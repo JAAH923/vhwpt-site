@@ -142,6 +142,9 @@ decisions:
   - date: 2026-04-17
     decision: Rework the homepage above-the-fold into a white editorial clinic layout.
     rationale: User preferred a reference with a white nav and calm headshot-led hero, so the primary homepage now opens with Bruce's portrait and the large clinical-care headline on a pale background.
+  - date: 2026-04-17
+    decision: Refine the editorial fold toward an all-white premium layout.
+    rationale: User asked to remove the grey/green band, enlarge Bruce's headshot, round the portrait edges, remove the red inset frame, and reduce the headline size.
 
 open_tasks:
   - Define the redesign brief and target conversion goals.
