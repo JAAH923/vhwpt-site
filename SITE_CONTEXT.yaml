@@ -13,7 +13,7 @@ session_continuity:
   updater_script: scripts/update_site_context.sh
 
 current_focus:
-  summary: Building a modern Astro one-page landing page foundation and gathering design inspiration.
+  summary: Version 4 Calm Care is promoted as the primary client-facing homepage; prior concept routes are deprecated redirects.
   active_questions: []
   next_steps:
     - Use docs/existing-site-map.md as the baseline inventory of the live site.
@@ -136,6 +136,9 @@ decisions:
   - date: 2026-04-17
     decision: Publish the Astro preview through GitHub Pages.
     rationale: User wanted a stable public client-preview URL that does not depend on Tailscale Funnel or the local Mac staying online.
+  - date: 2026-04-17
+    decision: Promote Version 4 Calm Care as the primary site direction.
+    rationale: User chose Version 4 as the foundation and asked to deprecate all other versions; homepage now renders Version 4 and concept routes redirect home.
 
 open_tasks:
   - Define the redesign brief and target conversion goals.

@@ -1,53 +1,13 @@
 ---
-import "../../styles/concepts.css";
-import { concepts, type Concept } from "../../data/concepts";
-
-const services = [
-  {
-    number: "01",
-    label: "Evaluate",
-    title: "Understand the body before changing the plan.",
-    text: "Movement, strength, posture, balance, history, and goals become the baseline.",
-  },
-  {
-    number: "02",
-    label: "Train",
-    title: "Build strength with better decisions.",
-    text: "Personal training guided by safer mechanics, smarter loading, and clearer progressions.",
-  },
-  {
-    number: "03",
-    label: "Coach",
-    title: "Keep momentum beyond the room.",
-    text: "Online support gives structure, accountability, and expert feedback from anywhere.",
-  },
-];
-
-const foldCards = [
-  {
-    title: "Personalized training",
-    text: "Plans shaped around goals, history, and current fitness level.",
-  },
-  {
-    title: "Clinical expertise",
-    text: "Doctor-led evaluation with practical coaching for safer progress.",
-  },
-  {
-    title: "Comprehensive approach",
-    text: "Fitness, wellness, recovery, and accountability in one plan.",
-  },
-];
+import { concepts } from "../../data/concepts";
 
 export function getStaticPaths() {
   return concepts.map((concept) => ({
     params: { id: concept.id },
-    props: { concept },
   }));
 }
 
-const { concept } = Astro.props as { concept: Concept };
 const basePath = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
-const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 ---
 
 <!doctype html>
@@ -55,143 +15,11 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,800&family=Manrope:wght@500;650;750;850&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="icon" type="image/png" href={withBase("/assets/brand/valencia-health-wellness-icon.png")} />
-    <title>{concept.name} | Valencia Health & Wellness</title>
+    <meta http-equiv="refresh" content={`0; url=${basePath}`} />
+    <link rel="canonical" href={basePath} />
+    <title>Redirecting | Valencia Health & Wellness</title>
   </head>
-  <body class={`concept-page ${concept.bodyClass}`}>
-    <main>
-      {concept.id === "4" ? (
-        <>
-          <div class="v4-topbar" aria-label="Contact information">
-            <div>
-              <a href="tel:19542996536">954-299-6536</a>
-              <a href="tel:15613425258">561-342-5258</a>
-            </div>
-            <a href="mailto:info@vhwpt.com">info@vhwpt.com</a>
-          </div>
-
-          <nav class="v4-nav" aria-label="Primary">
-            <a class="v4-brand" href={withBase("/concepts")}>
-              <img src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")} alt="" />
-              <span>
-                <strong>Valencia Health & Wellness, LLC</strong>
-                <small>Dr. Bruce Valencia, DPT</small>
-              </span>
-            </a>
-            <div class="v4-nav-links">
-              <a href={withBase("/concepts/4")}>Home</a>
-              <a href="#services">Services</a>
-              <a href="#doctor">About</a>
-              <a href="#contact">Contact</a>
-            </div>
-            <a class="v4-appointment" href="#contact">Book appointment</a>
-          </nav>
-
-          <header class="v4-fold">
-            <section class="v4-hero" aria-labelledby="v4-title">
-              <div class="v4-hero-copy">
-                <p class="concept-eyebrow">Coconut Creek and virtual wellness coaching</p>
-                <h1 id="v4-title">Valencia Health & Wellness, LLC</h1>
-                <p>
-                  Personalized fitness, health evaluations, and wellness coaching led by Dr. Bruce Valencia.
-                </p>
-                <div class="v4-fold-cards" aria-label="Highlights">
-                  {foldCards.map((card) => (
-                    <article>
-                      <span aria-hidden="true"></span>
-                      <h2>{card.title}</h2>
-                      <p>{card.text}</p>
-                    </article>
-                  ))}
-                </div>
-                <a class="concept-button primary" href="#contact">Book appointment</a>
-              </div>
-              <div class="v4-portrait" aria-label="Dr. Bruce Valencia">
-                <img src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
-              </div>
-            </section>
-          </header>
-        </>
-      ) : (
-        <>
-          <nav class="concept-nav" aria-label="Concept navigation">
-            <a class="concept-brand" href={withBase("/concepts")}>
-              <img src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")} alt="" />
-              <span>Version {concept.id}</span>
-            </a>
-            <div>
-              <a href={withBase(`/concepts/${Number(concept.id) === 1 ? 5 : Number(concept.id) - 1}`)}>Previous</a>
-              <a href={withBase(`/concepts/${Number(concept.id) === 5 ? 1 : Number(concept.id) + 1}`)}>Next</a>
-            </div>
-          </nav>
-
-          <section class={`concept-hero ${concept.heroMode}`}>
-            <div class="hero-copy">
-              <p class="concept-eyebrow">{concept.eyebrow}</p>
-              <h1>{concept.headline}</h1>
-              <p>{concept.lede}</p>
-              <div class="concept-actions">
-                <a class="concept-button primary" href="#contact">Book consultation</a>
-                <a class="concept-button secondary" href="#services">View services</a>
-              </div>
-            </div>
-
-            <div class="hero-media" aria-label="Brand visuals">
-              <img class="logo-art" src={withBase("/assets/brand/valencia-health-wellness-logo-display.png")} alt="Valencia Health & Wellness logo" />
-              <img class="headshot-art" src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
-            </div>
-          </section>
-        </>
-      )}
-
-      <section class="tone-strip" aria-label="Concept tone">
-        <span>{concept.name}</span>
-        <p>{concept.tone}</p>
-        <a href={withBase("/concepts")}>All concepts</a>
-      </section>
-
-      <section id="services" class="concept-services">
-        <div class="concept-section-heading">
-          <p class="concept-eyebrow">Services</p>
-          <h2>{concept.servicesIntro}</h2>
-        </div>
-        <div class="concept-service-list">
-          {services.map((service) => (
-            <article>
-              <span>{service.number}</span>
-              <p>{service.label}</p>
-              <h3>{service.title}</h3>
-              <p>{service.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class="concept-doctor">
-        <img src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
-        <div>
-          <p class="concept-eyebrow">Dr. Bruce Valencia</p>
-          <h2>{concept.doctorLine}</h2>
-          <p>
-            Doctor of Physical Therapy and Certified Lymphedema Therapist, blending evaluation, training, and wellness strategy into practical coaching.
-          </p>
-        </div>
-      </section>
-
-      <section id="contact" class="concept-contact">
-        <img src={withBase("/assets/brand/valencia-health-wellness-logo-display.png")} alt="Valencia Health & Wellness logo" />
-        <div>
-          <p class="concept-eyebrow">Private consultation</p>
-          <h2>Start with a clearer picture of what your body needs next.</h2>
-          <a class="concept-button primary" href="tel:19542996536">Call 954-299-6536</a>
-        </div>
-      </section>
-    </main>
+  <body>
+    <p>This design concept has been deprecated. <a href={basePath}>Go to the primary site.</a></p>
   </body>
 </html>
