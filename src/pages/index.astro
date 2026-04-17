@@ -22,21 +22,6 @@ const services = [
   },
 ];
 
-const foldCards = [
-  {
-    title: "Personalized training",
-    text: "Plans shaped around goals, history, and current fitness level.",
-  },
-  {
-    title: "Clinical expertise",
-    text: "Doctor-led evaluation with practical coaching for safer progress.",
-  },
-  {
-    title: "Comprehensive approach",
-    text: "Fitness, wellness, recovery, and accountability in one plan.",
-  },
-];
-
 const basePath = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 ---
@@ -61,14 +46,6 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
   </head>
   <body class="concept-page v4">
     <main>
-      <div class="v4-topbar" aria-label="Contact information">
-        <div>
-          <a href="tel:19542996536">954-299-6536</a>
-          <a href="tel:15613425258">561-342-5258</a>
-        </div>
-        <a href="mailto:info@vhwpt.com">info@vhwpt.com</a>
-      </div>
-
       <nav class="v4-nav" aria-label="Primary">
         <a class="v4-brand" href={withBase()}>
           <img src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")} alt="" />
@@ -86,34 +63,28 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         <a class="v4-appointment" href="#contact">Book appointment</a>
       </nav>
 
-      <header class="v4-fold">
-        <section class="v4-hero" aria-labelledby="hero-title">
-          <div class="v4-hero-copy">
-            <p class="concept-eyebrow">Coconut Creek and virtual wellness coaching</p>
-            <h1 id="hero-title">Valencia Health & Wellness, LLC</h1>
-            <p>
-              Personalized fitness, health evaluations, and wellness coaching led by Dr. Bruce Valencia.
-            </p>
-            <div class="v4-fold-cards" aria-label="Highlights">
-              {foldCards.map((card) => (
-                <article>
-                  <span aria-hidden="true"></span>
-                  <h2>{card.title}</h2>
-                  <p>{card.text}</p>
-                </article>
-              ))}
-            </div>
-            <a class="concept-button primary" href="#contact">Book appointment</a>
-          </div>
-          <div class="v4-portrait" aria-label="Dr. Bruce Valencia">
+      <header class="v4-editorial-fold">
+        <section class="v4-editorial-hero" aria-labelledby="hero-title">
+          <div class="v4-editorial-portrait" aria-label="Dr. Bruce Valencia">
             <img src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
+          </div>
+          <div class="v4-editorial-copy">
+            <p class="concept-eyebrow">Dr. Bruce Valencia</p>
+            <h1 id="hero-title">Clinical care can feel calm, direct, and deeply human.</h1>
+            <p>
+              Doctor of Physical Therapy and Certified Lymphedema Therapist, blending evaluation, training, and wellness strategy into practical coaching.
+            </p>
+            <div class="v4-editorial-actions">
+              <a class="concept-button primary" href="#contact">Book appointment</a>
+              <a class="concept-button secondary" href="#services">Explore services</a>
+            </div>
           </div>
         </section>
       </header>
 
       <section class="tone-strip" aria-label="Brand focus">
-        <span>Calm Care</span>
-        <p>Soft, reassuring, trustworthy care with doctor-led fitness and wellness strategy.</p>
+        <span>Valencia Health & Wellness</span>
+        <p>Personalized fitness, health evaluations, and virtual wellness coaching in Coconut Creek and beyond.</p>
         <a href="#contact">Start</a>
       </section>
 
@@ -138,7 +109,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         <img src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
         <div>
           <p class="concept-eyebrow">Dr. Bruce Valencia</p>
-          <h2>Clinical care can feel calm, direct, and deeply human.</h2>
+          <h2>The plan changes when your coach understands the body clinically.</h2>
           <p>
             Doctor of Physical Therapy and Certified Lymphedema Therapist, blending evaluation, training, and wellness strategy into practical coaching.
           </p>

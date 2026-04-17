@@ -437,12 +437,12 @@ img {
 }
 
 .v4 {
-  background: #eef5f2;
+  background: #fbfaf6;
   color: #18201d;
 }
 
 .v4 .tone-strip {
-  margin-top: clamp(28px, 4vw, 52px);
+  margin-top: 0;
 }
 
 .v4-fold {
@@ -473,17 +473,17 @@ img {
 
 .v4-nav {
   align-items: center;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(255, 255, 255, 0.96);
   border-bottom: 1px solid rgba(24, 32, 29, 0.08);
-  box-shadow: 0 16px 38px rgba(23, 33, 42, 0.08);
+  box-shadow: 0 12px 34px rgba(23, 33, 42, 0.06);
   display: grid;
   gap: 22px;
   grid-template-columns: minmax(260px, 1fr) auto auto;
   min-height: 86px;
-  padding: 12px clamp(18px, 5vw, 64px);
+  padding: 10px clamp(18px, 5vw, 64px);
   position: sticky;
   top: 0;
-  z-index: 3;
+  z-index: 10;
 }
 
 .v4-brand {
@@ -537,6 +537,83 @@ img {
   font-weight: 850;
   padding: 15px 20px;
   text-decoration: none;
+}
+
+.v4-editorial-fold {
+  background:
+    linear-gradient(#fbfaf6 0, #fbfaf6 72px, transparent 72px),
+    linear-gradient(180deg, #eef5f2 0%, #e3ede8 100%);
+  min-height: calc(100vh - 86px);
+  padding: clamp(58px, 8vw, 132px) clamp(18px, 5vw, 64px) clamp(74px, 9vw, 144px);
+}
+
+.v4-editorial-hero {
+  align-items: center;
+  display: grid;
+  gap: clamp(48px, 6vw, 90px);
+  grid-template-columns: minmax(240px, 0.37fr) 1fr;
+  margin: 0 auto;
+  max-width: 1400px;
+  min-height: clamp(560px, 68vh, 780px);
+}
+
+.v4-editorial-portrait {
+  align-self: center;
+  background: #ffffff;
+  box-shadow: 0 34px 90px rgba(38, 52, 47, 0.12);
+  overflow: hidden;
+  position: relative;
+}
+
+.v4-editorial-portrait::after {
+  border: 1px solid rgba(168, 59, 73, 0.34);
+  content: "";
+  inset: 16px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.v4-editorial-portrait img {
+  aspect-ratio: 1;
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.v4-editorial-copy {
+  max-width: 980px;
+}
+
+.v4-editorial-copy .concept-eyebrow {
+  color: #a83b49;
+  margin-bottom: 24px;
+}
+
+.v4-editorial-copy h1 {
+  color: #131c18;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(4.2rem, 7.8vw, 9.6rem);
+  font-weight: 650;
+  letter-spacing: -0.055em;
+  line-height: 0.86;
+  margin: 0;
+}
+
+.v4-editorial-copy > p:not(.concept-eyebrow) {
+  color: #18201d;
+  font-size: clamp(1.05rem, 1.45vw, 1.35rem);
+  font-weight: 650;
+  line-height: 1.55;
+  margin: 28px 0 0;
+  max-width: 720px;
+}
+
+.v4-editorial-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 34px;
 }
 
 .v4-hero {
@@ -761,6 +838,7 @@ img {
   }
 
   .v4-nav,
+  .v4-editorial-hero,
   .v4-hero,
   .v4-fold-cards {
     grid-template-columns: 1fr;
@@ -777,6 +855,19 @@ img {
   .v4-portrait {
     align-self: start;
     max-width: 260px;
+  }
+
+  .v4-editorial-fold {
+    background: linear-gradient(180deg, #eef5f2 0%, #e3ede8 100%);
+    padding-top: clamp(44px, 10vw, 72px);
+  }
+
+  .v4-editorial-hero {
+    min-height: auto;
+  }
+
+  .v4-editorial-portrait {
+    max-width: 420px;
   }
 }
 
