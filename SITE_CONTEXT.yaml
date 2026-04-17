@@ -148,6 +148,9 @@ decisions:
   - date: 2026-04-17
     decision: Add a hamburger navigation pattern for mobile.
     rationale: User asked to clean up the mobile header and move links behind a hamburger menu while keeping the desktop header intact.
+  - date: 2026-04-17
+    decision: Reintroduce Bruce's original site copy into the modern homepage.
+    rationale: User wanted to keep the legacy copy; homepage now includes the welcome message, key benefits, and full programming set language in the new premium layout.
 
 open_tasks:
   - Define the redesign brief and target conversion goals.

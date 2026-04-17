@@ -1,24 +1,57 @@
 ---
 import "../styles/concepts.css";
 
-const services = [
+const benefits = [
   {
-    number: "01",
-    label: "Evaluate",
-    title: "Understand the body before changing the plan.",
-    text: "Movement, strength, posture, balance, history, and goals become the baseline.",
+    title: "Personalized training",
+    text: "Customized workout plans tailored to individual goals and fitness levels.",
   },
   {
-    number: "02",
-    label: "Train",
-    title: "Build strength with better decisions.",
-    text: "Personal training guided by safer mechanics, smarter loading, and clearer progressions.",
+    title: "Expert coaches",
+    text: "Certified trainers with specialized expertise in various fitness and wellness areas.",
   },
   {
-    number: "03",
-    label: "Coach",
-    title: "Keep momentum beyond the room.",
-    text: "Online support gives structure, accountability, and expert feedback from anywhere.",
+    title: "Community focus",
+    text: "Creating a supportive and motivating environment for all clients.",
+  },
+  {
+    title: "Flexible scheduling",
+    text: "Convenient options for in-person and virtual training sessions.",
+  },
+  {
+    title: "Comprehensive approach",
+    text: "Integrating fitness, nutrition, and wellness for holistic health.",
+  },
+];
+
+const programs = [
+  {
+    title: "Senior fitness program",
+    text: "Tailored exercise routines to improve mobility, balance, and strength for older adults.",
+  },
+  {
+    title: "Weight management and nutritional counseling",
+    text: "Personalized plans for weight loss, healthy eating habits, and sustainable wellness.",
+  },
+  {
+    title: "Youth fitness and sports training",
+    text: "Helping young athletes improve performance, strength, and agility.",
+  },
+  {
+    title: "Rehabilitation and injury prevention",
+    text: "Recovery programs for individuals recovering from injuries or surgeries.",
+  },
+  {
+    title: "Corporate wellness programs",
+    text: "Health and fitness programming designed to support stronger, more resilient teams.",
+  },
+  {
+    title: "Pre and postnatal fitness",
+    text: "Safe, supportive movement plans for pregnancy, postpartum recovery, and changing bodies.",
+  },
+  {
+    title: "Holistic wellness programs",
+    text: "Wellness strategies that bring together fitness, recovery, stress management, and long-term health.",
   },
 ];
 
@@ -96,18 +129,39 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         <a href="#contact">Start</a>
       </section>
 
+      <section class="v4-welcome" aria-labelledby="welcome-title">
+        <div class="v4-welcome-copy">
+          <p class="concept-eyebrow">Welcome</p>
+          <h2 id="welcome-title">Personalized fitness and wellness, cultivated around your goals.</h2>
+          <p>
+            Welcome to Valencia Health and Wellness, LLC, your premier destination for personalized fitness and wellness in Coconut Creek, Florida, and virtually via programming cultivated and curated to bring success to your dreams and goals.
+          </p>
+          <p>
+            Whether you're looking to get fit, manage stress, or enhance your overall well-being, we have solutions tailored to your needs.
+          </p>
+        </div>
+        <div class="v4-benefits" aria-label="Key benefits">
+          <p class="concept-eyebrow">Key benefits</p>
+          {benefits.map((benefit) => (
+            <article>
+              <h3>{benefit.title}</h3>
+              <p>{benefit.text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section id="services" class="concept-services">
         <div class="concept-section-heading">
-          <p class="concept-eyebrow">Services</p>
-          <h2>Gentle pacing, high trust, and approachable expertise.</h2>
+          <p class="concept-eyebrow">Programming sets</p>
+          <h2>Specific programs for different bodies, goals, seasons, and levels of support.</h2>
         </div>
-        <div class="concept-service-list">
-          {services.map((service) => (
+        <div class="v4-program-grid">
+          {programs.map((program, index) => (
             <article>
-              <span>{service.number}</span>
-              <p>{service.label}</p>
-              <h3>{service.title}</h3>
-              <p>{service.text}</p>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <h3>{program.title}</h3>
+              <p>{program.text}</p>
             </article>
           ))}
         </div>
