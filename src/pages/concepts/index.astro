@@ -1,0 +1,44 @@
+---
+import "../../styles/concepts.css";
+import { concepts } from "../../data/concepts";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,800&family=Manrope:wght@500;650;750;850&display=swap"
+      rel="stylesheet"
+    />
+    <title>VHWPT Concepts</title>
+  </head>
+  <body class="concept-index">
+    <main>
+      <header class="index-hero">
+        <a class="back-link" href={withBase()}>Current Home</a>
+        <p class="concept-eyebrow">Design directions</p>
+        <h1>Five ways the Valencia site could feel.</h1>
+        <p>
+          Each route is a distinct art direction using the same core brand, headshot, logo, and service story.
+        </p>
+      </header>
+
+      <section class="concept-list" aria-label="Concept versions">
+        {concepts.map((concept) => (
+          <a class="concept-list-item" href={withBase(`/concepts/${concept.id}`)}>
+            <span>Version {concept.id}</span>
+            <strong>{concept.name}</strong>
+            <p>{concept.summary}</p>
+          </a>
+        ))}
+      </section>
+    </main>
+  </body>
+</html>

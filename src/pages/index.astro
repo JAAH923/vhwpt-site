@@ -1,0 +1,158 @@
+---
+import "../styles/global.css";
+
+const proof = [
+  "Doctor of Physical Therapy",
+  "Certified Lymphedema Therapist",
+  "Health evaluations",
+  "Personal and online training",
+];
+
+const services = [
+  {
+    number: "01",
+    label: "Evaluation",
+    title: "Start with what your body is actually telling us.",
+    text: "Movement, strength, posture, balance, limitations, and goals become the baseline for a plan that is specific instead of assumed.",
+  },
+  {
+    number: "02",
+    label: "Training",
+    title: "Build strength with a clinician's eye on every progression.",
+    text: "Personal training is shaped around safer mechanics, smarter loading, and the confidence to keep improving beyond the session.",
+  },
+  {
+    number: "03",
+    label: "Online Coaching",
+    title: "Carry the plan with you, wherever training happens.",
+    text: "Remote programming gives clients structure, feedback, and accountability without losing the precision of expert guidance.",
+  },
+];
+
+const process = ["Assess", "Design", "Coach", "Refine"];
+const basePath = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="description"
+      content="Valencia Health & Wellness provides doctor-led health evaluations, personal training, and online coaching with a physical therapy lens."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,800&family=Manrope:wght@500;650;750;850&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href={withBase("/assets/brand/valencia-health-wellness-icon.png")} />
+    <title>Valencia Health & Wellness</title>
+  </head>
+  <body>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <nav class="nav" aria-label="Primary">
+          <a class="brand" href={withBase()}>
+            <img src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")} alt="" />
+            <span>Valencia Health & Wellness</span>
+          </a>
+          <div class="nav-links">
+            <a href="#services">Services</a>
+            <a href="#doctor">Doctor</a>
+            <a href="#contact">Consult</a>
+          </div>
+        </nav>
+
+        <div class="hero-mark" aria-hidden="true">
+          <img src={withBase("/assets/brand/valencia-health-wellness-logo-display.png")} alt="" />
+        </div>
+
+        <div class="hero-inner">
+          <p class="eyebrow">Doctor-led fitness and wellness</p>
+          <h1 id="hero-title">Move with clinical confidence.</h1>
+          <p class="lede">
+            Health evaluations, personal training, and online coaching designed through a physical therapy lens.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#contact">Book a consultation</a>
+            <a class="button ghost" href="#services">Explore the work</a>
+          </div>
+        </div>
+
+        <div class="hero-footer" aria-label="Credentials and highlights">
+          {proof.map((item) => <span>{item}</span>)}
+        </div>
+      </section>
+
+      <section class="statement" aria-label="Brand statement">
+        <p>
+          This is not generic fitness. It is a measured, clinician-informed way to understand your body, train with purpose, and build strength that holds up in real life.
+        </p>
+      </section>
+
+      <section id="services" class="services" aria-labelledby="services-title">
+        <div class="section-kicker">
+          <p class="eyebrow">Services</p>
+          <h2 id="services-title">Three ways into better movement.</h2>
+        </div>
+
+        <div class="service-scenes">
+          {services.map((service) => (
+            <article class="service-scene">
+              <div class="service-index">
+                <span>{service.number}</span>
+                <p>{service.label}</p>
+              </div>
+              <div class="service-copy">
+                <h3>{service.title}</h3>
+                <p>{service.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="doctor" class="doctor" aria-labelledby="doctor-title">
+        <div class="doctor-image">
+          <img src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
+        </div>
+        <div class="doctor-copy">
+          <p class="eyebrow">Dr. Bruce Valencia, DPT / CLT</p>
+          <h2 id="doctor-title">The plan changes when the coach understands the body clinically.</h2>
+          <p>
+            Bruce brings physical therapy training into the fitness conversation, helping clients move past guesswork and into guided, progressive work that respects history, capacity, and goals.
+          </p>
+        </div>
+      </section>
+
+      <section class="process" aria-label="Process">
+        <div class="process-line">
+          {process.map((item, index) => (
+            <div class="process-step">
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <p>{item}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="contact" class="contact" aria-labelledby="contact-title">
+        <div class="contact-logo">
+          <img src={withBase("/assets/brand/valencia-health-wellness-logo-display.png")} alt="Valencia Health & Wellness logo" />
+        </div>
+        <div class="contact-copy">
+          <p class="eyebrow">Private consultation</p>
+          <h2 id="contact-title">Begin with a clearer picture of what your body needs next.</h2>
+          <div class="contact-actions">
+            <a class="button primary" href="tel:19542996536">Call 954-299-6536</a>
+            <a class="button ghost" href="mailto:info@vhwpt.com">Email info@vhwpt.com</a>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,153 @@
+version: 1
+project:
+  name: vhwpt_site
+  path: /Users/justin/dev/vhwpt_site
+  purpose: Modern website rebuild context for VHWPT.
+  status: discovery
+
+session_continuity:
+  intent: Keep durable project context available between Codex sessions.
+  update_frequency: Update whenever goals, architecture, design direction, commands, dependencies, or decisions change.
+  archive_policy: Before replacing this file, copy the previous version into ./~archive with a timestamped filename.
+  archive_filename_format: SITE_CONTEXT_YYYYMMDD_HHMMSS.yaml
+  updater_script: scripts/update_site_context.sh
+
+current_focus:
+  summary: Building a modern Astro one-page landing page foundation and gathering design inspiration.
+  active_questions: []
+  next_steps:
+    - Use docs/existing-site-map.md as the baseline inventory of the live site.
+    - Use docs/refero-inspiration.md for one-page landing page design references.
+    - Define redesign goals, audience, conversion actions, and desired sitemap.
+    - Add implementation notes as the codebase is created.
+    - Keep this file current at the end of meaningful work sessions.
+
+site:
+  source_url: https://www.vhwpt.com
+  legacy_platform: WordPress with Yoast SEO and WooCommerce installed.
+  target_platform: TBD, but not WordPress.
+  audience: People seeking health, wellness, physical therapy-informed fitness, personal training, online training, and health evaluations.
+  primary_goal: TBD
+  existing_site_map: docs/existing-site-map.md
+  inspiration_notes: docs/refero-inspiration.md
+  assets:
+    brand_folder: assets/brand
+    headshot: assets/brand/bruce-headshot2.webp
+    company_logo: assets/brand/Gemini_Generated_Image_gvkyfugvkyfugvky.png
+    public_headshot: public/assets/brand/bruce-headshot.webp
+    public_company_logo_source: public/assets/brand/valencia-health-wellness-logo-full.png
+    public_square_mark_source: public/assets/brand/valencia-health-wellness-logo.png
+    public_header_logo: public/assets/brand/valencia-health-wellness-logo-header.png
+    public_display_logo: public/assets/brand/valencia-health-wellness-logo-display.png
+    public_icon: public/assets/brand/valencia-health-wellness-icon.png
+    manifest: assets/brand/README.md
+  pages:
+    - Home: https://www.vhwpt.com/
+    - About: https://www.vhwpt.com/about
+    - Services archive: https://www.vhwpt.com/category/services
+    - Online Training: https://www.vhwpt.com/services/online-training
+    - Personal Training: https://www.vhwpt.com/services/personal-training
+    - Health Evaluations: https://www.vhwpt.com/services/health-evaluations
+    - Contact: https://www.vhwpt.com/contact
+    - Shop: https://www.vhwpt.com/shop
+    - Cart: https://www.vhwpt.com/cart
+    - Checkout: https://www.vhwpt.com/checkout
+    - My Account: https://www.vhwpt.com/my-account
+  content_notes: []
+  design_direction:
+    current_site_notes: Dark/black WordPress fitness theme with bright red accent #ff0137; recurring Services, Products, and Connect sections.
+    mood: TBD
+    references: []
+    typography: TBD
+    color_palette: TBD
+    interaction_notes: []
+
+technical:
+  stack: Astro static site; user wants a modern non-WordPress build.
+  package_manager: pnpm
+  dev_server: Astro dev server
+  local_url: http://localhost:4321/
+  tailnet_url: https://justins-mac-mini.tail4bfb07.ts.net/
+  public_preview_url: https://justins-mac-mini.tail4bfb07.ts.net/
+  public_preview_provider: Tailscale Funnel
+  github_pages_url: https://jaah923.github.io/vhwpt-site/
+  github_repository: https://github.com/JAAH923/vhwpt-site
+  tailnet_ip_url: http://100.98.86.93:4321/
+  important_commands:
+    - pnpm dev -- --port 4321
+    - pnpm build
+    - /Applications/Tailscale.app/Contents/MacOS/Tailscale serve --bg --yes 4321
+    - /Applications/Tailscale.app/Contents/MacOS/Tailscale funnel --bg --yes 4321
+    - /Applications/Tailscale.app/Contents/MacOS/Tailscale funnel status
+    - /Applications/Tailscale.app/Contents/MacOS/Tailscale funnel --https=443 off
+    - /Applications/Tailscale.app/Contents/MacOS/Tailscale serve status
+  environment_variables: []
+  integrations:
+    refero_mcp:
+      status: available
+      notes: Configured in Codex MCP settings for design-screen and flow inspiration.
+
+decisions:
+  - date: 2026-04-16
+    decision: Add SITE_CONTEXT.yaml for cross-session continuity.
+    rationale: Provide a stable, editable project memory file that future sessions can read first.
+  - date: 2026-04-16
+    decision: Capture the existing vhwpt.com public site map before redesign work.
+    rationale: Establish a factual baseline for current pages, services, WordPress content types, and commerce scaffolding.
+  - date: 2026-04-16
+    decision: Save Bruce Valencia headshot and Valencia Health & Wellness logo into assets/brand.
+    rationale: Keep source brand assets local for design exploration and implementation.
+  - date: 2026-04-16
+    decision: Use the full Valencia Health & Wellness logo as the primary logo asset.
+    rationale: User clarified the attached full logo should be used; keep the square mark only as an icon/favicon-style asset.
+  - date: 2026-04-16
+    decision: Use the user-reuploaded local headshot and logo from assets/brand as the canonical brand images.
+    rationale: User provided preferred local source files; copied them into public/assets/brand with clean filenames for Astro.
+  - date: 2026-04-16
+    decision: Treat WordPress as the legacy/source site only, not the rebuild platform.
+    rationale: User clarified they want something more modern than WordPress for the new build.
+  - date: 2026-04-16
+    decision: Start the rebuild foundation with Astro and pnpm.
+    rationale: Astro is modern, fast, content-friendly, and well-suited to a polished one-page service/marketing site.
+  - date: 2026-04-16
+    decision: Expose the local Astro dev server via Tailscale Serve.
+    rationale: Allows tailnet devices to preview the local site while keeping the dev server off the public internet.
+  - date: 2026-04-16
+    decision: Enable Tailscale Funnel for public preview.
+    rationale: Allows Bruce or other non-tailnet reviewers to access the local Astro preview through a temporary public HTTPS URL.
+  - date: 2026-04-16
+    decision: Upgrade the initial Astro page toward a premium one-page landing page direction.
+    rationale: User felt the starter page was too basic; revised hero, trust signals, service cards, doctor section, process, and consultation CTA to feel more polished and brand-led.
+  - date: 2026-04-16
+    decision: Replace the card-heavy landing page with a cinematic editorial one-page direction.
+    rationale: User wanted a less standard, more Apple-like premium feel; removed most card UI, enlarged type, used the logo as an atmospheric hero mark, and rebuilt services as full-width editorial scenes.
+  - date: 2026-04-16
+    decision: Create five parallel design concept routes using agent-generated art direction.
+    rationale: User requested multiple versions from the current dark premium vibe through a clean white headshot-led direction, so concepts now live at /concepts/1 through /concepts/5 with a comparison index at /concepts.
+  - date: 2026-04-17
+    decision: Use Version 4 Calm Care as the foundation and reformat its top fold.
+    rationale: User selected Version 4 and provided a reference with top contact strip, white nav, appointment CTA, large hero, and three visible value cards.
+  - date: 2026-04-17
+    decision: Optimize rendered logo assets for the Astro site.
+    rationale: The header was using the 2048px 4.9 MB source PNG, so pages now render smaller header, display, and icon variants while preserving the original source asset.
+  - date: 2026-04-17
+    decision: Use assets/brand/bruce-headshot2.webp as the authentic Bruce Valencia headshot.
+    rationale: User clarified this WebP is the correct human headshot; live pages now use public/assets/brand/bruce-headshot.webp instead of the older 200px JPEG.
+  - date: 2026-04-17
+    decision: Publish the Astro preview through GitHub Pages.
+    rationale: User wanted a stable public client-preview URL that does not depend on Tailscale Funnel or the local Mac staying online.
+
+open_tasks:
+  - Define the redesign brief and target conversion goals.
+  - Refine the first landing page direction using Refero inspiration.
+  - Capture visual inspiration from Refero once design exploration starts.
+  - Decide whether WooCommerce/shop functionality is part of the rebuild or should be removed/deprioritized.
+
+handoff_notes:
+  read_first:
+    - SITE_CONTEXT.yaml
+    - docs/existing-site-map.md
+    - docs/refero-inspiration.md
+  maintenance:
+    - Use scripts/update_site_context.sh to replace this file so the previous copy is archived.
+    - Keep entries concise, factual, and current.
