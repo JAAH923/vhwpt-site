@@ -517,6 +517,15 @@ img {
   font-weight: 750;
 }
 
+.v4-menu-toggle,
+.v4-menu-button {
+  display: none;
+}
+
+.v4-mobile-menu {
+  display: contents;
+}
+
 .v4-nav-links {
   display: flex;
   gap: clamp(16px, 2.6vw, 34px);
@@ -851,19 +860,116 @@ img {
     padding-top: 10px;
   }
 
-  .v4-nav,
   .v4-editorial-hero,
   .v4-hero,
   .v4-fold-cards {
     grid-template-columns: 1fr;
   }
 
-  .v4-nav-links {
-    flex-wrap: wrap;
+  .v4-nav {
+    gap: 14px 18px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 74px;
+    padding: 10px 18px;
   }
 
-  .v4-appointment {
-    justify-self: start;
+  .v4-brand {
+    min-width: 0;
+  }
+
+  .v4-brand img {
+    height: 50px;
+    width: 82px;
+  }
+
+  .v4-brand span {
+    min-width: 0;
+  }
+
+  .v4-brand strong,
+  .v4-brand small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .v4-brand strong {
+    font-size: 0.96rem;
+  }
+
+  .v4-brand small {
+    font-size: 0.78rem;
+  }
+
+  .v4-menu-button {
+    align-items: center;
+    border: 1px solid rgba(17, 18, 20, 0.18);
+    border-radius: 999px;
+    cursor: pointer;
+    display: inline-grid;
+    gap: 4px;
+    height: 44px;
+    justify-content: center;
+    padding: 0;
+    width: 44px;
+  }
+
+  .v4-menu-toggle {
+    display: block;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    width: 1px;
+  }
+
+  .v4-menu-button span {
+    background: #111214;
+    display: block;
+    height: 2px;
+    transition:
+      opacity 160ms ease,
+      transform 160ms ease;
+    width: 16px;
+  }
+
+  .v4-menu-toggle:checked + .v4-menu-button span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .v4-menu-toggle:checked + .v4-menu-button span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .v4-menu-toggle:checked + .v4-menu-button span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  .v4-mobile-menu {
+    border-top: 1px solid rgba(17, 18, 20, 0.08);
+    display: none;
+    grid-column: 1 / -1;
+    padding-top: 14px;
+  }
+
+  .v4-menu-toggle:checked ~ .v4-mobile-menu {
+    display: grid;
+    gap: 14px;
+  }
+
+  .v4-nav-links {
+    display: grid;
+    gap: 2px;
+  }
+
+  .v4-nav-links a {
+    border-radius: 14px;
+    padding: 12px 4px;
+  }
+
+  .v4-mobile-menu .v4-appointment {
+    justify-self: stretch;
+    width: 100%;
   }
 
   .v4-portrait {

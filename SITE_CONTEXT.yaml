@@ -145,6 +145,9 @@ decisions:
   - date: 2026-04-17
     decision: Refine the editorial fold toward an all-white premium layout.
     rationale: User asked to remove the grey/green band, enlarge Bruce's headshot, round the portrait edges, remove the red inset frame, and reduce the headline size.
+  - date: 2026-04-17
+    decision: Add a hamburger navigation pattern for mobile.
+    rationale: User asked to clean up the mobile header and move links behind a hamburger menu while keeping the desktop header intact.
 
 open_tasks:
   - Define the redesign brief and target conversion goals.

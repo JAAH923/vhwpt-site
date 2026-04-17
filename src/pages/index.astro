@@ -54,13 +54,21 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
             <small>Dr. Bruce Valencia, DPT</small>
           </span>
         </a>
-        <div class="v4-nav-links">
-          <a href={withBase()}>Home</a>
-          <a href="#services">Services</a>
-          <a href="#doctor">About</a>
-          <a href="#contact">Contact</a>
+        <input class="v4-menu-toggle" type="checkbox" id="primary-menu" aria-label="Toggle navigation menu" />
+        <label class="v4-menu-button" for="primary-menu" aria-label="Open navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
+        <div class="v4-mobile-menu">
+          <div class="v4-nav-links">
+            <a href={withBase()}>Home</a>
+            <a href="#services">Services</a>
+            <a href="#doctor">About</a>
+            <a href="#contact">Contact</a>
+          </div>
+          <a class="v4-appointment" href="#contact">Book appointment</a>
         </div>
-        <a class="v4-appointment" href="#contact">Book appointment</a>
       </nav>
 
       <header class="v4-editorial-fold">
