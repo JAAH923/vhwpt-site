@@ -151,6 +151,9 @@ decisions:
   - date: 2026-04-17
     decision: Reintroduce Bruce's original site copy into the modern homepage.
     rationale: User wanted to keep the legacy copy; homepage now includes the welcome message, key benefits, and full programming set language in the new premium layout.
+  - date: 2026-04-17
+    decision: Clarify header and hero credentials copy.
+    rationale: User wanted the header subtitle to indicate Coconut Creek and virtual care, and the hero eyebrow to include Bruce's DPT credential.
 
 open_tasks:
   - Define the redesign brief and target conversion goals.
