@@ -40,6 +40,7 @@ site:
     public_header_logo: public/assets/brand/valencia-health-wellness-logo-header.png
     public_display_logo: public/assets/brand/valencia-health-wellness-logo-display.png
     public_icon: public/assets/brand/valencia-health-wellness-icon.png
+    public_home_featured_image: public/assets/brand/vhwpt-home-featured-image.jpeg
     manifest: assets/brand/README.md
   pages:
     - Home: https://www.vhwpt.com/
@@ -154,6 +155,9 @@ decisions:
   - date: 2026-04-17
     decision: Clarify header and hero credentials copy.
     rationale: User wanted the header subtitle to indicate Coconut Creek and virtual care, and the hero eyebrow to include Bruce's DPT credential.
+  - date: 2026-04-17
+    decision: Align the hero content with the legacy vhwpt.com homepage.
+    rationale: User noted the hero did not match the current site; hero now uses the original page title, welcome copy, and featured homepage image from vhwpt.com while preserving the modern layout.
 
 open_tasks:
   - Define the redesign brief and target conversion goals.
