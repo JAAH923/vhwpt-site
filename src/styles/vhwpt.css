@@ -1,50 +1,112 @@
 /* ============================================================
-   vhwpt.css — Valencia Health & Wellness site styles
-   Supplements concepts.css (v4 Calm Care base)
+   vhwpt.css — Valencia Health & Wellness
+   v1.1 — typography, spacing & visual polish pass
    ============================================================ */
+
+/* ── Global ─────────────────────────────────────────────── */
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Anchor offset for sticky nav (86px desktop, 74px mobile) */
+body {
+  line-height: 1.75;
+}
+
+p {
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
 #services,
 #about,
 #contact {
   scroll-margin-top: 86px;
 }
 
-/* ── Nav: teal CTA override ─────────────────────────────── */
-.v4-appointment {
-  background: #2d9ac0;
-  border-color: #2d9ac0;
-}
-.v4-appointment:hover {
-  background: #ffffff;
-  color: #2d9ac0;
+/* ── Global section vertical rhythm ─────────────────────── */
+
+.services-section,
+.about-section,
+.why-section,
+.testimonials-section,
+.contact-band {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
 }
 
-/* ── CTA button: teal pill ──────────────────────────────── */
+/* ── Nav ────────────────────────────────────────────────── */
+
+.v4-nav-links a {
+  font-weight: 500;
+}
+
+.v4-brand strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.v4-brand small {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.v4-appointment {
+  background: #0f6e56;
+  border-color: #0f6e56;
+}
+.v4-appointment:hover {
+  background: #085041;
+  border-color: #085041;
+  color: #ffffff;
+}
+
+/* ── Primary CTA button — solid green, site-wide ─────────── */
+
 .vhwpt-cta {
-  background: #2d9ac0 !important;
-  border-color: #2d9ac0 !important;
-  border-radius: 999px;
+  background: #0f6e56 !important;
+  border-color: #0f6e56 !important;
+  border-radius: 6px;
   color: #ffffff !important;
+  font-weight: 500;
+  letter-spacing: 0;
+  min-height: unset;
+  padding: 0.75rem 1.75rem;
+  text-transform: none;
   transition:
     background 180ms ease,
     box-shadow 180ms ease,
     transform 180ms ease;
 }
 .vhwpt-cta:hover {
-  background: #2389ad !important;
-  box-shadow: 0 12px 28px rgba(45, 154, 192, 0.28);
-  transform: translateY(-2px);
+  background: #085041 !important;
+  border-color: #085041 !important;
+  box-shadow: 0 8px 20px rgba(15, 110, 86, 0.24);
+  transform: translateY(-1px);
 }
 
 /* ── Hero layout: copy left, portrait right ─────────────── */
+
+/* Apply Playfair Display to hero h1 */
+.v4-editorial-copy h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 600;
+}
+
+/* Minimum 120px vertical padding on desktop */
+@media (min-width: 901px) {
+  .v4-editorial-fold {
+    padding-top: 120px;
+    padding-bottom: 120px;
+  }
+}
+
 .vhwpt-hero {
   grid-template-columns: 1fr minmax(300px, 0.48fr);
 }
+
+/* Desktop: copy left, portrait right */
 .vhwpt-hero .v4-editorial-copy {
   order: 1;
 }
@@ -53,46 +115,52 @@ html {
 }
 
 /* ── Section 3: Credential Trust Bar ───────────────────── */
+
 .trust-bar {
-  background: #f0f6f4;
-  border-top: 1px solid rgba(45, 154, 192, 0.18);
-  border-bottom: 1px solid rgba(45, 154, 192, 0.18);
-  padding: 26px clamp(18px, 5vw, 64px);
+  background: #ffffff;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 32px clamp(18px, 5vw, 64px);
 }
 .trust-bar-inner {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  gap: 12px;
+  justify-content: center;
   margin: 0 auto;
   max-width: 1200px;
 }
 .trust-badge {
   align-items: center;
-  display: flex;
+  background: #e1f5ee;
+  border: 1px solid #9fe1cb;
+  border-radius: 99px;
+  color: #0f6e56;
+  display: inline-flex;
   flex: 0 0 auto;
-  gap: 10px;
-  padding: 6px 24px;
-}
-.trust-badge:not(:last-child) {
-  border-right: 1px solid rgba(17, 18, 20, 0.12);
+  gap: 6px;
+  padding: 0.4rem 1rem;
 }
 .trust-icon {
-  font-size: 1.4rem;
+  color: #1d9e75;
+  font-size: 1rem;
   line-height: 1;
 }
 .trust-label {
-  color: #17212a;
-  font-size: 0.88rem;
-  font-weight: 850;
-  letter-spacing: 0.03em;
+  color: #0f6e56;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
   white-space: nowrap;
 }
 
 /* ── Section 4: Services Grid ───────────────────────────── */
+
 .services-section {
   background: #ffffff;
-  padding: clamp(72px, 10vw, 136px) clamp(18px, 5vw, 64px);
+  padding-left: clamp(18px, 5vw, 64px);
+  padding-right: clamp(18px, 5vw, 64px);
 }
 .services-section-inner {
   margin: 0 auto;
@@ -103,34 +171,33 @@ html {
   max-width: 860px;
 }
 .services-heading .concept-eyebrow {
-  color: #2d9ac0;
+  color: #1d9e75;
 }
 .services-heading h2 {
   color: #17212a;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-size: clamp(1.8rem, 3vw, 2.8rem);
-  font-weight: 650;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
   margin: 0;
 }
 .services-grid {
   display: grid;
-  gap: 16px;
+  gap: 1.5rem;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .service-card {
   background: #ffffff;
-  border: 1px solid rgba(17, 18, 20, 0.1);
-  border-radius: 20px;
-  padding: clamp(22px, 3vw, 32px);
-  transition:
-    box-shadow 220ms ease,
-    transform 220ms ease;
+  border: 1px solid rgba(17, 18, 20, 0.08);
+  border-radius: 12px;
+  border-top: 3px solid #1d9e75;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .service-card:hover {
-  box-shadow: 0 18px 48px rgba(17, 18, 20, 0.1);
-  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 .service-card-icon {
   display: block;
@@ -141,24 +208,26 @@ html {
 .service-card h3 {
   color: #17212a;
   font-family: "Manrope", "Avenir Next", sans-serif;
-  font-size: 0.9rem;
-  font-weight: 850;
-  letter-spacing: 0.06em;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0;
   margin: 0 0 10px;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .service-card p {
   color: #53616c;
-  font-size: 0.93rem;
-  font-weight: 650;
-  line-height: 1.65;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.75;
   margin: 0;
 }
 
 /* ── Section 5: About ───────────────────────────────────── */
+
 .about-section {
   background: #f7f9f8;
-  padding: clamp(72px, 10vw, 136px) clamp(18px, 5vw, 64px);
+  padding-left: clamp(18px, 5vw, 64px);
+  padding-right: clamp(18px, 5vw, 64px);
 }
 .about-inner {
   align-items: start;
@@ -173,25 +242,27 @@ html {
   top: 106px;
 }
 .about-photo img {
+  aspect-ratio: 3 / 4;
   border-radius: 22px;
   box-shadow: 0 28px 72px rgba(17, 18, 20, 0.12);
   display: block;
   object-fit: cover;
+  object-position: top center;
   width: 100%;
 }
 .about-story h2 {
   color: #17212a;
-  font-family: "Fraunces", Georgia, serif;
-  font-size: clamp(2rem, 3.8vw, 3.6rem);
-  font-weight: 650;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
   margin: 0 0 10px;
 }
 .about-credentials {
-  color: #2d9ac0;
+  color: #1d9e75;
   font-size: 0.86rem;
-  font-weight: 750;
+  font-weight: 500;
   letter-spacing: 0.04em;
   margin: 0 0 36px;
 }
@@ -202,39 +273,51 @@ html {
   color: #17212a;
   font-family: "Manrope", "Avenir Next", sans-serif;
   font-size: 0.75rem;
-  font-weight: 850;
+  font-weight: 700;
   letter-spacing: 0.16em;
   margin: 0 0 10px;
   text-transform: uppercase;
 }
 .about-block p {
   color: #3a4a52;
-  font-size: clamp(1rem, 1.4vw, 1.1rem);
-  font-weight: 650;
-  line-height: 1.78;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.75;
   margin: 0;
 }
+
+/* Pull quote — emotional peak of the page */
 .about-quote {
-  background: #ffffff;
-  border-left: 4px solid #2d9ac0;
-  border-radius: 0 14px 14px 0;
-  margin: 0 0 14px;
-  padding: 18px 22px;
+  background: none;
+  border-left: 4px solid #1d9e75;
+  border-radius: 0;
+  margin: 2rem 0;
+  padding: 0 0 0 1.5rem;
+}
+.about-quote::before {
+  color: #9fe1cb;
+  content: '\201C';
+  display: block;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 4rem;
+  line-height: 1;
+  margin-bottom: -1rem;
 }
 .about-quote p {
-  color: #17212a;
-  font-family: "Fraunces", Georgia, serif;
-  font-size: clamp(1.05rem, 1.7vw, 1.44rem);
+  color: #1a1a1a;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.75rem;
   font-style: italic;
-  font-weight: 650;
-  line-height: 1.5;
+  font-weight: 500;
+  line-height: 1.45;
   margin: 0;
 }
+
 .about-philosophy {
   color: #3a4a52;
-  font-size: clamp(1rem, 1.4vw, 1.1rem);
-  font-weight: 650;
-  line-height: 1.78;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.75;
   margin: 0 0 28px;
 }
 .about-cta {
@@ -246,15 +329,17 @@ html {
 }
 .about-cta-label {
   color: #53616c;
-  font-size: 0.94rem;
-  font-weight: 750;
+  font-size: 1.0625rem;
+  font-weight: 400;
   margin: 0;
 }
 
 /* ── Section 6: Why Bruce ───────────────────────────────── */
+
 .why-section {
-  background: #eef5f2;
-  padding: clamp(64px, 9vw, 112px) clamp(18px, 5vw, 64px);
+  background: #e1f5ee;
+  padding-left: clamp(18px, 5vw, 64px);
+  padding-right: clamp(18px, 5vw, 64px);
 }
 .why-inner {
   display: grid;
@@ -276,32 +361,34 @@ html {
   color: #17212a;
   font-family: "Manrope", "Avenir Next", sans-serif;
   font-size: 0.88rem;
-  font-weight: 850;
+  font-weight: 700;
   letter-spacing: 0.08em;
   margin: 0 0 12px;
   text-transform: uppercase;
 }
 .why-item p {
-  color: #53616c;
-  font-size: 0.96rem;
-  font-weight: 650;
-  line-height: 1.72;
+  color: #3a4a52;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.75;
   margin: 0;
 }
 
 /* ── Section 7: Testimonials ────────────────────────────── */
+
 .testimonials-section {
   background: #ffffff;
-  padding: clamp(64px, 9vw, 112px) clamp(18px, 5vw, 64px);
+  padding-left: clamp(18px, 5vw, 64px);
+  padding-right: clamp(18px, 5vw, 64px);
 }
 .testimonials-inner {
   margin: 0 auto;
   max-width: 1100px;
 }
 .testimonials-heading {
-  color: #2d9ac0;
+  color: #1d9e75;
   font-size: 0.72rem;
-  font-weight: 850;
+  font-weight: 700;
   letter-spacing: 0.16em;
   margin: 0 0 40px;
   text-align: center;
@@ -325,12 +412,20 @@ html {
   margin: 0 0 20px;
   padding: 0;
 }
+.testimonial-card blockquote::before {
+  color: #9fe1cb;
+  content: '\201C';
+  display: block;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
 .testimonial-card blockquote p {
   color: #17212a;
-  font-family: "Fraunces", Georgia, serif;
-  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  font-size: 1.0625rem;
   font-style: italic;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1.65;
   margin: 0;
 }
@@ -343,19 +438,21 @@ html {
 .testimonial-card footer strong {
   color: #17212a;
   font-size: 0.88rem;
-  font-weight: 850;
+  font-weight: 700;
 }
 .testimonial-card footer span {
   color: #64727d;
   font-size: 0.8rem;
-  font-weight: 750;
+  font-weight: 500;
 }
 
 /* ── Section 8: Contact CTA Band ────────────────────────── */
+
 .contact-band {
   background: #1a2e3a;
   color: #ffffff;
-  padding: clamp(64px, 9vw, 112px) clamp(18px, 5vw, 64px);
+  padding-left: clamp(18px, 5vw, 64px);
+  padding-right: clamp(18px, 5vw, 64px);
 }
 .contact-band-inner {
   align-items: center;
@@ -367,17 +464,17 @@ html {
 }
 .contact-band-copy h2 {
   color: #ffffff;
-  font-family: "Fraunces", Georgia, serif;
-  font-size: clamp(2rem, 3.8vw, 3.4rem);
-  font-weight: 650;
-  letter-spacing: -0.03em;
-  line-height: 1.08;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
   margin: 0 0 14px;
 }
 .contact-band-copy > p {
   color: rgba(255, 255, 255, 0.76);
-  font-size: 1.04rem;
-  font-weight: 650;
+  font-size: 1.0625rem;
+  font-weight: 400;
   margin: 0 0 22px;
 }
 .contact-details {
@@ -389,8 +486,8 @@ html {
 }
 .contact-details li {
   color: rgba(255, 255, 255, 0.82);
-  font-size: 0.95rem;
-  font-weight: 650;
+  font-size: 1.0625rem;
+  font-weight: 400;
 }
 .contact-details a {
   color: rgba(255, 255, 255, 0.82);
@@ -400,33 +497,31 @@ html {
 .contact-details a:hover {
   color: #ffffff;
 }
+
+/* White button on dark band */
 .contact-band-cta {
   align-items: center;
-  background: #2d9ac0;
-  border-radius: 999px;
-  box-shadow: 0 16px 36px rgba(45, 154, 192, 0.28);
-  color: #ffffff;
+  background: #ffffff;
+  border: none;
+  border-radius: 6px;
+  color: #0f6e56;
   display: inline-flex;
   font-size: 0.9rem;
-  font-weight: 850;
+  font-weight: 500;
   justify-content: center;
-  letter-spacing: 0.04em;
-  min-height: 54px;
-  padding: 0 32px;
+  min-height: 48px;
+  padding: 0.75rem 1.75rem;
   text-decoration: none;
-  transition:
-    background 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+  transition: background 180ms ease, transform 180ms ease;
   white-space: nowrap;
 }
 .contact-band-cta:hover {
-  background: #2389ad;
-  box-shadow: 0 20px 44px rgba(45, 154, 192, 0.36);
-  transform: translateY(-2px);
+  background: #f0fdf4;
+  transform: translateY(-1px);
 }
 
 /* ── Section 9: Footer ──────────────────────────────────── */
+
 .site-footer {
   background: #111214;
   color: rgba(255, 255, 255, 0.6);
@@ -439,7 +534,7 @@ html {
 .footer-tagline {
   color: rgba(255, 255, 255, 0.82);
   font-size: 0.88rem;
-  font-weight: 750;
+  font-weight: 500;
   margin: 0 0 28px;
 }
 .footer-disclaimers {
@@ -450,7 +545,7 @@ html {
 }
 .footer-disclaimers p {
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 400;
   line-height: 1.72;
   margin: 0 0 14px;
   max-width: 900px;
@@ -474,7 +569,7 @@ html {
 .footer-social a {
   color: rgba(255, 255, 255, 0.6);
   font-size: 0.84rem;
-  font-weight: 750;
+  font-weight: 500;
   text-decoration: none;
   transition: color 160ms ease;
 }
@@ -484,11 +579,12 @@ html {
 .footer-copy {
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.78rem;
-  font-weight: 650;
+  font-weight: 400;
   margin: 0;
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
+
 @media (max-width: 900px) {
   #services,
   #about,
@@ -496,25 +592,22 @@ html {
     scroll-margin-top: 74px;
   }
 
+  /* Stack hero: headline above headshot on mobile */
   .vhwpt-hero {
     grid-template-columns: 1fr;
   }
+  .vhwpt-hero .v4-editorial-copy {
+    order: 1;
+  }
   .vhwpt-hero .v4-editorial-portrait {
     max-width: 460px;
-    order: -1;
-  }
-  .vhwpt-hero .v4-editorial-copy {
     order: 2;
   }
 
+  /* Trust badges wrap naturally — flex-wrap handles it */
   .trust-bar-inner {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .trust-badge {
-    border-right: none !important;
-    padding: 0;
+    gap: 10px;
+    justify-content: flex-start;
   }
 
   .services-grid {
@@ -528,7 +621,10 @@ html {
     position: static;
   }
   .about-photo img {
-    max-width: 440px;
+    max-width: 380px;
+  }
+  .about-quote p {
+    font-size: 1.375rem;
   }
 
   .why-inner,
@@ -550,8 +646,23 @@ html {
   }
 }
 
+@media (max-width: 768px) {
+  .services-section,
+  .about-section,
+  .why-section,
+  .testimonials-section,
+  .contact-band {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
+
 @media (max-width: 560px) {
   .services-grid {
     grid-template-columns: 1fr;
+  }
+  .trust-bar-inner {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
