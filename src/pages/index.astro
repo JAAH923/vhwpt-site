@@ -1,191 +1,406 @@
 ---
 import "../styles/concepts.css";
+import "../styles/vhwpt.css";
 
-const benefits = [
-  {
-    title: "Personalized training",
-    text: "Customized workout plans tailored to individual goals and fitness levels.",
-  },
-  {
-    title: "Expert coaches",
-    text: "Certified trainers with specialized expertise in various fitness and wellness areas.",
-  },
-  {
-    title: "Community focus",
-    text: "Creating a supportive and motivating environment for all clients.",
-  },
-  {
-    title: "Flexible scheduling",
-    text: "Convenient options for in-person and virtual training sessions.",
-  },
-  {
-    title: "Comprehensive approach",
-    text: "Integrating fitness, nutrition, and wellness for holistic health.",
-  },
-];
-
-const programs = [
-  {
-    title: "Senior fitness program",
-    text: "Tailored exercise routines to improve mobility, balance, and strength for older adults.",
-  },
-  {
-    title: "Weight management and nutritional counseling",
-    text: "Personalized plans for weight loss, healthy eating habits, and sustainable wellness.",
-  },
-  {
-    title: "Youth fitness and sports training",
-    text: "Helping young athletes improve performance, strength, and agility.",
-  },
-  {
-    title: "Rehabilitation and injury prevention",
-    text: "Recovery programs for individuals recovering from injuries or surgeries.",
-  },
-  {
-    title: "Corporate wellness programs",
-    text: "Health and fitness programming designed to support stronger, more resilient teams.",
-  },
-  {
-    title: "Pre and postnatal fitness",
-    text: "Safe, supportive movement plans for pregnancy, postpartum recovery, and changing bodies.",
-  },
-  {
-    title: "Holistic wellness programs",
-    text: "Wellness strategies that bring together fitness, recovery, stress management, and long-term health.",
-  },
-];
-
-const basePath = import.meta.env.BASE_URL.endsWith("/") ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const services = [
+  {
+    icon: "🧓",
+    title: "Senior Fitness",
+    teaser:
+      "Tailored movement programs designed to support mobility, balance, and strength for older adults. Low-impact, supervised, and personalized.",
+  },
+  {
+    icon: "🏃",
+    title: "Youth Sports Conditioning",
+    teaser:
+      "Customized training designed to support athletic development, proper movement mechanics, and performance in young athletes.",
+  },
+  {
+    icon: "⚖️",
+    title: "Weight Management & Nutrition",
+    teaser:
+      "Personalized fitness and nutrition guidance to help you work toward your wellness and body composition goals.",
+  },
+  {
+    icon: "🩹",
+    title: "Rehabilitation & Recovery",
+    teaser:
+      "Evidence-informed programs designed to support recovery from injury or surgery, developed in collaboration with your healthcare team.",
+  },
+  {
+    icon: "🤰",
+    title: "Pre & Postnatal Fitness",
+    teaser:
+      "Safe, certified programming designed to support the physical wellbeing of expecting and new mothers, with appropriate modifications throughout.",
+  },
+  {
+    icon: "🧘",
+    title: "Holistic Wellness",
+    teaser:
+      "Integrated fitness, mindfulness, yoga, and coaching to support a more balanced, whole-body approach to health.",
+  },
+  {
+    icon: "🏢",
+    title: "Corporate Wellness",
+    teaser:
+      "On-site or virtual fitness classes and wellness workshops, customized to your organization's team size, schedule, and goals.",
+  },
+];
+
+const testimonials = [
+  {
+    quote: "[Quote here — specific, personal, in the client's own voice]",
+    name: "Client Name",
+    context: "Service Type",
+    city: "City, FL",
+  },
+  {
+    quote: "[Quote here]",
+    name: "Client Name",
+    context: "Service Type",
+    city: "City, FL",
+  },
+  {
+    quote: "[Quote here]",
+    name: "Client Name",
+    context: "Service Type",
+    city: "City, FL",
+  },
+];
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Valencia Health & Wellness provides doctor-led fitness, health evaluations, personal training, and online coaching in Coconut Creek and virtually."
+      content="Valencia Health and Wellness — personalized fitness, physical therapy, and wellness programming in Coconut Creek, FL and virtually. Led by Dr. Bruce Valencia, DPT."
     />
+    <meta
+      property="og:title"
+      content="Dr. Bruce Valencia, DPT | Physical Therapy & Fitness | Coconut Creek, FL"
+    />
+    <meta
+      property="og:description"
+      content="Valencia Health and Wellness — personalized fitness, physical therapy, and wellness programming in Coconut Creek, FL and virtually. Led by Dr. Bruce Valencia, DPT."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.vhwpt.com/" />
+    <meta
+      property="og:image"
+      content="https://www.vhwpt.com/assets/brand/valencia-health-wellness-logo-full.png"
+    />
+    <link rel="canonical" href="https://www.vhwpt.com/" />
+    <link rel="sitemap" href="/sitemap.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,800&family=Manrope:wght@500;650;750;850&display=swap"
       rel="stylesheet"
     />
-    <link rel="icon" type="image/png" href={withBase("/assets/brand/valencia-health-wellness-icon.png")} />
-    <title>Valencia Health & Wellness, LLC</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href={withBase("/assets/brand/valencia-health-wellness-icon.png")}
+    />
+    <title>Dr. Bruce Valencia, DPT | Physical Therapy & Fitness | Coconut Creek, FL</title>
   </head>
+
   <body class="concept-page v4">
     <main>
-      <nav class="v4-nav" aria-label="Primary">
+
+      <!-- ── Section 1: Sticky Nav ───────────────────────── -->
+      <nav class="v4-nav" aria-label="Primary navigation">
         <a class="v4-brand" href={withBase()}>
-          <img src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")} alt="" />
+          <img
+            src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")}
+            alt="Valencia Health & Wellness"
+          />
           <span>
-            <strong>Valencia Health & Wellness, LLC</strong>
+            <strong>Valencia Health &amp; Wellness, LLC</strong>
             <small>Coconut Creek + Virtual Care</small>
           </span>
         </a>
-        <input class="v4-menu-toggle" type="checkbox" id="primary-menu" aria-label="Toggle navigation menu" />
+
+        <input
+          class="v4-menu-toggle"
+          type="checkbox"
+          id="primary-menu"
+          aria-label="Toggle navigation menu"
+        />
         <label class="v4-menu-button" for="primary-menu" aria-label="Open navigation menu">
           <span></span>
           <span></span>
           <span></span>
         </label>
+
         <div class="v4-mobile-menu">
           <div class="v4-nav-links">
-            <a href={withBase()}>Home</a>
+            <a href="#about">About</a>
             <a href="#services">Services</a>
-            <a href="#doctor">About</a>
             <a href="#contact">Contact</a>
           </div>
-          <a class="v4-appointment" href="#contact">Book appointment</a>
+          <a class="v4-appointment" href="#contact">Book a Session</a>
         </div>
       </nav>
 
+      <!-- ── Section 2: Hero ────────────────────────────── -->
       <header class="v4-editorial-fold">
-        <section class="v4-editorial-hero" aria-labelledby="hero-title">
-          <div class="v4-editorial-portrait" aria-label="Dr. Bruce Valencia">
-            <img src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
-          </div>
+        <section class="v4-editorial-hero vhwpt-hero" aria-labelledby="hero-title">
           <div class="v4-editorial-copy">
-            <p class="concept-eyebrow">Dr. Bruce Valencia, DPT</p>
-            <h1 id="hero-title">Clinical care can feel calm, direct, and deeply human.</h1>
+            <h1 id="hero-title">
+              Physical Therapy &amp; Fitness — Led by a Doctor of Physical Therapy
+            </h1>
             <p>
-              Doctor of Physical Therapy and Certified Lymphedema Therapist, blending evaluation, training, and wellness strategy into practical coaching.
+              In-person in Coconut Creek, FL or virtually from anywhere. Dr. Bruce Valencia, DPT
+              brings clinical expertise and personalized coaching to meet you where you are.
             </p>
             <div class="v4-editorial-actions">
-              <a class="concept-button primary" href="#contact">Book appointment</a>
-              <a class="concept-button secondary" href="#services">Explore services</a>
+              <a class="concept-button primary vhwpt-cta" href="#contact">Book a Session →</a>
             </div>
+          </div>
+
+          <div class="v4-editorial-portrait" aria-hidden="true">
+            <img
+              src={withBase("/assets/brand/bruce-headshot.webp")}
+              alt="Dr. Bruce Valencia, DPT"
+            />
           </div>
         </section>
       </header>
 
-      <section class="tone-strip" aria-label="Brand focus">
-        <span>Valencia Health & Wellness</span>
-        <p>Personalized fitness, health evaluations, and virtual wellness coaching in Coconut Creek and beyond.</p>
-        <a href="#contact">Start</a>
+      <!-- ── Section 3: Credential Trust Bar ───────────── -->
+      <section class="trust-bar" aria-label="Credentials and certifications">
+        <div class="trust-bar-inner">
+          <div class="trust-badge">
+            <span class="trust-icon" aria-hidden="true">🎓</span>
+            <span class="trust-label">Doctor of Physical Therapy (DPT)</span>
+          </div>
+          <div class="trust-badge">
+            <span class="trust-icon" aria-hidden="true">💪</span>
+            <span class="trust-label">ISSA-Certified Personal Trainer</span>
+          </div>
+          <div class="trust-badge">
+            <span class="trust-icon" aria-hidden="true">🩺</span>
+            <span class="trust-label">Certified Lymph Therapist (CLT)</span>
+          </div>
+          <div class="trust-badge">
+            <span class="trust-icon" aria-hidden="true">⚓</span>
+            <span class="trust-label">U.S. Navy Veteran</span>
+          </div>
+        </div>
       </section>
 
-      <section class="v4-welcome" aria-labelledby="welcome-title">
-        <div class="v4-welcome-copy">
-          <p class="concept-eyebrow">Welcome</p>
-          <h2 id="welcome-title">Personalized fitness and wellness, cultivated around your goals.</h2>
-          <p>
-            Welcome to Valencia Health and Wellness, LLC, your premier destination for personalized fitness and wellness in Coconut Creek, Florida, and virtually via programming cultivated and curated to bring success to your dreams and goals.
+      <!-- ── Section 4: Services Grid ──────────────────── -->
+      <section id="services" class="services-section" aria-labelledby="services-title">
+        <div class="services-section-inner">
+          <div class="services-heading">
+            <p class="concept-eyebrow">What We Offer</p>
+            <h2 id="services-title">
+              A spectrum of evidence-informed programming across fitness, rehabilitation, and
+              wellness — designed to support your goals at every stage of life.
+            </h2>
+          </div>
+
+          <div class="services-grid">
+            {
+              services.map((service) => (
+                <article class="service-card">
+                  <span class="service-card-icon" aria-hidden="true">
+                    {service.icon}
+                  </span>
+                  <h3>{service.title}</h3>
+                  <p>{service.teaser}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 5: About ───────────────────────────── -->
+      <section id="about" class="about-section" aria-labelledby="about-title">
+        <div class="about-inner">
+          <div class="about-photo">
+            <img
+              src={withBase("/assets/brand/bruce-headshot.webp")}
+              alt="Dr. Bruce Valencia, DPT"
+            />
+          </div>
+
+          <div class="about-story">
+            <h2 id="about-title">Meet Dr. Bruce Valencia, DPT, CLT</h2>
+            <p class="about-credentials">
+              Doctor of Physical Therapy · ISSA-Certified Trainer · Lifestyle Fitness Coach ·
+              Certified Lymph Therapist
+            </p>
+
+            <div class="about-block">
+              <h3>Origin</h3>
+              <p>
+                Growing up in Manhattan, Dr. Valencia discovered his passion for fitness coaching
+                at 17, working in some of the city's most respected training environments. After
+                choosing to serve his country — spending five years in the United States Navy — a
+                personal injury during his service became a turning point. It deepened his
+                understanding of recovery, resilience, and the real difference expert physical
+                guidance makes.
+              </p>
+            </div>
+
+            <blockquote class="about-quote">
+              <p>
+                "If you want something bad enough, you can achieve it — but you can't do it alone.
+                Asking for help is a strength, not a weakness."
+              </p>
+            </blockquote>
+            <p class="about-philosophy">
+              That belief shapes everything at Valencia Health and Wellness. Dr. Valencia brings a
+              collaborative, non-judgmental approach to every client relationship — combining
+              clinical precision with the motivational coaching style he developed over decades.
+            </p>
+
+            <div class="about-block">
+              <h3>Approach</h3>
+              <p>
+                As a Doctor of Physical Therapy, ISSA-certified personal trainer, and lifestyle
+                fitness coach, Dr. Valencia bridges the gap between clinical rehabilitation and
+                everyday fitness. Every client starts with a comprehensive evaluation. From there,
+                programming is tailored — not templated — with collaboration from physicians and
+                specialists to ensure well-rounded, coordinated support.
+              </p>
+            </div>
+
+            <div class="about-cta">
+              <p class="about-cta-label">Ready to take the first step?</p>
+              <a class="concept-button primary vhwpt-cta" href="#contact">Book a Session →</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 6: Why Bruce ───────────────────────── -->
+      <section class="why-section" aria-label="Why choose Valencia Health and Wellness">
+        <div class="why-inner">
+          <div class="why-item">
+            <span class="why-icon" aria-hidden="true">🩺</span>
+            <h3>DPT-Led Care</h3>
+            <p>
+              Every program informed by clinical physical therapy expertise — not just fitness
+              experience.
+            </p>
+          </div>
+          <div class="why-item">
+            <span class="why-icon" aria-hidden="true">📍</span>
+            <h3>In-Person or Virtual</h3>
+            <p>
+              Coconut Creek, FL or wherever you are. Serving Broward and Palm Beach County, and
+              clients nationwide virtually.
+            </p>
+          </div>
+          <div class="why-item">
+            <span class="why-icon" aria-hidden="true">📋</span>
+            <h3>Personalized, Not Templated</h3>
+            <p>Every plan starts with a comprehensive evaluation. No cookie-cutter programs.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 7: Testimonials ────────────────────── -->
+      <section class="testimonials-section" aria-label="Client testimonials">
+        <div class="testimonials-inner">
+          <p class="testimonials-heading">What Clients Say</p>
+          <div class="testimonials-grid">
+            {
+              testimonials.map((t) => (
+                <article class="testimonial-card">
+                  <blockquote>
+                    <p>{t.quote}</p>
+                  </blockquote>
+                  <footer>
+                    <strong>{t.name}</strong>
+                    <span>
+                      {t.context} · {t.city}
+                    </span>
+                  </footer>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 8: Contact CTA Band ───────────────── -->
+      <section id="contact" class="contact-band" aria-labelledby="contact-title">
+        <div class="contact-band-inner">
+          <div class="contact-band-copy">
+            <h2 id="contact-title">Ready to start your wellness journey?</h2>
+            <p>Reach out to Dr. Bruce Valencia and the Valencia Health and Wellness team.</p>
+            <ul class="contact-details">
+              <li><a href="tel:19542996536">📞 1-954-299-6536</a></li>
+              <li><a href="mailto:info@vhwpt.com">📧 info@vhwpt.com</a></li>
+              <li>📍 Coconut Creek, FL — Serving Broward and Palm Beach County</li>
+              <li>🌐 Virtual sessions available nationwide</li>
+            </ul>
+          </div>
+          <div class="contact-band-action">
+            <a class="contact-band-cta" href="mailto:info@vhwpt.com">Send a Message →</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Section 9: Footer ──────────────────────────── -->
+      <footer class="site-footer">
+        <div class="site-footer-inner">
+          <p class="footer-tagline">
+            Valencia Health and Wellness, LLC — Personalized Fitness, Physical Therapy &amp;
+            Wellness | Coconut Creek, FL
           </p>
-          <p>
-            Whether you're looking to get fit, manage stress, or enhance your overall well-being, we have solutions tailored to your needs.
-          </p>
-        </div>
-        <div class="v4-benefits" aria-label="Key benefits">
-          <p class="concept-eyebrow">Key benefits</p>
-          {benefits.map((benefit) => (
-            <article>
-              <h3>{benefit.title}</h3>
-              <p>{benefit.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
 
-      <section id="services" class="concept-services">
-        <div class="concept-section-heading">
-          <p class="concept-eyebrow">Programming sets</p>
-          <h2>Specific programs for different bodies, goals, seasons, and levels of support.</h2>
-        </div>
-        <div class="v4-program-grid">
-          {programs.map((program, index) => (
-            <article>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{program.title}</h3>
-              <p>{program.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+          <div class="footer-disclaimers">
+            <p>
+              <strong>Medical Disclaimer:</strong> Dr. Bruce Valencia is a licensed Doctor of
+              Physical Therapy (DPT). Services offered through Valencia Health and Wellness, LLC
+              include fitness coaching, personal training, and physical therapy-informed
+              programming. These services are not a substitute for medical diagnosis, treatment, or
+              prescription. Always consult your physician before beginning a new exercise program.
+              Individuals with existing health conditions or recent surgery should obtain physician
+              clearance prior to participation.
+            </p>
+            <p>
+              <strong>Nutrition Disclaimer:</strong> Nutritional guidance provided through Valencia
+              Health and Wellness is intended for general wellness support and does not constitute
+              medical nutritional therapy. For individualized dietary medical management, please
+              consult a registered dietitian or your physician.
+            </p>
+          </div>
 
-      <section id="doctor" class="concept-doctor">
-        <img src={withBase("/assets/brand/bruce-headshot.webp")} alt="Dr. Bruce Valencia" />
-        <div>
-          <p class="concept-eyebrow">Dr. Bruce Valencia</p>
-          <h2>The plan changes when your coach understands the body clinically.</h2>
-          <p>
-            Doctor of Physical Therapy and Certified Lymphedema Therapist, blending evaluation, training, and wellness strategy into practical coaching.
-          </p>
+          <div class="footer-bottom">
+            <nav class="footer-social" aria-label="Social media">
+              <a
+                href="https://www.facebook.com/ValenciaHealthandWellness"
+                aria-label="Facebook"
+                rel="noopener noreferrer"
+                target="_blank">Facebook</a
+              >
+              <a
+                href="https://www.instagram.com/valenciahealthandwellness"
+                aria-label="Instagram"
+                rel="noopener noreferrer"
+                target="_blank">Instagram</a
+              >
+            </nav>
+            <p class="footer-copy">&copy; 2025 Valencia Health and Wellness, LLC</p>
+          </div>
         </div>
-      </section>
+      </footer>
 
-      <section id="contact" class="concept-contact">
-        <img src={withBase("/assets/brand/valencia-health-wellness-logo-display.png")} alt="Valencia Health & Wellness logo" />
-        <div>
-          <p class="concept-eyebrow">Private consultation</p>
-          <h2>Start with a clearer picture of what your body needs next.</h2>
-          <a class="concept-button primary" href="tel:19542996536">Call 954-299-6536</a>
-        </div>
-      </section>
     </main>
   </body>
 </html>

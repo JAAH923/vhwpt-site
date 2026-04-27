@@ -1,0 +1,557 @@
+/* ============================================================
+   vhwpt.css — Valencia Health & Wellness site styles
+   Supplements concepts.css (v4 Calm Care base)
+   ============================================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Anchor offset for sticky nav (86px desktop, 74px mobile) */
+#services,
+#about,
+#contact {
+  scroll-margin-top: 86px;
+}
+
+/* ── Nav: teal CTA override ─────────────────────────────── */
+.v4-appointment {
+  background: #2d9ac0;
+  border-color: #2d9ac0;
+}
+.v4-appointment:hover {
+  background: #ffffff;
+  color: #2d9ac0;
+}
+
+/* ── CTA button: teal pill ──────────────────────────────── */
+.vhwpt-cta {
+  background: #2d9ac0 !important;
+  border-color: #2d9ac0 !important;
+  border-radius: 999px;
+  color: #ffffff !important;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+.vhwpt-cta:hover {
+  background: #2389ad !important;
+  box-shadow: 0 12px 28px rgba(45, 154, 192, 0.28);
+  transform: translateY(-2px);
+}
+
+/* ── Hero layout: copy left, portrait right ─────────────── */
+.vhwpt-hero {
+  grid-template-columns: 1fr minmax(300px, 0.48fr);
+}
+.vhwpt-hero .v4-editorial-copy {
+  order: 1;
+}
+.vhwpt-hero .v4-editorial-portrait {
+  order: 2;
+}
+
+/* ── Section 3: Credential Trust Bar ───────────────────── */
+.trust-bar {
+  background: #f0f6f4;
+  border-top: 1px solid rgba(45, 154, 192, 0.18);
+  border-bottom: 1px solid rgba(45, 154, 192, 0.18);
+  padding: 26px clamp(18px, 5vw, 64px);
+}
+.trust-bar-inner {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+.trust-badge {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+  padding: 6px 24px;
+}
+.trust-badge:not(:last-child) {
+  border-right: 1px solid rgba(17, 18, 20, 0.12);
+}
+.trust-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.trust-label {
+  color: #17212a;
+  font-size: 0.88rem;
+  font-weight: 850;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+/* ── Section 4: Services Grid ───────────────────────────── */
+.services-section {
+  background: #ffffff;
+  padding: clamp(72px, 10vw, 136px) clamp(18px, 5vw, 64px);
+}
+.services-section-inner {
+  margin: 0 auto;
+  max-width: 1260px;
+}
+.services-heading {
+  margin-bottom: clamp(40px, 6vw, 68px);
+  max-width: 860px;
+}
+.services-heading .concept-eyebrow {
+  color: #2d9ac0;
+}
+.services-heading h2 {
+  color: #17212a;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0;
+}
+.services-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.service-card {
+  background: #ffffff;
+  border: 1px solid rgba(17, 18, 20, 0.1);
+  border-radius: 20px;
+  padding: clamp(22px, 3vw, 32px);
+  transition:
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+.service-card:hover {
+  box-shadow: 0 18px 48px rgba(17, 18, 20, 0.1);
+  transform: translateY(-4px);
+}
+.service-card-icon {
+  display: block;
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.service-card h3 {
+  color: #17212a;
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+.service-card p {
+  color: #53616c;
+  font-size: 0.93rem;
+  font-weight: 650;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ── Section 5: About ───────────────────────────────────── */
+.about-section {
+  background: #f7f9f8;
+  padding: clamp(72px, 10vw, 136px) clamp(18px, 5vw, 64px);
+}
+.about-inner {
+  align-items: start;
+  display: grid;
+  gap: clamp(40px, 6vw, 90px);
+  grid-template-columns: minmax(260px, 0.38fr) 1fr;
+  margin: 0 auto;
+  max-width: 1260px;
+}
+.about-photo {
+  position: sticky;
+  top: 106px;
+}
+.about-photo img {
+  border-radius: 22px;
+  box-shadow: 0 28px 72px rgba(17, 18, 20, 0.12);
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+.about-story h2 {
+  color: #17212a;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(2rem, 3.8vw, 3.6rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  margin: 0 0 10px;
+}
+.about-credentials {
+  color: #2d9ac0;
+  font-size: 0.86rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  margin: 0 0 36px;
+}
+.about-block {
+  margin-bottom: 28px;
+}
+.about-block h3 {
+  color: #17212a;
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  margin: 0 0 10px;
+  text-transform: uppercase;
+}
+.about-block p {
+  color: #3a4a52;
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  font-weight: 650;
+  line-height: 1.78;
+  margin: 0;
+}
+.about-quote {
+  background: #ffffff;
+  border-left: 4px solid #2d9ac0;
+  border-radius: 0 14px 14px 0;
+  margin: 0 0 14px;
+  padding: 18px 22px;
+}
+.about-quote p {
+  color: #17212a;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.05rem, 1.7vw, 1.44rem);
+  font-style: italic;
+  font-weight: 650;
+  line-height: 1.5;
+  margin: 0;
+}
+.about-philosophy {
+  color: #3a4a52;
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+  font-weight: 650;
+  line-height: 1.78;
+  margin: 0 0 28px;
+}
+.about-cta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 36px;
+}
+.about-cta-label {
+  color: #53616c;
+  font-size: 0.94rem;
+  font-weight: 750;
+  margin: 0;
+}
+
+/* ── Section 6: Why Bruce ───────────────────────────────── */
+.why-section {
+  background: #eef5f2;
+  padding: clamp(64px, 9vw, 112px) clamp(18px, 5vw, 64px);
+}
+.why-inner {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0 auto;
+  max-width: 1100px;
+}
+.why-item {
+  text-align: center;
+}
+.why-icon {
+  display: block;
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.why-item h3 {
+  color: #17212a;
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+.why-item p {
+  color: #53616c;
+  font-size: 0.96rem;
+  font-weight: 650;
+  line-height: 1.72;
+  margin: 0;
+}
+
+/* ── Section 7: Testimonials ────────────────────────────── */
+.testimonials-section {
+  background: #ffffff;
+  padding: clamp(64px, 9vw, 112px) clamp(18px, 5vw, 64px);
+}
+.testimonials-inner {
+  margin: 0 auto;
+  max-width: 1100px;
+}
+.testimonials-heading {
+  color: #2d9ac0;
+  font-size: 0.72rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  margin: 0 0 40px;
+  text-align: center;
+  text-transform: uppercase;
+}
+.testimonials-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.testimonial-card {
+  background: #f7f9f8;
+  border: 1px solid rgba(17, 18, 20, 0.08);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 3vw, 30px);
+}
+.testimonial-card blockquote {
+  flex: 1;
+  margin: 0 0 20px;
+  padding: 0;
+}
+.testimonial-card blockquote p {
+  color: #17212a;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1rem, 1.3vw, 1.1rem);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.65;
+  margin: 0;
+}
+.testimonial-card footer {
+  border-top: 1px solid rgba(17, 18, 20, 0.1);
+  display: grid;
+  gap: 3px;
+  padding-top: 16px;
+}
+.testimonial-card footer strong {
+  color: #17212a;
+  font-size: 0.88rem;
+  font-weight: 850;
+}
+.testimonial-card footer span {
+  color: #64727d;
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+/* ── Section 8: Contact CTA Band ────────────────────────── */
+.contact-band {
+  background: #1a2e3a;
+  color: #ffffff;
+  padding: clamp(64px, 9vw, 112px) clamp(18px, 5vw, 64px);
+}
+.contact-band-inner {
+  align-items: center;
+  display: grid;
+  gap: clamp(40px, 6vw, 80px);
+  grid-template-columns: 1fr auto;
+  margin: 0 auto;
+  max-width: 1100px;
+}
+.contact-band-copy h2 {
+  color: #ffffff;
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(2rem, 3.8vw, 3.4rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin: 0 0 14px;
+}
+.contact-band-copy > p {
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 1.04rem;
+  font-weight: 650;
+  margin: 0 0 22px;
+}
+.contact-details {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.contact-details li {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+.contact-details a {
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+.contact-details a:hover {
+  color: #ffffff;
+}
+.contact-band-cta {
+  align-items: center;
+  background: #2d9ac0;
+  border-radius: 999px;
+  box-shadow: 0 16px 36px rgba(45, 154, 192, 0.28);
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 850;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  min-height: 54px;
+  padding: 0 32px;
+  text-decoration: none;
+  transition:
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+  white-space: nowrap;
+}
+.contact-band-cta:hover {
+  background: #2389ad;
+  box-shadow: 0 20px 44px rgba(45, 154, 192, 0.36);
+  transform: translateY(-2px);
+}
+
+/* ── Section 9: Footer ──────────────────────────────────── */
+.site-footer {
+  background: #111214;
+  color: rgba(255, 255, 255, 0.6);
+  padding: clamp(44px, 6vw, 80px) clamp(18px, 5vw, 64px);
+}
+.site-footer-inner {
+  margin: 0 auto;
+  max-width: 1100px;
+}
+.footer-tagline {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.88rem;
+  font-weight: 750;
+  margin: 0 0 28px;
+}
+.footer-disclaimers {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 26px;
+  padding: 22px 0;
+}
+.footer-disclaimers p {
+  font-size: 0.78rem;
+  font-weight: 650;
+  line-height: 1.72;
+  margin: 0 0 14px;
+  max-width: 900px;
+}
+.footer-disclaimers p:last-child {
+  margin-bottom: 0;
+}
+.footer-disclaimers strong {
+  color: rgba(255, 255, 255, 0.82);
+}
+.footer-bottom {
+  align-items: center;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+}
+.footer-social {
+  display: flex;
+  gap: 20px;
+}
+.footer-social a {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.84rem;
+  font-weight: 750;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+.footer-social a:hover {
+  color: #ffffff;
+}
+.footer-copy {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.78rem;
+  font-weight: 650;
+  margin: 0;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  #services,
+  #about,
+  #contact {
+    scroll-margin-top: 74px;
+  }
+
+  .vhwpt-hero {
+    grid-template-columns: 1fr;
+  }
+  .vhwpt-hero .v4-editorial-portrait {
+    max-width: 460px;
+    order: -1;
+  }
+  .vhwpt-hero .v4-editorial-copy {
+    order: 2;
+  }
+
+  .trust-bar-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .trust-badge {
+    border-right: none !important;
+    padding: 0;
+  }
+
+  .services-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .about-inner {
+    grid-template-columns: 1fr;
+  }
+  .about-photo {
+    position: static;
+  }
+  .about-photo img {
+    max-width: 440px;
+  }
+
+  .why-inner,
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-band-inner {
+    grid-template-columns: 1fr;
+  }
+  .contact-band-cta {
+    align-self: flex-start;
+  }
+
+  .footer-bottom {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 560px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+}
