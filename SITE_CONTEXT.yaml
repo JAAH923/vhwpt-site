@@ -3,29 +3,29 @@ project:
   name: vhwpt_site
   path: /Users/justin/dev/vhwpt_site
   purpose: Modern website rebuild context for VHWPT.
-  status: discovery
+  status: active
 
 session_continuity:
-  intent: Keep durable project context available between Codex sessions.
+  intent: Keep durable project context available between sessions.
   update_frequency: Update whenever goals, architecture, design direction, commands, dependencies, or decisions change.
   archive_policy: Before replacing this file, copy the previous version into ./~archive with a timestamped filename.
   archive_filename_format: SITE_CONTEXT_YYYYMMDD_HHMMSS.yaml
   updater_script: scripts/update_site_context.sh
 
 current_focus:
-  summary: Version 4 Calm Care is promoted as the primary client-facing homepage; prior concept routes are deprecated redirects.
+  summary: Homepage polish pass complete. Hero, credential strip, and service cards are cleaned up. Next focus is content refinement and filling in real testimonials.
   active_questions: []
   next_steps:
-    - Use docs/existing-site-map.md as the baseline inventory of the live site.
-    - Use docs/refero-inspiration.md for one-page landing page design references.
-    - Define redesign goals, audience, conversion actions, and desired sitemap.
-    - Add implementation notes as the codebase is created.
+    - Fill in real client testimonials (currently placeholder text).
+    - Decide whether WooCommerce/shop functionality is part of the rebuild or deprioritized.
+    - Define redesign brief and target conversion goals.
+    - Refine further landing page sections using Refero inspiration.
     - Keep this file current at the end of meaningful work sessions.
 
 site:
   source_url: https://www.vhwpt.com
   legacy_platform: WordPress with Yoast SEO and WooCommerce installed.
-  target_platform: TBD, but not WordPress.
+  target_platform: Astro static site
   audience: People seeking health, wellness, physical therapy-informed fitness, personal training, online training, and health evaluations.
   primary_goal: TBD
   existing_site_map: docs/existing-site-map.md
@@ -33,8 +33,10 @@ site:
   assets:
     brand_folder: assets/brand
     headshot: assets/brand/bruce-headshot2.webp
+    in_session_photo: assets/brand/E0A5216B-CC28-4718-A58C-F854A50F1AF3.png
     company_logo: assets/brand/Gemini_Generated_Image_gvkyfugvkyfugvky.png
     public_headshot: public/assets/brand/bruce-headshot.webp
+    public_in_session_photo: public/assets/brand/bruce-in-session.png
     public_company_logo_source: public/assets/brand/valencia-health-wellness-logo-full.png
     public_square_mark_source: public/assets/brand/valencia-health-wellness-logo.png
     public_header_logo: public/assets/brand/valencia-health-wellness-logo-header.png
@@ -56,10 +58,10 @@ site:
   content_notes: []
   design_direction:
     current_site_notes: Dark/black WordPress fitness theme with bright red accent #ff0137; recurring Services, Products, and Connect sections.
-    mood: TBD
+    mood: Premium, calm, clinical. White editorial with clean typography.
     references: []
-    typography: TBD
-    color_palette: TBD
+    typography: Playfair Display (hero h1), system sans-serif body
+    color_palette: White background, dark text, green accent #0f6e56
     interaction_notes: []
 
 technical:
@@ -85,7 +87,7 @@ technical:
   integrations:
     refero_mcp:
       status: available
-      notes: Configured in Codex MCP settings for design-screen and flow inspiration.
+      notes: Configured in Claude Code MCP settings for design-screen and flow inspiration. Tool does not appear via ToolSearch — may need session-level activation.
 
 decisions:
   - date: 2026-04-16
@@ -154,11 +156,26 @@ decisions:
   - date: 2026-04-17
     decision: Clarify header and hero credentials copy.
     rationale: User wanted the header subtitle to indicate Coconut Creek and virtual care, and the hero eyebrow to include Bruce's DPT credential.
+  - date: 2026-05-01
+    decision: Add B&W in-session action photo to the About section.
+    rationale: User provided a professional B&W photo of Bruce working with a patient; replaces the duplicate headshot in the About section while keeping the portrait in the hero.
+  - date: 2026-05-01
+    decision: Remove emojis from service cards and credential trust bar.
+    rationale: User did not want emojis in the What We Offer cards or the credential strip below the hero.
+  - date: 2026-05-01
+    decision: Replace emoji pill badges in credential strip with a clean typographic treatment.
+    rationale: Redesigned as a single tracked all-caps line with dot separators — no icons, no color, editorial and clinical in feel.
+  - date: 2026-05-01
+    decision: Remove full-viewport min-height from hero section.
+    rationale: The fold was forcing full-screen height even when content was shorter, creating excessive dead space before the credential strip.
+  - date: 2026-05-01
+    decision: Increase credential strip font size for prominence.
+    rationale: User felt the credentials were too small; bumped from 0.69rem to 0.81rem with slightly darker gray.
 
 open_tasks:
+  - Fill in real client testimonials (currently placeholder text).
   - Define the redesign brief and target conversion goals.
-  - Refine the first landing page direction using Refero inspiration.
-  - Capture visual inspiration from Refero once design exploration starts.
+  - Refine further sections using Refero inspiration.
   - Decide whether WooCommerce/shop functionality is part of the rebuild or should be removed/deprioritized.
 
 handoff_notes:
