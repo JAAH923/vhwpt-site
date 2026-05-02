@@ -9,43 +9,36 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
 const services = [
   {
-    icon: "🧓",
     title: "Senior Fitness",
     teaser:
       "Tailored movement programs designed to support mobility, balance, and strength for older adults. Low-impact, supervised, and personalized.",
   },
   {
-    icon: "🏃",
     title: "Youth Sports Conditioning",
     teaser:
       "Customized training designed to support athletic development, proper movement mechanics, and performance in young athletes.",
   },
   {
-    icon: "⚖️",
     title: "Weight Management & Nutrition",
     teaser:
       "Personalized fitness and nutrition guidance to help you work toward your wellness and body composition goals.",
   },
   {
-    icon: "🩹",
     title: "Rehabilitation & Recovery",
     teaser:
       "Evidence-informed programs designed to support recovery from injury or surgery, developed in collaboration with your healthcare team.",
   },
   {
-    icon: "🤰",
     title: "Pre & Postnatal Fitness",
     teaser:
       "Safe, certified programming designed to support the physical wellbeing of expecting and new mothers, with appropriate modifications throughout.",
   },
   {
-    icon: "🧘",
     title: "Holistic Wellness",
     teaser:
       "Integrated fitness, mindfulness, yoga, and coaching to support a more balanced, whole-body approach to health.",
   },
   {
-    icon: "🏢",
     title: "Corporate Wellness",
     teaser:
       "On-site or virtual fitness classes and wellness workshops, customized to your organization's team size, schedule, and goals.",
@@ -213,9 +206,6 @@ const testimonials = [
             {
               services.map((service) => (
                 <article class="service-card">
-                  <span class="service-card-icon" aria-hidden="true">
-                    {service.icon}
-                  </span>
                   <h3>{service.title}</h3>
                   <p>{service.teaser}</p>
                 </article>
