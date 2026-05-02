@@ -666,8 +666,7 @@ img {
 
 .v4-editorial-fold {
   background: #ffffff;
-  min-height: calc(100vh - 86px);
-  padding: clamp(46px, 6vw, 96px) clamp(18px, 5vw, 64px) clamp(64px, 8vw, 116px);
+  padding: clamp(46px, 6vw, 96px) clamp(18px, 5vw, 64px) clamp(32px, 4vw, 64px);
 }
 
 .v4-editorial-hero {

@@ -97,8 +97,8 @@ p {
 /* Minimum 120px vertical padding on desktop */
 @media (min-width: 901px) {
   .v4-editorial-fold {
-    padding-top: 120px;
-    padding-bottom: 120px;
+    padding-top: 80px;
+    padding-bottom: 60px;
   }
 }
 
