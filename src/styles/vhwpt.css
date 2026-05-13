@@ -93,13 +93,21 @@ p {
   font-family: "Playfair Display", Georgia, serif;
   font-weight: 600;
 }
-.hero-title-sub {
-  color: #53616c;
-  display: block;
-  font-size: 0.62em;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  margin-top: 0.3em;
+.hero-subhead {
+  color: #3a4a52;
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: clamp(1rem, 1.4vw, 1.2rem) !important;
+  font-weight: 400 !important;
+  line-height: 1.6 !important;
+  margin-top: 20px !important;
+}
+.hero-location {
+  color: #64727d;
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.9rem !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  margin-top: 10px !important;
 }
 
 /* Minimum 120px vertical padding on desktop */
@@ -119,6 +127,7 @@ p {
   order: 1;
 }
 .vhwpt-hero .v4-editorial-portrait {
+  border-radius: 8px;
   order: 2;
 }
 
