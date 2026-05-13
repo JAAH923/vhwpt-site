@@ -45,26 +45,37 @@ const services = [
   },
 ];
 
-const testimonials = [
-  {
-    quote: "[Quote here — specific, personal, in the client's own voice]",
-    name: "Client Name",
-    context: "Service Type",
-    city: "City, FL",
+const testimonials = {
+  featured: {
+    quote:
+      "Dr. Valencia's vast experience as a personal trainer and doctor of physical therapy proved invaluable to my fitness journey, improving my strength, stamina, metabolic health, diet, and lifestyle.",
+    full: "Over the course of 3 years, Dr. Valencia's holistic training program helped me lose weight, increased my strength and stamina, and dramatically improved my metabolic health. His expertise produced consistent and enduring fitness gains, leading to a healthier lifestyle and faster recreational running times. Most importantly, his diet recommendations and regular evaluations kept me focused on my goals both inside and outside the gym.",
+    name: "Brendan Meehan",
+    service: "Personal Training · Weight Management · Holistic Wellness",
   },
-  {
-    quote: "[Quote here]",
-    name: "Client Name",
-    context: "Service Type",
-    city: "City, FL",
-  },
-  {
-    quote: "[Quote here]",
-    name: "Client Name",
-    context: "Service Type",
-    city: "City, FL",
-  },
-];
+  cards: [
+    {
+      quote:
+        "Over time, I even surpassed physical limitations medical experts believed impossible to overcome.",
+      name: "Paul Duffe",
+      service: "Rehabilitation & Recovery",
+      detail: "Author & Fitness Enthusiast · Jacksonville, FL",
+    },
+    {
+      quote:
+        "His holistic approach includes exercise, nutrition, natural supplements, and motivational material — all tailored to my needs. It's everything I need, and nothing I don't.",
+      name: "Joseph Leo",
+      service: "Personal Training · Holistic Wellness",
+    },
+    {
+      quote:
+        "Bruce not only provided us with personal training, but guided us on nutrition and lifestyle changes that have made a lasting difference. We continue to use the skills he taught us, and our health reflects it.",
+      name: "Olga & Ozzie Brannon",
+      service: "Personal Training · Weight Management",
+      detail: "Long-Term Clients",
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -297,18 +308,29 @@ const testimonials = [
       <section class="testimonials-section" aria-label="Client testimonials">
         <div class="testimonials-inner">
           <p class="testimonials-heading">What Clients Say</p>
+          <h2 class="testimonials-title">Results that speak for themselves.</h2>
+
+          <article class="testimonial-featured">
+            <blockquote>
+              <p>{testimonials.featured.quote}</p>
+            </blockquote>
+            <footer>
+              <strong>{testimonials.featured.name}</strong>
+              <span>{testimonials.featured.service}</span>
+            </footer>
+          </article>
+
           <div class="testimonials-grid">
             {
-              testimonials.map((t) => (
+              testimonials.cards.map((t) => (
                 <article class="testimonial-card">
                   <blockquote>
                     <p>{t.quote}</p>
                   </blockquote>
                   <footer>
                     <strong>{t.name}</strong>
-                    <span>
-                      {t.context} · {t.city}
-                    </span>
+                    <span>{t.service}</span>
+                    {t.detail && <span class="testimonial-detail">{t.detail}</span>}
                   </footer>
                 </article>
               ))

@@ -13,13 +13,14 @@ session_continuity:
   updater_script: scripts/update_site_context.sh
 
 current_focus:
-  summary: Homepage polish pass complete. Hero, credential strip, and service cards are cleaned up. Next focus is content refinement and filling in real testimonials.
+  summary: Real client testimonials integrated from Notion database. Featured Brendan Meehan quote (DPT-reinforcing) with full-width treatment; Paul Duffe, Joseph Leo, and Olga & Ozzie Brannon in 3-card grid below. Howard Kurpit testimonial is marked Needs Review / not published. Notion links added to this file.
   active_questions: []
   next_steps:
-    - Fill in real client testimonials (currently placeholder text).
+    - Review Howard Kurpit testimonial with Bruce — confirm attribution/facility context before publishing.
     - Decide whether WooCommerce/shop functionality is part of the rebuild or deprioritized.
     - Define redesign brief and target conversion goals.
-    - Refine further landing page sections using Refero inspiration.
+    - Integrate single-page copy from Notion (9-section flow) into Astro build.
+    - Calendly booking integration — discuss with Bruce and add CTA link to hero + contact band.
     - Keep this file current at the end of meaningful work sessions.
 
 site:
@@ -55,6 +56,10 @@ site:
     - Cart: https://www.vhwpt.com/cart
     - Checkout: https://www.vhwpt.com/checkout
     - My Account: https://www.vhwpt.com/my-account
+  notion_project_page: https://www.notion.so/348325238254816e820af279dc46432a
+  notion_testimonials_db: https://www.notion.so/22f2f8b3d56c4b13a78ba156139fe676
+  notion_site_copy: https://www.notion.so/34f3252382548118ba44f35ad9730cfd
+  notion_design_influences: https://www.notion.so/34f32523825481d7a1f5fae2f5a82845
   content_notes: []
   design_direction:
     current_site_notes: Dark/black WordPress fitness theme with bright red accent #ff0137; recurring Services, Products, and Connect sections.
@@ -171,6 +176,9 @@ decisions:
   - date: 2026-05-01
     decision: Increase credential strip font size for prominence.
     rationale: User felt the credentials were too small; bumped from 0.69rem to 0.81rem with slightly darker gray.
+  - date: 2026-05-13
+    decision: Integrate real testimonials from Notion database into Section 7.
+    rationale: Four approved entries pulled from Notion (Brendan Meehan, Paul Duffe, Joseph Leo, Olga & Ozzie Brannon). Featured Brendan Meehan as a full-width card because his quote directly references DPT credential, reinforcing Bruce's authority. Howard Kurpit testimonial excluded — marked Needs Review, Use on Website = NO.
 
 open_tasks:
   - Fill in real client testimonials (currently placeholder text).
