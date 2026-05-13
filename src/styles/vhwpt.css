@@ -451,6 +451,9 @@ p {
 }
 
 @media (max-width: 880px) {
+  .about-section {
+    overflow-x: hidden; /* contain accent block's negative positioning */
+  }
   .about-inner {
     gap: 0;
     grid-template-columns: 1fr;
@@ -461,10 +464,13 @@ p {
     right: 12px;
     top: 12px;
   }
+  .about-lead::first-letter {
+    font-size: 2.75em; /* reduce drop cap from 4em on narrow screens */
+  }
   .about-story {
     margin-left: 0;
     margin-top: -32px;
-    padding: 36px 24px;
+    padding: 36px 20px;
   }
   .about-meta {
     grid-template-columns: 1fr;
@@ -478,6 +484,15 @@ p {
   .about-meta-item:last-child {
     border-bottom: none;
     padding-bottom: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  .about-lead::first-letter {
+    font-size: 2.25em;
+  }
+  .about-story {
+    padding: 28px 16px;
   }
 }
 
