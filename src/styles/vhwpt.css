@@ -93,6 +93,14 @@ p {
   font-family: "Playfair Display", Georgia, serif;
   font-weight: 600;
 }
+.hero-title-sub {
+  color: #53616c;
+  display: block;
+  font-size: 0.62em;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  margin-top: 0.3em;
+}
 
 /* Minimum 120px vertical padding on desktop */
 @media (min-width: 901px) {
@@ -332,6 +340,15 @@ p {
   line-height: 1.75;
   margin: 0 0 28px;
 }
+.about-lead::first-letter {
+  color: #1a2e3a;
+  float: left;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 4em;
+  font-weight: 600;
+  line-height: 0.85;
+  margin: 6px 12px -4px 0;
+}
 .about-body {
   color: #3a4a52;
   font-size: 1.0625rem;
@@ -456,6 +473,9 @@ p {
     top: 12px;
   }
 
+  .about-lead::first-letter {
+    font-size: 2.75em;
+  }
   .about-story {
     margin-left: 0;
     margin-top: -32px;
@@ -477,6 +497,9 @@ p {
 }
 
 @media (max-width: 400px) {
+  .about-lead::first-letter {
+    font-size: 2.25em;
+  }
   .about-story {
     padding: 28px 16px;
   }
