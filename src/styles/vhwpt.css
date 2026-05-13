@@ -212,7 +212,7 @@ p {
 /* ── Section 5: About ───────────────────────────────────── */
 
 .about-section {
-  background: #f7f9f8;
+  background: #f7f7f8;
   padding-left: clamp(18px, 5vw, 64px);
   padding-right: clamp(18px, 5vw, 64px);
 }
@@ -247,10 +247,10 @@ p {
   margin: 0 0 10px;
 }
 .about-credentials {
-  color: #c41230;
-  font-size: 0.86rem;
+  color: #64727d;
+  font-size: 0.84rem;
   font-weight: 500;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   margin: 0 0 36px;
 }
 .about-block {
@@ -282,13 +282,7 @@ p {
   padding: 0 0 0 1.5rem;
 }
 .about-quote::before {
-  color: #e8a0a8;
-  content: '\201C';
-  display: block;
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 4rem;
-  line-height: 1;
-  margin-bottom: -1rem;
+  display: none;
 }
 .about-quote p {
   color: #1a1a1a;
@@ -444,7 +438,7 @@ p {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 .testimonial-card {
-  background: #f7f9f8;
+  background: #f7f7f8;
   border: 1px solid rgba(17, 18, 20, 0.08);
   border-radius: 18px;
   display: flex;
