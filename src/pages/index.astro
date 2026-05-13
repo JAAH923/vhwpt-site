@@ -220,30 +220,32 @@ const testimonials = {
       <!-- ── Section 5: About ───────────────────────────── -->
       <section id="about" class="about-section" aria-labelledby="about-title">
         <div class="about-inner">
+
           <div class="about-photo">
+            <span class="about-photo-accent" aria-hidden="true"></span>
             <img
               src={withBase("/assets/brand/bruce-in-session.png")}
               alt="Dr. Bruce Valencia, DPT working with a patient"
             />
+            <p class="about-photo-caption">
+              <span>Coconut Creek, FL</span>
+              <span>Valencia Health &amp; Wellness</span>
+            </p>
           </div>
 
-          <div class="about-story">
+          <article class="about-story">
+            <p class="about-eyebrow">About</p>
             <h2 id="about-title">Meet Dr. Valencia</h2>
-            <p class="about-credentials">
-              Doctor of Physical Therapy · ISSA-Certified Trainer · Lifestyle Fitness Coach ·
-              Certified Lymph Therapist
-            </p>
+            <p class="about-credentials">DPT · CLT · ISSA-CPT</p>
 
-            <div class="about-block">
-              <p>
-                Growing up in Manhattan, Dr. Valencia discovered his passion for fitness coaching
-                at 17, working in some of the city's most respected training environments. After
-                choosing to serve his country — spending five years in the United States Navy — a
-                personal injury during his service became a turning point. It deepened his
-                understanding of recovery, resilience, and the real difference expert physical
-                guidance makes.
-              </p>
-            </div>
+            <p class="about-lead">
+              Growing up in Manhattan, Dr. Valencia discovered his passion for fitness coaching
+              at 17, working in some of the city's most respected training environments. After
+              choosing to serve his country — spending five years in the United States Navy — a
+              personal injury during his service became a turning point. It deepened his
+              understanding of recovery, resilience, and the real difference expert physical
+              guidance makes.
+            </p>
 
             <blockquote class="about-quote">
               <p>
@@ -251,23 +253,40 @@ const testimonials = {
                 Asking for help is a strength, not a weakness."
               </p>
             </blockquote>
+
             <p class="about-philosophy">
               That belief shapes everything at Valencia Health and Wellness — a collaborative,
               non-judgmental approach that pairs clinical precision with motivational coaching.
             </p>
 
-            <div class="about-block">
-              <p>
-                Dr. Valencia bridges the gap between clinical rehabilitation and everyday fitness.
-                Every client starts with a comprehensive evaluation — tailored, not templated.
-              </p>
-            </div>
+            <p class="about-body">
+              Dr. Valencia bridges the gap between clinical rehabilitation and everyday fitness.
+              Every client starts with a comprehensive evaluation — tailored, not templated.
+            </p>
+
+            <dl class="about-meta">
+              <div class="about-meta-item">
+                <dt>Credentials</dt>
+                <dd>Doctor of Physical Therapy</dd>
+              </div>
+              <div class="about-meta-item">
+                <dt>Education</dt>
+                <dd>University of North Florida</dd>
+              </div>
+              <div class="about-meta-item">
+                <dt>Practice</dt>
+                <dd>Coconut Creek · Virtual</dd>
+              </div>
+            </dl>
 
             <div class="about-cta">
               <p class="about-cta-label">Ready to take the first step?</p>
-              <a class="about-cta-link" href="#contact">Book a Session <span aria-hidden="true">→</span></a>
+              <a class="about-cta-link" href="#contact">
+                Book a Session <span aria-hidden="true">→</span>
+              </a>
             </div>
-          </div>
+          </article>
+
         </div>
       </section>
 

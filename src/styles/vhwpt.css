@@ -213,87 +213,162 @@ p {
 
 .about-section {
   background: #f7f7f8;
-  padding-left: clamp(18px, 5vw, 64px);
-  padding-right: clamp(18px, 5vw, 64px);
+  padding: clamp(80px, 9vw, 140px) clamp(18px, 5vw, 64px);
 }
 .about-inner {
   align-items: start;
   display: grid;
-  gap: clamp(40px, 6vw, 90px);
-  grid-template-columns: minmax(260px, 0.38fr) 1fr;
+  gap: 0;
+  grid-template-columns: minmax(280px, 0.85fr) 1.15fr;
   margin: 0 auto;
   max-width: 1260px;
 }
+
+/* Photo column */
 .about-photo {
-  position: sticky;
-  top: 106px;
+  position: relative;
+}
+.about-photo-accent {
+  background: #1a2e3a;
+  bottom: -22px;
+  display: block;
+  left: -22px;
+  position: absolute;
+  right: 22px;
+  top: 22px;
+  z-index: 0;
 }
 .about-photo img {
   aspect-ratio: 3 / 4;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(17, 18, 20, 0.08);
+  box-shadow: 0 24px 50px -16px rgba(17, 33, 42, 0.28);
   display: block;
   object-fit: cover;
   object-position: top center;
+  position: relative;
   width: 100%;
+  z-index: 1;
+}
+.about-photo-caption {
+  align-items: baseline;
+  color: #64727d;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  gap: 14px;
+  justify-content: space-between;
+  letter-spacing: 0.2em;
+  margin: 22px 0 0;
+  position: relative;
+  text-transform: uppercase;
+  z-index: 1;
+}
+.about-photo-caption span:last-child {
+  color: #1a2e3a;
+  font-weight: 600;
+}
+
+/* Story column — overlaps photo on right edge */
+.about-story {
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(17, 33, 42, 0.04),
+    0 30px 80px -24px rgba(17, 33, 42, 0.18);
+  margin-left: clamp(-100px, -7vw, -60px);
+  margin-top: clamp(48px, 6vw, 88px);
+  padding: clamp(40px, 4.5vw, 64px) clamp(28px, 4vw, 56px);
+  position: relative;
+  z-index: 2;
+}
+.about-eyebrow {
+  color: #c41230;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  margin: 0 0 14px;
+  text-transform: uppercase;
 }
 .about-story h2 {
   color: #17212a;
   font-family: "Playfair Display", Georgia, serif;
-  font-size: clamp(2rem, 3.8vw, 3.2rem);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  line-height: 1.1;
-  margin: 0 0 10px;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 0 0 20px;
 }
 .about-credentials {
-  color: #64727d;
-  font-size: 0.84rem;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  margin: 0 0 36px;
-}
-.about-block {
-  margin-bottom: 28px;
-}
-.about-block h3 {
-  color: #17212a;
-  font-family: "Manrope", "Avenir Next", sans-serif;
+  align-items: center;
+  color: #1a2e3a;
+  display: flex;
   font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  margin: 0 0 10px;
+  font-weight: 600;
+  gap: 14px;
+  letter-spacing: 0.18em;
+  margin: 0 0 36px;
+  padding: 0 0 28px;
+  position: relative;
   text-transform: uppercase;
 }
-.about-block p {
+.about-credentials::before {
+  background: #c41230;
+  content: "";
+  flex-shrink: 0;
+  height: 1px;
+  width: 28px;
+}
+.about-credentials::after {
+  background: #e5e7eb;
+  bottom: 0;
+  content: "";
+  height: 1px;
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+.about-lead {
   color: #3a4a52;
   font-size: 1.0625rem;
   font-weight: 400;
   line-height: 1.75;
-  margin: 0;
+  margin: 0 0 28px;
+}
+.about-lead::first-letter {
+  color: #1a2e3a;
+  float: left;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 4em;
+  font-weight: 600;
+  line-height: 0.85;
+  margin: 6px 12px -4px 0;
+}
+.about-body {
+  color: #3a4a52;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.75;
+  margin: 0 0 28px;
 }
 
-/* Pull quote — editorial, not poster */
+/* Pull quote */
 .about-quote {
   background: none;
-  border-left: 1px solid #d1d5db;
+  border-left: 2px solid #1a2e3a;
   border-radius: 0;
-  margin: 1.75rem 0;
-  padding: 0.25rem 0 0.25rem 1.25rem;
+  margin: 2rem 0;
+  padding: 0.25rem 0 0.25rem 1.5rem;
 }
 .about-quote::before {
   display: none;
 }
 .about-quote p {
-  color: #3a4a52;
+  color: #1a2e3a;
   font-family: "Playfair Display", Georgia, serif;
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   font-style: italic;
   font-weight: 400;
-  line-height: 1.6;
+  line-height: 1.5;
   margin: 0;
 }
-
 .about-philosophy {
   color: #3a4a52;
   font-size: 1.0625rem;
@@ -301,12 +376,50 @@ p {
   line-height: 1.75;
   margin: 0 0 28px;
 }
+
+/* Meta strip */
+.about-meta {
+  border-top: 1px solid #e5e7eb;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 8px 0 0;
+  padding: 28px 0 0;
+}
+.about-meta-item {
+  border-right: 1px solid #e5e7eb;
+  margin: 0;
+  padding: 0 20px;
+}
+.about-meta-item:first-child {
+  padding-left: 0;
+}
+.about-meta-item:last-child {
+  border-right: none;
+  padding-right: 0;
+}
+.about-meta dt {
+  color: #64727d;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+}
+.about-meta dd {
+  color: #17212a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0;
+}
+
 .about-cta {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-top: 36px;
+  margin-top: 40px;
 }
 .about-cta-label {
   color: #53616c;
@@ -335,6 +448,37 @@ p {
 }
 .about-cta-link:hover span {
   transform: translateX(3px);
+}
+
+@media (max-width: 880px) {
+  .about-inner {
+    gap: 0;
+    grid-template-columns: 1fr;
+  }
+  .about-photo-accent {
+    bottom: -12px;
+    left: -12px;
+    right: 12px;
+    top: 12px;
+  }
+  .about-story {
+    margin-left: 0;
+    margin-top: -32px;
+    padding: 36px 24px;
+  }
+  .about-meta {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .about-meta-item {
+    border-bottom: 1px solid #e5e7eb;
+    border-right: none;
+    padding: 0 0 12px;
+  }
+  .about-meta-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
 }
 
 /* ── Section 6: Why Bruce ───────────────────────────────── */
@@ -677,18 +821,7 @@ p {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .about-inner {
-    grid-template-columns: 1fr;
-  }
-  .about-photo {
-    position: static;
-  }
-  .about-photo img {
-    max-width: 380px;
-  }
-  .about-quote p {
-    font-size: 1.375rem;
-  }
+
 
   .why-inner,
   .testimonials-grid {
@@ -711,7 +844,6 @@ p {
 
 @media (max-width: 768px) {
   .services-section,
-  .about-section,
   .why-section,
   .testimonials-section,
   .contact-band {
