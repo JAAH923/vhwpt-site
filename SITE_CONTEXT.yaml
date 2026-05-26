@@ -179,6 +179,12 @@ decisions:
   - date: 2026-05-13
     decision: Integrate real testimonials from Notion database into Section 7.
     rationale: Four approved entries pulled from Notion (Brendan Meehan, Paul Duffe, Joseph Leo, Olga & Ozzie Brannon). Featured Brendan Meehan as a full-width card because his quote directly references DPT credential, reinforcing Bruce's authority. Howard Kurpit testimonial excluded — marked Needs Review, Use on Website = NO.
+  - date: 2026-05-26
+    decision: Refine About section with editorial whitespace (drop navy accent block and white story card).
+    rationale: Bruce flagged the desktop bio-photo placement; the original layout had the white story card overlapping the photo and a heavy navy accent block behind it, which read as dated and conflicted with the premium/calm/clinical direction. Photo now sits on flat #fafafa background with captions below; story column has no background or shadow, letting whitespace and typography carry the section. Mobile stack unchanged in feel.
+  - date: 2026-05-26
+    decision: Switch GitHub Pages deploys to the develop branch.
+    rationale: Pages now acts as the staging/preview site (auto-deploys from develop); main is reserved for production at the eventual hosting target. Required adding develop to the github-pages environment's deployment branch policies. Workflow going forward: feature/* → develop (auto preview) → main (prod).
 
 open_tasks:
   - Fill in real client testimonials (currently placeholder text).
