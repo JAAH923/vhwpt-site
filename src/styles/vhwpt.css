@@ -235,7 +235,7 @@ p {
 .about-inner {
   align-items: start;
   display: grid;
-  gap: 0;
+  gap: clamp(40px, 5vw, 72px);
   grid-template-columns: minmax(280px, 0.85fr) 1.15fr;
   margin: 0 auto;
   max-width: 1260px;
@@ -284,14 +284,13 @@ p {
   font-weight: 600;
 }
 
-/* Story column — overlaps photo on right edge */
+/* Story column */
 .about-story {
   background: #ffffff;
   box-shadow:
     0 1px 2px rgba(17, 33, 42, 0.04),
     0 30px 80px -24px rgba(17, 33, 42, 0.18);
-  margin-left: clamp(-100px, -7vw, -60px);
-  margin-top: clamp(48px, 6vw, 88px);
+  margin-top: clamp(24px, 3vw, 48px);
   padding: clamp(40px, 4.5vw, 64px) clamp(28px, 4vw, 56px);
   position: relative;
   z-index: 2;
