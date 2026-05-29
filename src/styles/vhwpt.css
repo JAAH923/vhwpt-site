@@ -52,6 +52,13 @@ p {
   font-weight: 400;
 }
 
+.v4-brand small .brand-sep {
+  font-size: 1.25em;
+  line-height: 0;
+  vertical-align: middle;
+  margin: 0 0.15em;
+}
+
 .v4-appointment {
   background: #c41230;
   border-color: #c41230;
