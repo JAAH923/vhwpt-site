@@ -1,0 +1,89 @@
+---
+import Base from "../../layouts/Base.astro";
+import { services } from "../../data/services";
+
+export function getStaticPaths() {
+  return services.map((service) => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (p = "") => `${basePath}${p.replace(/^\//, "")}`;
+
+const others = services.filter((s) => s.slug !== service.slug);
+---
+
+<Base
+  title={`${service.title} | Dr. Bruce Valencia, DPT | Valencia Health & Wellness`}
+  description={service.teaser}
+  path={`/services/${service.slug}`}
+>
+  <article class="service-page">
+    <header class="service-hero">
+      <div class="service-hero-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href={withBase("/")}>Home</a>
+          <span aria-hidden="true">·</span>
+          <a href={withBase("/services")}>Services</a>
+        </nav>
+        <h1>{service.title}</h1>
+        <p class="service-lede">{service.lede}</p>
+      </div>
+    </header>
+
+    <div class="service-body">
+      <div class="service-body-inner">
+        <p class="service-intro">{service.intro}</p>
+
+        {
+          service.groups.map((group) => (
+            <section class="service-group">
+              <h2>{group.heading}</h2>
+              <dl class="service-list">
+                {group.items.map((item) => (
+                  <div class="service-list-item">
+                    <dt>{item.term}</dt>
+                    <dd>{item.detail}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))
+        }
+
+        <aside class="service-cta">
+          <h2>Ready to get started?</h2>
+          <p>
+            Every engagement begins with a conversation about where you are and where you want to
+            be.
+          </p>
+          <a class="concept-button primary vhwpt-cta" href={withBase("/#contact")}>
+            Book a Session <span aria-hidden="true">→</span>
+          </a>
+        </aside>
+
+        <nav class="service-siblings" aria-label="Other services">
+          <h2>Other ways to work together</h2>
+          <ul>
+            {
+              others.map((other) => (
+                <li>
+                  <a href={withBase(`/services/${other.slug}`)}>
+                    <span class="sibling-title">{other.shortTitle}</span>
+                    <span class="sibling-teaser">{other.teaser}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </article>
+</Base>

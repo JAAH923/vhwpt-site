@@ -65,8 +65,8 @@ site:
     current_site_notes: Dark/black WordPress fitness theme with bright red accent #ff0137; recurring Services, Products, and Connect sections.
     mood: Premium, calm, clinical. White editorial with clean typography.
     references: []
-    typography: Playfair Display (hero h1), system sans-serif body
-    color_palette: White background, dark text, green accent #0f6e56
+    typography: Playfair Display (headings), Manrope (body)
+    color_palette: White background, dark text. Primary accent crimson #c41230; secondary deep green #085041. Confirmed canonical by Bruce 2026-08-29 — supersedes the teal #1D9E75/#0F6E56 named in the v1.1 design review, which was never implemented.
     interaction_notes: []
 
 technical:
@@ -185,6 +185,24 @@ decisions:
   - date: 2026-05-26
     decision: Switch GitHub Pages deploys to the develop branch.
     rationale: Pages now acts as the staging/preview site (auto-deploys from develop); main is reserved for production at the eventual hosting target. Required adding develop to the github-pages environment's deployment branch policies. Workflow going forward: feature/* → develop (auto preview) → main (prod).
+  - date: 2026-08-29
+    decision: Crimson #c41230 with deep green #085041 confirmed as the canonical palette.
+    rationale: Three sources disagreed — the v1.1 design review specified teal #1D9E75/#0F6E56, this file claimed #0f6e56, and the shipped CSS used crimson with no teal anywhere. Bruce confirmed the shipped crimson is correct; it is closer to the original brand red. The teal direction is retired.
+  - date: 2026-08-29
+    decision: Split Services from Programs as two separate axes.
+    rationale: The legacy /services/* URLs (Personal Training, Online Training, Health Evaluations) are delivery modes; the homepage grid (Senior Fitness, Youth Sports, etc.) is specialty areas. They are orthogonal — a specialty is delivered through a service — and flattening both under one nav item made the offering hard to parse. Services keeps the legacy URLs and their search indexing; Programs becomes a separate section.
+  - date: 2026-08-29
+    decision: One /programs page covering all seven specialties, not seven pages.
+    rationale: Each specialty currently has a title and a one-line teaser. Seven pages built from that would be thin, near-duplicate content — discounted by search engines and read as padding by visitors, which works against the professionalism the redesign is for. Individual specialty pages get promoted only when there is real content behind them. Also keeps the WordPress theme port at a manageable number of templates.
+  - date: 2026-08-29
+    decision: Howard Kurpit testimonial approved for publication.
+    rationale: Previously held at Needs Review / Use on Website = NO pending confirmation of attribution and facility context. Bruce cleared it 2026-08-29; the Notion testimonials record is now Approved / Use on Website = YES. It was already present in the code, so no change was needed there.
+  - date: 2026-08-29
+    decision: Extract a shared Base layout and give every route its own metadata.
+    rationale: Nav, footer and head were inlined in index.astro, so adding routes would have duplicated them and every page would have shared the homepage's title, description, canonical and OG tags. Base.astro now takes per-page values; canonical and OG always resolve to the production domain even in GitHub Pages preview builds.
+  - date: 2026-08-29
+    decision: Recover the legacy service copy from the WordPress REST API rather than rewriting it.
+    rationale: The three /services/* posts stopped rendering when the custom theme took over, but the content was still in the WP database and readable at /wp-json/wp/v2/posts. It is Bruce's own copy and needed only typo and regional-phrasing edits.
 
 open_tasks:
   - Fill in real client testimonials (currently placeholder text).
