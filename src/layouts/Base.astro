@@ -1,0 +1,151 @@
+---
+import "../styles/concepts.css";
+import "../styles/vhwpt.css";
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Site-root-relative path for this page, e.g. "/" or "/services/personal-training". */
+  path: string;
+  /** Page-specific social image, root-relative. Falls back to the company logo. */
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  path,
+  ogImage = "/assets/brand/valencia-health-wellness-logo-full.png",
+} = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (p = "") => `${basePath}${p.replace(/^\//, "")}`;
+
+// Canonical and OG URLs always point at the production domain, even when the
+// build is previewed on GitHub Pages, so shared links resolve to the real site.
+const PRODUCTION_ORIGIN = "https://www.vhwpt.com";
+const canonical = `${PRODUCTION_ORIGIN}${path === "/" ? "/" : path}`;
+const ogImageUrl = `${PRODUCTION_ORIGIN}${ogImage}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,800&family=Manrope:wght@500;650;750;850&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href={withBase("/assets/brand/valencia-health-wellness-icon.png")}
+    />
+    <title>{title}</title>
+  </head>
+
+  <body class="concept-page v4">
+    <main>
+      <!-- ── Sticky Nav ──────────────────────────────────── -->
+      <nav class="v4-nav" aria-label="Primary navigation">
+        <a class="v4-brand" href={withBase()}>
+          <img
+            src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")}
+            alt="Valencia Health & Wellness"
+          />
+          <span>
+            <strong>Dr. Bruce Valencia, DPT</strong>
+            <small
+              >Serving Broward and Palm Beach County Areas <span class="brand-sep">·</span> Virtual</small
+            >
+          </span>
+        </a>
+
+        <input
+          class="v4-menu-toggle"
+          type="checkbox"
+          id="primary-menu"
+          aria-label="Toggle navigation menu"
+        />
+        <label class="v4-menu-button" for="primary-menu" aria-label="Open navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
+
+        <div class="v4-mobile-menu">
+          <div class="v4-nav-links">
+            <a
+              href={withBase("/services")}
+              aria-current={path.startsWith("/services") ? "page" : undefined}>Services</a
+            >
+            <a href={withBase("/#about")}>About</a>
+            <a href={withBase("/#contact")}>Contact</a>
+          </div>
+          <a class="v4-appointment" href={withBase("/#contact")}>Book a Session</a>
+        </div>
+      </nav>
+
+      <slot />
+
+      <!-- ── Footer ──────────────────────────────────────── -->
+      <footer class="site-footer">
+        <div class="site-footer-inner">
+          <p class="footer-tagline">
+            Valencia Health and Wellness, LLC — Personalized Fitness, Physical Therapy &amp;
+            Wellness | Serving Broward and Palm Beach County
+          </p>
+
+          <div class="footer-disclaimers">
+            <p>
+              <strong>Medical Disclaimer:</strong> Dr. Bruce Valencia is a licensed Doctor of
+              Physical Therapy (DPT). Services offered through Valencia Health and Wellness, LLC
+              include fitness coaching, personal training, and physical therapy-informed
+              programming. These services are not a substitute for medical diagnosis, treatment, or
+              prescription. Always consult your physician before beginning a new exercise program.
+              Individuals with existing health conditions or recent surgery should obtain physician
+              clearance prior to participation.
+            </p>
+            <p>
+              <strong>Nutrition Disclaimer:</strong> Nutritional guidance provided through Valencia
+              Health and Wellness is intended for general wellness support and does not constitute
+              medical nutritional therapy. For individualized dietary medical management, please
+              consult a registered dietitian or your physician.
+            </p>
+          </div>
+
+          <div class="footer-bottom">
+            <nav class="footer-social" aria-label="Social media">
+              <a
+                href="https://www.facebook.com/ValenciaHealthandWellness"
+                aria-label="Facebook"
+                rel="noopener noreferrer"
+                target="_blank">Facebook</a
+              >
+              <a
+                href="https://www.instagram.com/drbrucevdpt/"
+                aria-label="Instagram"
+                rel="noopener noreferrer"
+                target="_blank">Instagram</a
+              >
+            </nav>
+            <p class="footer-copy">&copy; 2025 Valencia Health and Wellness, LLC</p>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

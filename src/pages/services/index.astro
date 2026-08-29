@@ -1,0 +1,68 @@
+---
+import Base from "../../layouts/Base.astro";
+import { services } from "../../data/services";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (p = "") => `${basePath}${p.replace(/^\//, "")}`;
+---
+
+<Base
+  title="Services | Dr. Bruce Valencia, DPT | Valencia Health & Wellness"
+  description="Three ways to work with Dr. Bruce Valencia, DPT — in-person personal training, remote online training, and comprehensive health evaluations. Serving Broward and Palm Beach County and virtually."
+  path="/services"
+>
+  <article class="service-page">
+    <header class="service-hero">
+      <div class="service-hero-inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href={withBase("/")}>Home</a>
+        </nav>
+        <h1>Services</h1>
+        <p class="service-lede">
+          Three ways to work together — in person across Broward and Palm Beach County, or
+          virtually from anywhere.
+        </p>
+      </div>
+    </header>
+
+    <div class="service-body">
+      <div class="service-body-inner">
+        <p class="service-intro">
+          Every engagement starts with an evaluation, so the programming that follows is built on
+          what your body is actually doing — not a template. Whichever format you choose, the
+          clinical grounding is the same.
+        </p>
+
+        <ul class="service-index">
+          {
+            services.map((service) => (
+              <li>
+                <a href={withBase(`/services/${service.slug}`)}>
+                  <h2>{service.title}</h2>
+                  <p class="service-index-lede">{service.lede}</p>
+                  <p class="service-index-teaser">{service.teaser}</p>
+                  <span class="service-index-more" aria-hidden="true">
+                    Read more →
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <aside class="service-cta">
+          <h2>Not sure which fits?</h2>
+          <p>
+            A health evaluation is the usual starting point — it tells us both what the right
+            programming looks like.
+          </p>
+          <a class="concept-button primary vhwpt-cta" href={withBase("/#contact")}>
+            Book a Session <span aria-hidden="true">→</span>
+          </a>
+        </aside>
+      </div>
+    </div>
+  </article>
+</Base>
