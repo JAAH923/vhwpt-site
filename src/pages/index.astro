@@ -1,434 +1,215 @@
 ---
-import "../styles/concepts.css";
-import "../styles/vhwpt.css";
+import Site from "../layouts/Site.astro";
+import Icon from "../components/Icon.astro";
+import { practice, credentials, services, featured, testimonials } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
-const services = [
-  {
-    title: "Senior Fitness",
-    teaser:
-      "Tailored movement programs designed to support mobility, balance, and strength for older adults. Low-impact, supervised, and personalized.",
-  },
-  {
-    title: "Youth Sports Conditioning",
-    teaser:
-      "Customized training designed to support athletic development, proper movement mechanics, and performance in young athletes.",
-  },
-  {
-    title: "Weight Management & Nutrition",
-    teaser:
-      "Personalized fitness and nutrition guidance to help you work toward your wellness and body composition goals.",
-  },
-  {
-    title: "Rehabilitation & Recovery",
-    teaser:
-      "Evidence-informed programs designed to support recovery from injury or surgery, developed in collaboration with your healthcare team.",
-  },
-  {
-    title: "Pre & Postnatal Fitness",
-    teaser:
-      "Safe, certified programming designed to support the physical wellbeing of expecting and new mothers, with appropriate modifications throughout.",
-  },
-  {
-    title: "Holistic Wellness",
-    teaser:
-      "Integrated fitness, mindfulness, yoga, and coaching to support a more balanced, whole-body approach to health.",
-  },
-  {
-    title: "Corporate Wellness",
-    teaser:
-      "On-site or virtual fitness classes and wellness workshops, customized to your organization's team size, schedule, and goals.",
-  },
-];
-
-const testimonials = {
-  featured: {
-    quote:
-      "Dr. Valencia's vast experience as a personal trainer and doctor of physical therapy proved invaluable to my fitness journey, improving my strength, stamina, metabolic health, diet, and lifestyle.",
-    full: "Over the course of 3 years, Dr. Valencia's holistic training program helped me lose weight, increased my strength and stamina, and dramatically improved my metabolic health. His expertise produced consistent and enduring fitness gains, leading to a healthier lifestyle and faster recreational running times. Most importantly, his diet recommendations and regular evaluations kept me focused on my goals both inside and outside the gym.",
-    name: "Brendan Meehan",
-    service: "Personal Training · Weight Management · Holistic Wellness",
-  },
-  cards: [
-    {
-      quote:
-        "Over time, I even surpassed physical limitations medical experts believed impossible to overcome.",
-      name: "Paul Duffe",
-      service: "Rehabilitation & Recovery",
-      detail: "Author & Fitness Enthusiast · Jacksonville, FL",
-    },
-    {
-      quote:
-        "His holistic approach includes exercise, nutrition, natural supplements, and motivational material — all tailored to my needs. It's everything I need, and nothing I don't.",
-      name: "Joseph Leo",
-      service: "Personal Training · Holistic Wellness",
-    },
-    {
-      quote:
-        "Bruce not only provided us with personal training, but guided us on nutrition and lifestyle changes that have made a lasting difference. We continue to use the skills he taught us, and our health reflects it.",
-      name: "Olga & Ozzie Brannon",
-      service: "Personal Training · Weight Management",
-      detail: "Long-Term Clients",
-    },
-    {
-      quote:
-        "Thanks to you I am healthy, wealthy, and wise. My A1C dropped from 8.2 down to 5.8. My doctor confirmed my weight reduction, improved muscle tone, and I'm no longer at risk for diabetes.",
-      name: "Olga Brannon",
-      service: "Personal Training · Weight Management · Holistic Wellness",
-    },
-    {
-      quote:
-        "Bruce and his team have been miracle workers! She smiles, talks, exercises, and even takes steps when she is under his care. He is caring, effective, and is the reason I keep Mom there. Bruce is by far YourLife's biggest asset.",
-      name: "Howard Kurpit",
-      service: "Senior Fitness · Memory Care",
-    },
-  ],
-};
+const cards = featured.map((a) => services.find((s) => s.anchor === a)!);
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      name="description"
-      content="Valencia Health and Wellness — personalized fitness, physical therapy, and wellness programming serving Broward and Palm Beach County and virtually. Led by Dr. Bruce Valencia, DPT."
-    />
-    <meta
-      property="og:title"
-      content="Dr. Bruce Valencia, DPT | Physical Therapy & Fitness | Broward & Palm Beach County"
-    />
-    <meta
-      property="og:description"
-      content="Valencia Health and Wellness — personalized fitness, physical therapy, and wellness programming serving Broward and Palm Beach County and virtually. Led by Dr. Bruce Valencia, DPT."
-    />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.vhwpt.com/" />
-    <meta
-      property="og:image"
-      content="https://www.vhwpt.com/assets/brand/valencia-health-wellness-logo-full.png"
-    />
-    <link rel="canonical" href="https://www.vhwpt.com/" />
-    <link rel="sitemap" href="/sitemap.xml" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650;9..144,800&family=Manrope:wght@500;650;750;850&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      href={withBase("/assets/brand/valencia-health-wellness-icon.png")}
-    />
-    <title>Dr. Bruce Valencia, DPT | Physical Therapy & Fitness | Broward & Palm Beach County</title>
-  </head>
+<Site
+  title="Dr. Bruce Valencia, DPT | Physical Therapy & Training | Broward & Palm Beach"
+  description="Doctor of Physical Therapy offering rehabilitation, personal training and wellness programming across Broward and Palm Beach County, and virtually nationwide. Every client starts with a full evaluation."
+  path="/"
+>
+  <!-- Hero -->
+  <header class="v4-editorial-fold">
+    <section class="v4-editorial-hero vhwpt-hero" aria-labelledby="hero-title">
+      <div class="v4-editorial-copy">
+        <h1 id="hero-title">Training that starts where you are.</h1>
+        <p class="hero-subhead">
+          Physical therapy and fitness coaching with {practice.doctor}.<br />
+          Clinical, personal, judgment-free.
+        </p>
+        <p class="hero-location">
+          In your home across {practice.regionLong}, or virtually from anywhere.
+        </p>
+        <div class="v4-editorial-actions">
+          <a class="concept-button primary vhwpt-cta" href={withBase("/book")}>
+            Book an evaluation
+          </a>
+          <a class="cta-secondary-inline" href={withBase("/services")}>See services</a>
+        </div>
+      </div>
 
-  <body class="concept-page v4">
-    <main>
-
-      <!-- ── Section 1: Sticky Nav ───────────────────────── -->
-      <nav class="v4-nav" aria-label="Primary navigation">
-        <a class="v4-brand" href={withBase()}>
-          <img
-            src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")}
-            alt="Valencia Health & Wellness"
-          />
-          <span>
-            <strong>Dr. Bruce Valencia, DPT</strong>
-            <small>Serving Broward and Palm Beach County Areas <span class="brand-sep">·</span> Virtual</small>
-          </span>
-        </a>
-
-        <input
-          class="v4-menu-toggle"
-          type="checkbox"
-          id="primary-menu"
-          aria-label="Toggle navigation menu"
+      <div class="v4-editorial-portrait">
+        <img
+          src={withBase("/assets/brand/bruce-headshot.webp")}
+          alt={practice.doctor}
+          width="520"
+          height="640"
+          loading="eager"
         />
-        <label class="v4-menu-button" for="primary-menu" aria-label="Open navigation menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </label>
+      </div>
+    </section>
+  </header>
 
-        <div class="v4-mobile-menu">
-          <div class="v4-nav-links">
-            <a href="#services">Services</a>
-            <a href="#about">About</a>
-            <a href="#contact">Contact</a>
-          </div>
-          <a class="v4-appointment" href="#contact">Book a Session</a>
-        </div>
-      </nav>
+  <!-- Credentials -->
+  <section class="trust-bar" aria-label="Credentials and certifications">
+    <div class="trust-bar-inner">
+      {
+        credentials.map((c, i) => (
+          <>
+            {i > 0 && <span class="trust-divider" aria-hidden="true">·</span>}
+            <span>{c}</span>
+          </>
+        ))
+      }
+    </div>
+  </section>
 
-      <!-- ── Section 2: Hero ────────────────────────────── -->
-      <header class="v4-editorial-fold">
-        <section class="v4-editorial-hero vhwpt-hero" aria-labelledby="hero-title">
-          <div class="v4-editorial-copy">
-            <h1 id="hero-title">Training that starts where you are.</h1>
-            <p class="hero-subhead">
-              Physical therapy and fitness coaching with Dr. Bruce Valencia, DPT.<br />
-              Clinical, personal, judgment-free.
-            </p>
-            <p class="hero-location">
-              In-person across Broward and Palm Beach County or virtually from anywhere.
-            </p>
-            <div class="v4-editorial-actions">
-              <a class="concept-button primary vhwpt-cta" href="#contact">Book a Session →</a>
-            </div>
-          </div>
+  <!--
+    About sits here, ahead of the service list. Bruce is the product: the
+    credential is the differentiator, so it should land before the menu.
+  -->
+  <section id="about" class="about-section" aria-labelledby="about-title">
+    <div class="about-inner">
+      <div class="about-photo">
+        <img
+          src={withBase("/assets/brand/bruce-in-session.png")}
+          alt={`${practice.doctor} working with a patient`}
+          width="720"
+          height="820"
+          loading="lazy"
+        />
+        <p class="about-photo-caption">
+          <span>{practice.region}</span>
+          <span>{practice.name}</span>
+        </p>
+      </div>
 
-          <div class="v4-editorial-portrait" aria-hidden="true">
-            <img
-              src={withBase("/assets/brand/bruce-headshot.webp")}
-              alt="Dr. Bruce Valencia, DPT"
-            />
-          </div>
-        </section>
-      </header>
+      <article class="about-story">
+        <p class="about-eyebrow">About</p>
+        <h2 id="about-title">A doctor of physical therapy, coaching in your living room.</h2>
+        <p class="about-credentials">DPT · CLT · ISSA-CPT · U.S. Navy Veteran</p>
 
-      <!-- ── Section 3: Credential Trust Bar ───────────── -->
-      <section class="trust-bar" aria-label="Credentials and certifications">
-        <div class="trust-bar-inner">
-          <span>Doctor of Physical Therapy (DPT)</span>
-          <span class="trust-divider" aria-hidden="true">·</span>
-          <span>ISSA-Certified Personal Trainer</span>
-          <span class="trust-divider" aria-hidden="true">·</span>
-          <span>Certified Lymph Therapist (CLT)</span>
-          <span class="trust-divider" aria-hidden="true">·</span>
-          <span>U.S. Navy Veteran</span>
-        </div>
-      </section>
+        <p class="about-lead">
+          Bruce Valencia started coaching at 17 in Manhattan, then served five years in
+          the Navy. An injury during that service is what pulled him toward physical
+          therapy — he had been on the other side of a recovery, and knew what expert
+          guidance was worth.
+        </p>
 
-      <!-- ── Section 4: Services Grid ──────────────────── -->
-      <section id="services" class="services-section" aria-labelledby="services-title">
-        <div class="services-section-inner">
-          <div class="services-heading">
-            <p class="concept-eyebrow">What We Offer</p>
-            <h2 id="services-title">
-              A spectrum of evidence-informed programming across fitness, rehabilitation, and
-              wellness — designed to support your goals at every stage of life.
-            </h2>
-          </div>
-
-          <div class="services-grid">
-            {
-              services.map((service) => (
-                <article class="service-card">
-                  <h3>{service.title}</h3>
-                  <p>{service.teaser}</p>
-                </article>
-              ))
-            }
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Section 5: About ───────────────────────────── -->
-      <section id="about" class="about-section" aria-labelledby="about-title">
-        <div class="about-inner">
-
-          <div class="about-photo">
-            <img
-              src={withBase("/assets/brand/bruce-in-session.png")}
-              alt="Dr. Bruce Valencia, DPT working with a patient"
-            />
-            <p class="about-photo-caption">
-              <span>Broward &amp; Palm Beach County</span>
-              <span>Valencia Health &amp; Wellness</span>
-            </p>
-          </div>
-
-          <article class="about-story">
-            <p class="about-eyebrow">About</p>
-            <h2 id="about-title">Meet Dr. Valencia</h2>
-            <p class="about-credentials">DPT · CLT · ISSA-CPT</p>
-
-            <p class="about-lead">
-              Growing up in Manhattan, Dr. Valencia discovered his passion for fitness coaching
-              at 17, working in some of the city's most respected training environments. After
-              choosing to serve his country — spending five years in the United States Navy — a
-              personal injury during his service became a turning point. It deepened his
-              understanding of recovery, resilience, and the real difference expert physical
-              guidance makes.
-            </p>
-
-            <blockquote class="about-quote">
-              <p>
-                "If you want something bad enough, you can achieve it — but you can't do it alone.
-                Asking for help is a strength, not a weakness."
-              </p>
-            </blockquote>
-
-            <p class="about-philosophy">
-              That belief shapes everything at Valencia Health and Wellness — a collaborative,
-              non-judgmental approach that pairs clinical precision with motivational coaching.
-            </p>
-
-            <p class="about-body">
-              Dr. Valencia bridges the gap between clinical rehabilitation and everyday fitness.
-              Every client starts with a comprehensive evaluation — tailored, not templated.
-            </p>
-
-            <dl class="about-meta">
-              <div class="about-meta-item">
-                <dt>Credentials</dt>
-                <dd>Doctor of Physical Therapy</dd>
-              </div>
-              <div class="about-meta-item">
-                <dt>Education</dt>
-                <dd>University of North Florida</dd>
-              </div>
-              <div class="about-meta-item">
-                <dt>Practice</dt>
-                <dd>Broward & Palm Beach · Virtual</dd>
-              </div>
-            </dl>
-
-            <div class="about-cta">
-              <p class="about-cta-label">Ready to take the first step?</p>
-              <a class="about-cta-link" href="#contact">
-                Book a Session <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </article>
-
-        </div>
-      </section>
-
-      <!-- ── Section 6: Why Bruce ───────────────────────── -->
-      <section class="why-section" aria-label="Why choose Valencia Health and Wellness">
-        <div class="why-inner">
-          <div class="why-item">
-            <span class="why-icon" aria-hidden="true">🩺</span>
-            <h3>DPT-Led Care</h3>
-            <p>
-              Every program informed by clinical physical therapy expertise — not just fitness
-              experience.
-            </p>
-          </div>
-          <div class="why-item">
-            <span class="why-icon" aria-hidden="true">📍</span>
-            <h3>In-Person or Virtual</h3>
-            <p>
-              Serving Broward and Palm Beach County in person, and
-              clients nationwide virtually.
-            </p>
-          </div>
-          <div class="why-item">
-            <span class="why-icon" aria-hidden="true">📋</span>
-            <h3>Personalized, Not Templated</h3>
-            <p>Every plan starts with a comprehensive evaluation. No cookie-cutter programs.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Section 7: Testimonials ────────────────────── -->
-      <section class="testimonials-section" aria-label="Client testimonials">
-        <div class="testimonials-inner">
-          <p class="testimonials-heading">What Clients Say</p>
-          <h2 class="testimonials-title">Results that speak for themselves.</h2>
-
-          <article class="testimonial-featured">
-            <blockquote>
-              <p>{testimonials.featured.quote}</p>
-            </blockquote>
-            <footer>
-              <strong>{testimonials.featured.name}</strong>
-              <span>{testimonials.featured.service}</span>
-            </footer>
-          </article>
-
-          <div class="testimonials-grid">
-            {
-              testimonials.cards.map((t) => (
-                <article class="testimonial-card">
-                  <blockquote>
-                    <p>{t.quote}</p>
-                  </blockquote>
-                  <footer>
-                    <strong>{t.name}</strong>
-                    <span>{t.service}</span>
-                    {t.detail && <span class="testimonial-detail">{t.detail}</span>}
-                  </footer>
-                </article>
-              ))
-            }
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Section 8: Contact CTA Band ───────────────── -->
-      <section id="contact" class="contact-band" aria-labelledby="contact-title">
-        <div class="contact-band-inner">
-          <div class="contact-band-copy">
-            <h2 id="contact-title">Ready to start your wellness journey?</h2>
-            <p>Reach out to Dr. Bruce Valencia and the Valencia Health and Wellness team.</p>
-            <ul class="contact-details">
-              <li><a href="tel:19542996536">📞 1-954-299-6536</a></li>
-              <li><a href="mailto:info@vhwpt.com">📧 info@vhwpt.com</a></li>
-              <li>📍 Serving Broward and Palm Beach County</li>
-              <li>🌐 Virtual sessions available nationwide</li>
-            </ul>
-          </div>
-          <div class="contact-band-action">
-            <a class="contact-band-cta" href="mailto:info@vhwpt.com">Send a Message →</a>
-          </div>
-        </div>
-      </section>
-
-      <!-- ── Section 9: Footer ──────────────────────────── -->
-      <footer class="site-footer">
-        <div class="site-footer-inner">
-          <p class="footer-tagline">
-            Valencia Health and Wellness, LLC — Personalized Fitness, Physical Therapy &amp;
-            Wellness | Serving Broward and Palm Beach County
+        <blockquote class="about-quote">
+          <p>
+            "If you want something bad enough, you can achieve it — but you can't do it
+            alone. Asking for help is a strength, not a weakness."
           </p>
+        </blockquote>
 
-          <div class="footer-disclaimers">
-            <p>
-              <strong>Medical Disclaimer:</strong> Dr. Bruce Valencia is a licensed Doctor of
-              Physical Therapy (DPT). Services offered through Valencia Health and Wellness, LLC
-              include fitness coaching, personal training, and physical therapy-informed
-              programming. These services are not a substitute for medical diagnosis, treatment, or
-              prescription. Always consult your physician before beginning a new exercise program.
-              Individuals with existing health conditions or recent surgery should obtain physician
-              clearance prior to participation.
-            </p>
-            <p>
-              <strong>Nutrition Disclaimer:</strong> Nutritional guidance provided through Valencia
-              Health and Wellness is intended for general wellness support and does not constitute
-              medical nutritional therapy. For individualized dietary medical management, please
-              consult a registered dietitian or your physician.
-            </p>
-          </div>
+        <p class="about-philosophy">
+          Most trainers cannot read a post-operative report. Most clinics stop the moment
+          insurance does. Working with a DPT who also coaches means one person carries you
+          from recovery through to training, without the handoff where progress usually
+          stalls.
+        </p>
 
-          <div class="footer-bottom">
-            <nav class="footer-social" aria-label="Social media">
-              <a
-                href="https://www.facebook.com/ValenciaHealthandWellness"
-                aria-label="Facebook"
-                rel="noopener noreferrer"
-                target="_blank">Facebook</a
-              >
-              <a
-                href="https://www.instagram.com/drbrucevdpt/"
-                aria-label="Instagram"
-                rel="noopener noreferrer"
-                target="_blank">Instagram</a
-              >
-            </nav>
-            <p class="footer-copy">&copy; 2025 Valencia Health and Wellness, LLC</p>
-          </div>
+        <div class="about-cta">
+          <p class="about-cta-label">More about Bruce</p>
+          <a class="about-cta-link" href={withBase("/about")}>
+            Read his story <Icon name="arrow" size={16} />
+          </a>
         </div>
-      </footer>
+      </article>
+    </div>
+  </section>
 
-    </main>
-  </body>
-</html>
+  <!-- Four featured services, each linking into the Services page -->
+  <section id="services" class="services-section" aria-labelledby="services-title">
+    <div class="services-section-inner">
+      <div class="services-heading">
+        <p class="concept-eyebrow">What We Offer</p>
+        <h2 id="services-title">Care built around your body, not a package.</h2>
+        <p class="services-sub">
+          Rehabilitation, training and wellness under one practitioner — so nobody has to
+          be caught up on your history.
+        </p>
+      </div>
+
+      <div class="services-grid">
+        {
+          cards.map((s) => (
+            <a class="service-card" href={withBase(`/services#${s.anchor}`)}>
+              <h3>{s.title}</h3>
+              <p>{s.lede}</p>
+              <span class="service-card-more">Learn more &rarr;</span>
+            </a>
+          ))
+        }
+      </div>
+
+      <p class="services-all">
+        <a href={withBase("/services")}>All eight services, in detail <Icon name="arrow" size={15} /></a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Differentiators, line icons rather than emoji -->
+  <section class="why-section" aria-label="Why choose Valencia Health and Wellness">
+    <div class="why-inner">
+      <div class="why-item">
+        <Icon name="stethoscope" size={26} />
+        <h3>DPT-Led Care</h3>
+        <p>
+          Programming informed by clinical physical therapy training, not fitness
+          certification alone.
+        </p>
+      </div>
+      <div class="why-item">
+        <Icon name="pin" size={26} />
+        <h3>In Your Home, or Online</h3>
+        <p>
+          Across {practice.regionLong} in person, and anywhere in the country by video.
+        </p>
+      </div>
+      <div class="why-item">
+        <Icon name="clipboard" size={26} />
+        <h3>Evaluated, Not Assumed</h3>
+        <p>
+          Everyone starts with a full evaluation and leaves with a written plan. No
+          template programs.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- One testimonial; the rest live on the pages they speak to -->
+  <section class="testimonials-section" aria-label="Client testimonials">
+    <div class="testimonials-inner">
+      <p class="testimonials-heading">What Clients Say</p>
+      <h2 class="testimonials-title">Twenty years of people getting their lives back.</h2>
+
+      <article class="testimonial-featured">
+        <blockquote>
+          <p>{testimonials.featured.quote}</p>
+        </blockquote>
+        <footer>
+          <strong>{testimonials.featured.name}</strong>
+          <span>{testimonials.featured.service}</span>
+        </footer>
+      </article>
+
+      <p class="services-all">
+        <a href={withBase("/services")}>More client results <Icon name="arrow" size={15} /></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="cta-band-inner">
+      <h2>Start with an evaluation.</h2>
+      <p>
+        Sixty minutes, in your home or over video. You leave knowing what is going on and
+        what the plan is — whether or not you train with Bruce afterward.
+      </p>
+      <div class="cta-band-actions">
+        <a class="cta-primary" href={withBase("/book")}>Book an evaluation</a>
+        <a class="cta-secondary" href={practice.phoneHref}>Call {practice.phone}</a>
+      </div>
+    </div>
+  </section>
+</Site>

@@ -1,0 +1,171 @@
+---
+import "../styles/concepts.css";
+import "../styles/vhwpt.css";
+import "../styles/pages.css";
+import { practice, nav } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Path for the canonical URL and for marking the active nav item. */
+  path: string;
+}
+
+const { title, description, path } = Astro.props;
+const canonical = `https://www.vhwpt.com${path}`;
+const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta
+      property="og:image"
+      content="https://www.vhwpt.com/assets/brand/valencia-health-wellness-logo-full.png"
+    />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;650;750;850&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      href={withBase("/assets/brand/valencia-health-wellness-icon.png")}
+    />
+    <title>{title}</title>
+  </head>
+
+  <body class="concept-page v4">
+    <main>
+      <!-- Utility strip. Bespoke and Personal Care PT both answer the
+           coverage question above the logo; this is that slot. -->
+      <div class="util-strip">
+        <div class="util-strip-inner">
+          <span class="util-item">In-home &amp; virtual</span>
+          <span class="util-sep" aria-hidden="true">·</span>
+          <span class="util-item">{practice.region}</span>
+          <span class="util-spacer"></span>
+          <a class="util-phone" href={practice.phoneHref}>{practice.phone}</a>
+        </div>
+      </div>
+
+      <nav class="v4-nav" aria-label="Primary navigation">
+        <a class="v4-brand" href={withBase()}>
+          <img
+            src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")}
+            alt={practice.name}
+            width="48"
+            height="48"
+          />
+          <span>
+            <strong>{practice.doctor}</strong>
+            <small>Physical therapy, training &amp; wellness</small>
+          </span>
+        </a>
+
+        <input
+          class="v4-menu-toggle"
+          type="checkbox"
+          id="primary-menu"
+          aria-label="Toggle navigation menu"
+        />
+        <label class="v4-menu-button" for="primary-menu" aria-label="Open navigation menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </label>
+
+        <div class="v4-mobile-menu">
+          <div class="v4-nav-links">
+            {
+              nav.map((item) => (
+                <a
+                  href={withBase(item.href)}
+                  aria-current={isActive(item.href) ? "page" : undefined}
+                >
+                  {item.label}
+                </a>
+              ))
+            }
+          </div>
+          <a class="v4-appointment" href={withBase("/book")}>Book an evaluation</a>
+        </div>
+      </nav>
+
+      <slot />
+
+      <footer class="site-footer">
+        <div class="site-footer-inner">
+          <div class="footer-top">
+            <div class="footer-brand">
+              <p class="footer-tagline">
+                {practice.legalName} — physical therapy, personal training and wellness
+                across {practice.regionLong}, and virtually nationwide.
+              </p>
+              <ul class="footer-contact">
+                <li><a href={practice.phoneHref}>{practice.phone}</a></li>
+                <li><a href={`mailto:${practice.email}`}>{practice.email}</a></li>
+              </ul>
+            </div>
+            <nav class="footer-nav" aria-label="Footer navigation">
+              <a href={withBase("/services")}>Services</a>
+              <a href={withBase("/services/health-evaluation")}>Health Evaluation</a>
+              <a href={withBase("/about")}>About</a>
+              <a href={withBase("/book")}>Book</a>
+            </nav>
+          </div>
+
+          <div class="footer-disclaimers">
+            <p>
+              <strong>Medical Disclaimer:</strong> Dr. Bruce Valencia is a licensed Doctor of
+              Physical Therapy (DPT). Services offered through {practice.legalName} include
+              fitness coaching, personal training, and physical therapy-informed
+              programming. These services are not a substitute for medical diagnosis,
+              treatment, or prescription. Always consult your physician before beginning a
+              new exercise program. Individuals with existing health conditions or recent
+              surgery should obtain physician clearance prior to participation.
+            </p>
+            <p>
+              <strong>Nutrition Disclaimer:</strong> Nutritional guidance provided through
+              {" "}{practice.name} is intended for general wellness support and does not
+              constitute medical nutritional therapy. For individualized dietary medical
+              management, please consult a registered dietitian or your physician.
+            </p>
+          </div>
+
+          <div class="footer-bottom">
+            <nav class="footer-social" aria-label="Social media">
+              <a
+                href="https://www.facebook.com/ValenciaHealthandWellness"
+                rel="noopener noreferrer"
+                target="_blank">Facebook</a
+              >
+              <a
+                href="https://www.instagram.com/drbrucevdpt/"
+                rel="noopener noreferrer"
+                target="_blank">Instagram</a
+              >
+            </nav>
+            <p class="footer-copy">&copy; 2026 {practice.legalName}</p>
+          </div>
+        </div>
+      </footer>
+    </main>
+  </body>
+</html>

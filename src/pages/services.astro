@@ -1,0 +1,102 @@
+---
+import Site from "../layouts/Site.astro";
+import Icon from "../components/Icon.astro";
+import { practice, services, testimonials } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const quoteFor = (anchor: string) =>
+  testimonials.cards.find((t) => t.anchor === anchor);
+---
+
+<Site
+  title="Services | Dr. Bruce Valencia, DPT | Broward & Palm Beach"
+  description="Rehabilitation and recovery, senior fitness, personal training, weight management, youth conditioning, pre and postnatal fitness, virtual training and wellness programming — all led by a Doctor of Physical Therapy."
+  path="/services"
+>
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <p class="eyebrow">Services</p>
+      <h1>Eight ways to work together. One person running all of them.</h1>
+      <p class="page-lede">
+        Whatever you come in for, it starts the same way — a full evaluation, then a
+        written plan built for your body and your history. Sessions happen in your home
+        across {practice.regionLong}, or live over video from anywhere.
+      </p>
+    </div>
+  </header>
+
+  <nav class="jump-nav" aria-label="Jump to a service">
+    {services.map((s) => <a href={`#${s.anchor}`}>{s.title}</a>)}
+  </nav>
+
+  <!-- The first visit gets top billing: it is the entry point to everything below. -->
+  <section class="page-section alt">
+    <div class="page-section-narrow">
+      <h2>Everything starts with the evaluation</h2>
+      <p>
+        Sixty minutes going through your history, watching how you actually move, and
+        explaining what is going on. You leave with a written plan — and an honest answer
+        if what you need is a physician rather than a trainer.
+      </p>
+      <p style="margin-top:1.1rem">
+        <a class="about-cta-link" href={withBase("/services/health-evaluation")}>
+          What happens in an evaluation <Icon name="arrow" size={16} />
+        </a>
+      </p>
+    </div>
+  </section>
+
+  {
+    services.map((s) => {
+      const q = quoteFor(s.anchor);
+      return (
+        <section class="svc" id={s.anchor} aria-labelledby={`${s.anchor}-title`}>
+          <div class="svc-inner">
+            <div>
+              <h2 id={`${s.anchor}-title`}>{s.title}</h2>
+              <p class="svc-lede">{s.lede}</p>
+              <p class="svc-body">{s.body}</p>
+              {q && (
+                <blockquote class="svc-quote">
+                  <p>{q.quote}</p>
+                  <footer>
+                    <strong>{q.name}</strong>
+                    {q.detail && <span>{q.detail}</span>}
+                  </footer>
+                </blockquote>
+              )}
+            </div>
+            <dl class="svc-covers">
+              <dt>Commonly covers</dt>
+              <dd>
+                <ul>
+                  {s.covers.map((c) => (
+                    <li><Icon name="check" size={16} />{c}</li>
+                  ))}
+                </ul>
+              </dd>
+            </dl>
+          </div>
+        </section>
+      );
+    })
+  }
+
+  <section class="cta-band">
+    <div class="cta-band-inner">
+      <h2>Not sure which one you need?</h2>
+      <p>
+        That is what the evaluation is for. Book it and Bruce will tell you — including if
+        the answer is someone other than him.
+      </p>
+      <div class="cta-band-actions">
+        <a class="cta-primary" href={withBase("/book")}>Book an evaluation</a>
+        <a class="cta-secondary" href={practice.phoneHref}>Call {practice.phone}</a>
+      </div>
+    </div>
+  </section>
+</Site>

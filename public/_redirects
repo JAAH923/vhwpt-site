@@ -1,0 +1,19 @@
+# Cloudflare Pages / Netlify redirect map. Inert on GitHub Pages — real 301s
+# there have to be configured at the host instead.
+#
+# The old WordPress URLs. /about and /contact were live pages with inbound
+# links and rankings; they are currently returning 404 on vhwpt.com.
+/contact                        /book                            301
+/services/personal-training     /services#training               301
+/services/online-training       /services#virtual                301
+/services/health-evaluations    /services/health-evaluation      301
+/category/services              /services                        301
+
+# WooCommerce leftovers. No products ever existed.
+/shop                           /                                410
+/cart                           /                                410
+/checkout                       /                                410
+/my-account                     /                                410
+
+# Retired design exploration routes.
+/concepts/*                     /                                301

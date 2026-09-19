@@ -1,0 +1,157 @@
+---
+import Site from "../layouts/Site.astro";
+import Icon from "../components/Icon.astro";
+import { practice, services } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<Site
+  title="Book an Evaluation | Dr. Bruce Valencia, DPT"
+  description="Book a 60-minute health evaluation with Dr. Bruce Valencia, DPT. In-home across Broward and Palm Beach County, or live over video anywhere in the country."
+  path="/book"
+>
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <p class="eyebrow">Book</p>
+      <h1>Book an evaluation</h1>
+      <p class="page-lede">
+        Tell Bruce what is going on and where you are. He answers his own messages,
+        usually the same day.
+      </p>
+    </div>
+  </header>
+
+  <section class="page-section">
+    <div class="page-section-inner book-grid">
+      <div class="form-card">
+        <!--
+          TODO before launch: point this at a real handler. On Cloudflare Pages
+          that is a Pages Function; on WordPress a form plugin. It must NOT
+          ship as a mailto: — that is what the old site did and it silently
+          failed on most phones.
+        -->
+        <form method="post" action="#" novalidate>
+          <div class="field-row">
+            <div class="field">
+              <label for="name">Your name</label>
+              <input id="name" name="name" type="text" autocomplete="name" required />
+            </div>
+            <div class="field">
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="where">Where would you like to meet?</label>
+              <select id="where" name="where">
+                <option>In my home</option>
+                <option>Over video</option>
+                <option>Not sure yet</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="city">Your city</label>
+              <input id="city" name="city" type="text" autocomplete="address-level2" />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="about">What is going on?</label>
+            <textarea
+              id="about"
+              name="about"
+              placeholder="A recent surgery, an old injury, balance that is not what it was, or just wanting to get stronger safely."
+            ></textarea>
+          </div>
+
+          <button class="form-submit" type="submit">Request an evaluation</button>
+          <p class="form-note">
+            Bruce reads these himself. If it is urgent, call
+            {" "}<a href={practice.phoneHref}>{practice.phone}</a>. If it is a medical
+            emergency, call 911.
+          </p>
+        </form>
+      </div>
+
+      <aside>
+        <h2>Or just call</h2>
+        <ul class="contact-list">
+          <li>
+            <Icon name="phone" size={20} />
+            <div>
+              <a href={practice.phoneHref}>{practice.phone}</a>
+              <span><span class="todo">CONFIRM HOURS</span></span>
+            </div>
+          </li>
+          <li>
+            <Icon name="mail" size={20} />
+            <div>
+              <a href={`mailto:${practice.email}`}>{practice.email}</a>
+              <span>Usually answered same day</span>
+            </div>
+          </li>
+          <li>
+            <Icon name="pin" size={20} />
+            <div>
+              <a href={withBase("/services")}>In-home visits</a>
+              <span>{practice.regionLong}</span>
+            </div>
+          </li>
+          <li>
+            <Icon name="globe" size={20} />
+            <div>
+              <a href={withBase("/services#virtual")}>Virtual sessions</a>
+              <span>Anywhere in the country</span>
+            </div>
+          </li>
+        </ul>
+
+        <h2 style="margin-top:2.5rem">Fees &amp; insurance</h2>
+        <dl class="fees">
+          <div class="fees-row">
+            <dt>Evaluation, 60 minutes</dt>
+            <dd><span class="todo">CONFIRM RATE</span></dd>
+          </div>
+          <div class="fees-row">
+            <dt>Ongoing sessions</dt>
+            <dd><span class="todo">CONFIRM RATE</span></dd>
+          </div>
+          <div class="fees-row">
+            <dt>Insurance</dt>
+            <dd><span class="todo">CONFIRM</span></dd>
+          </div>
+        </dl>
+        <p class="form-note">
+          Whatever the answer is, saying it here converts better than leaving people to
+          guess — silence reads as expensive.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="page-section alt">
+    <div class="page-section-narrow">
+      <h2>What you are booking</h2>
+      <p>
+        A sixty-minute evaluation: history and goals, a movement and strength assessment,
+        the findings explained in plain language, and a written plan you keep.
+      </p>
+      <p style="margin-top:1rem">
+        <a class="about-cta-link" href={withBase("/services/health-evaluation")}>
+          The evaluation in full <Icon name="arrow" size={16} />
+        </a>
+      </p>
+    </div>
+  </section>
+</Site>

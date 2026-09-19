@@ -1,0 +1,128 @@
+---
+import Site from "../layouts/Site.astro";
+import Icon from "../components/Icon.astro";
+import { practice, credentials } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<Site
+  title="About Dr. Bruce Valencia, DPT | Valencia Health & Wellness"
+  description="Doctor of Physical Therapy, Certified Lymph Therapist, ISSA-Certified Personal Trainer and U.S. Navy veteran, serving Broward and Palm Beach County and clients nationwide by video."
+  path="/about"
+>
+  <header class="page-hero">
+    <div class="page-hero-inner">
+      <p class="eyebrow">About</p>
+      <h1>Bruce Valencia, DPT</h1>
+      <p class="page-lede">
+        A doctor of physical therapy who never stopped being a coach — which is why the
+        recovery and the training are the same conversation here instead of two.
+      </p>
+    </div>
+  </header>
+
+  <section id="about" class="about-section" aria-labelledby="story-title">
+    <div class="about-inner">
+      <div class="about-photo">
+        <img
+          src={withBase("/assets/brand/bruce-in-session.png")}
+          alt={`${practice.doctor} working with a patient`}
+          width="720"
+          height="820"
+          loading="lazy"
+        />
+        <p class="about-photo-caption">
+          <span>{practice.region}</span>
+          <span>{practice.name}</span>
+        </p>
+      </div>
+
+      <article class="about-story">
+        <p class="about-eyebrow">His story</p>
+        <h2 id="story-title">From a Manhattan gym floor to a doctorate</h2>
+        <p class="about-credentials">DPT · CLT · ISSA-CPT · U.S. Navy Veteran</p>
+
+        <p class="about-lead">
+          Bruce found coaching at 17, working in some of Manhattan's most demanding
+          training rooms. He chose to serve instead of going straight on with it, and
+          spent five years in the United States Navy.
+        </p>
+
+        <p class="about-body">
+          An injury during that service turned out to be the turning point. Being on the
+          receiving end of a recovery — the slow weeks, the uncertainty, the difference a
+          good clinician makes — sent him to the University of North Florida for a
+          doctorate in physical therapy.
+        </p>
+
+        <blockquote class="about-quote">
+          <p>
+            "If you want something bad enough, you can achieve it — but you can't do it
+            alone. Asking for help is a strength, not a weakness."
+          </p>
+        </blockquote>
+
+        <p class="about-philosophy">
+          That belief is the whole practice: collaborative, non-judgmental, and built on
+          the idea that nobody should have to arrive already fit enough to be helped.
+        </p>
+
+        <dl class="about-meta">
+          <div class="about-meta-item">
+            <dt>Doctorate</dt>
+            <dd>University of North Florida</dd>
+          </div>
+          <div class="about-meta-item">
+            <dt>Service</dt>
+            <dd>U.S. Navy, five years</dd>
+          </div>
+          <div class="about-meta-item">
+            <dt>Practice</dt>
+            <dd>{practice.region} · Virtual</dd>
+          </div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section class="page-section alt">
+    <div class="page-section-narrow">
+      <h2>Credentials</h2>
+      <ul class="included">
+        {credentials.map((c) => <li><Icon name="check" size={18} />{c}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="page-section-narrow">
+      <h2>Why the two halves matter together</h2>
+      <p>
+        Most people recovering from something get handed between two worlds. A clinic
+        treats them until the insurance authorization runs out, then a trainer picks them
+        up without the clinical history and starts from a questionnaire. The gap between
+        those two is where most people quietly stop making progress.
+      </p>
+      <p style="margin-top:1rem">
+        Bruce holds both halves. He can read the operative report and he can run the
+        session, so the plan carries straight through from getting you out of pain to
+        getting you strong — with nobody needing to be briefed in the middle.
+      </p>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="cta-band-inner">
+      <h2>Meet him for sixty minutes.</h2>
+      <p>The evaluation is how everything here starts. In your home, or over video.</p>
+      <div class="cta-band-actions">
+        <a class="cta-primary" href={withBase("/book")}>Book an evaluation</a>
+        <a class="cta-secondary" href={withBase("/services")}>See services</a>
+      </div>
+    </div>
+  </section>
+</Site>
