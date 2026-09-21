@@ -40,17 +40,17 @@ was not simply done.
 - **Page · block:** Home · About, moved up the page (`home-about`)
 - **Asked by:** Bruce Valencia
 - **Request:** "Brooklyn, New York"
-- **Outcome:** needs Bruce
-- **Commit:** —
-- **Thread:** open
-- **Notes:** Reads as a correction to the Manhattan references in his bio, which
-  appear in three places (`index.astro:91`, `about.astro:46`, `about.astro:50`).
-  Two readings and they produce different copy: that he *grew up* in Brooklyn,
-  or that he *started coaching* in Brooklyn gyms. The legacy WordPress copy said
-  "Growing up in Manhattan", the current copy only claims he trained there, so
-  the second reading is likelier — but this is a biographical fact on a licensed
-  clinician's own site and a wrong guess publishes a false claim about his life.
-  Not actioned pending his answer.
+- **Outcome:** done
+- **Commit:** 75d27f2
+- **Thread:** resolved in the store; no reply sent (the self-hosted panel has no
+  reply verb, only resolve)
+- **Notes:** Asked rather than guessed, and the answer was both readings at once:
+  he grew up in **Brooklyn** and trained clients **across Manhattan**. Neither
+  single reading would have been right, so guessing would have published a false
+  biographical claim either way. Corrected in three places — the Home About lead,
+  the About page story lead, and the About heading, which became "From Brooklyn to
+  a doctorate". The legacy WordPress copy had said "Growing up in Manhattan", so
+  this error predates the rebuild and has been on his site for years.
 
 <!--
 Entry template — copy, fill, append at the bottom. Newest last.

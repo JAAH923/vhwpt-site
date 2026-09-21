@@ -1,0 +1,122 @@
+/*
+  About Section CSS — Valencia Health & Wellness
+  Fonts loaded: Playfair Display, Manrope, Fraunces
+  Palette: #17212a dark · #c41230 crimson · #1a2e3a navy · #64727d muted gray
+  Context: asymmetric two-column grid (photo left, story right), sticky photo on scroll
+*/
+
+/* ── Section 5: About ───────────────────────────────────── */
+
+.about-section {
+  background: #f7f7f8;
+  padding-left: clamp(18px, 5vw, 64px);
+  padding-right: clamp(18px, 5vw, 64px);
+}
+.about-inner {
+  align-items: start;
+  display: grid;
+  gap: clamp(40px, 6vw, 90px);
+  grid-template-columns: minmax(260px, 0.38fr) 1fr;
+  margin: 0 auto;
+  max-width: 1260px;
+}
+.about-photo {
+  position: sticky;
+  top: 106px;
+}
+.about-photo img {
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(17, 18, 20, 0.08);
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+.about-story h2 {
+  color: #17212a;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2rem, 3.8vw, 3.2rem);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin: 0 0 10px;
+}
+.about-credentials {
+  color: #64727d;
+  font-size: 0.84rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  margin: 0 0 36px;
+}
+.about-block {
+  margin-bottom: 28px;
+}
+.about-block p {
+  color: #3a4a52;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.75;
+  margin: 0;
+}
+
+/* Pull quote */
+.about-quote {
+  background: none;
+  border-left: 1px solid #d1d5db;
+  border-radius: 0;
+  margin: 1.75rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+}
+.about-quote p {
+  color: #3a4a52;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.125rem;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.about-philosophy {
+  color: #3a4a52;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  line-height: 1.75;
+  margin: 0 0 28px;
+}
+.about-cta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 36px;
+}
+.about-cta-label {
+  color: #53616c;
+  font-size: 1.0625rem;
+  font-weight: 400;
+  margin: 0;
+}
+.about-cta-link {
+  border-bottom: 1px solid transparent;
+  color: #1a2e3a;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding-bottom: 2px;
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+.about-cta-link:hover,
+.about-cta-link:focus-visible {
+  border-bottom-color: #1a2e3a;
+}
+.about-cta-link span {
+  display: inline-block;
+  margin-left: 4px;
+  transition: transform 0.2s ease;
+}
+.about-cta-link:hover span {
+  transform: translateX(3px);
+}
