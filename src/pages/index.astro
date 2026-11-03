@@ -1,215 +1,109 @@
 ---
 import Site from "../layouts/Site.astro";
 import Icon from "../components/Icon.astro";
-import { practice, credentials, services, featured, testimonials } from "../data/site";
+import RoomHero from "../components/RoomHero.astro";
+import Cta from "../components/Cta.astro";
+import { practice, services, featured, testimonials } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
-const cards = featured.map((a) => services.find((s) => s.anchor === a)!);
+const rows = featured.map((a) => services.find((s) => s.anchor === a)!);
+// The strongest proof on the site, in the client's own words.
+const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
 ---
 
 <Site
   title="Dr. Bruce Valencia, DPT | Physical Therapy & Training | Broward & Palm Beach"
   description="Doctor of Physical Therapy offering rehabilitation, personal training and wellness programming across Broward and Palm Beach County, and virtually nationwide. Every client starts with a full evaluation."
   path="/"
+  overlay
 >
-  <!-- Hero -->
-  <header class="v4-editorial-fold">
-    <section class="v4-editorial-hero vhwpt-hero" aria-labelledby="hero-title">
-      <div class="v4-editorial-copy">
-        <h1 id="hero-title">Training that starts where you are.</h1>
-        <p class="hero-subhead">
-          Physical therapy and fitness coaching with {practice.doctor}.<br />
-          Clinical, personal, judgment-free.
-        </p>
-        <p class="hero-location">
-          In your home across {practice.regionLong}, or virtually from anywhere.
-        </p>
-        <div class="v4-editorial-actions">
-          <a class="concept-button primary vhwpt-cta" href={withBase("/book")}>
-            Book an evaluation
-          </a>
-          <a class="cta-secondary-inline" href={withBase("/services")}>See services</a>
-        </div>
-      </div>
-
-      <div class="v4-editorial-portrait">
-        <img
-          src={withBase("/assets/brand/bruce-headshot.webp")}
-          alt={practice.doctor}
-          width="520"
-          height="640"
-          loading="eager"
-        />
-      </div>
-    </section>
-  </header>
-
-  <!-- Credentials -->
-  <section class="trust-bar" aria-label="Credentials and certifications">
-    <div class="trust-bar-inner">
-      {
-        credentials.map((c, i) => (
-          <>
-            {i > 0 && <span class="trust-divider" aria-hidden="true">·</span>}
-            <span>{c}</span>
-          </>
-        ))
-      }
-    </div>
-  </section>
+  <RoomHero />
 
   <!--
-    About sits here, ahead of the service list. Bruce is the product: the
-    credential is the differentiator, so it should land before the menu.
+    About sits ahead of the service list. Bruce is the product: the credential
+    is the differentiator, so it should land before the menu.
   -->
-  <section id="about" class="about-section" aria-labelledby="about-title">
-    <div class="about-inner">
-      <div class="about-photo">
+  <section class="section" aria-labelledby="about-title">
+    <div class="wrap split">
+      <figure>
         <img
-          src={withBase("/assets/brand/bruce-in-session.png")}
+          src={withBase("/assets/photos/bruce-in-session.webp")}
           alt={`${practice.doctor} working with a patient`}
-          width="720"
-          height="820"
+          width="1402"
+          height="1122"
           loading="lazy"
         />
-        <p class="about-photo-caption">
-          <span>{practice.region}</span>
-          <span>{practice.name}</span>
-        </p>
-      </div>
-
-      <article class="about-story">
-        <p class="about-eyebrow">About</p>
-        <h2 id="about-title">A doctor of physical therapy, coaching in your living room.</h2>
-        <p class="about-credentials">DPT · CLT · ISSA-CPT · U.S. Navy Veteran</p>
-
-        <p class="about-lead">
-          Bruce Valencia grew up in Brooklyn and started coaching at 17, training
-          clients across Manhattan, then served five years in the Navy. An injury during
-          that service is what pulled him toward physical therapy — he had been on the
-          other side of a recovery, and knew what expert guidance was worth.
-        </p>
-
-        <blockquote class="about-quote">
-          <p>
-            "If you want something bad enough, you can achieve it — but you can't do it
-            alone. Asking for help is a strength, not a weakness."
-          </p>
-        </blockquote>
-
-        <p class="about-philosophy">
+      </figure>
+      <div>
+        <p class="label">Dr. Bruce Valencia · DPT · CLT · ISSA-CPT</p>
+        <h2 id="about-title">One clinician, from recovery to strength.</h2>
+        <p class="lead">
           Most trainers cannot read a post-operative report. Most clinics stop the moment
-          insurance does. Working with a DPT who also coaches means one person carries you
-          from recovery through to training, without the handoff where progress usually
-          stalls.
+          insurance does.
         </p>
-
-        <div class="about-cta">
-          <p class="about-cta-label">More about Bruce</p>
-          <a class="about-cta-link" href={withBase("/about")}>
-            Read his story <Icon name="arrow" size={16} />
-          </a>
-        </div>
-      </article>
+        <p>
+          Working with a doctor of physical therapy who also coaches means one person
+          carries you from recovery through to training, without the handoff where
+          progress usually stalls.
+        </p>
+        <a class="more" href={withBase("/about")}>Read his story <Icon name="arrow" size={16} /></a>
+      </div>
     </div>
   </section>
 
-  <!-- Four featured services, each linking into the Services page -->
-  <section id="services" class="services-section" aria-labelledby="services-title">
-    <div class="services-section-inner">
-      <div class="services-heading">
-        <p class="concept-eyebrow">What We Offer</p>
+  <section class="section" aria-labelledby="services-title">
+    <div class="wrap">
+      <div class="section-head">
         <h2 id="services-title">Care built around your body, not a package.</h2>
-        <p class="services-sub">
-          Rehabilitation, training and wellness under one practitioner — so nobody has to
+        <p>
+          Rehabilitation, training and wellness under one practitioner, so nobody has to
           be caught up on your history.
         </p>
       </div>
-
-      <div class="services-grid">
+      <ul class="rows">
         {
-          cards.map((s) => (
-            <a class="service-card" href={withBase(`/services#${s.anchor}`)}>
-              <h3>{s.title}</h3>
-              <p>{s.lede}</p>
-              <span class="service-card-more">Learn more &rarr;</span>
-            </a>
+          rows.map((s) => (
+            <li>
+              <a href={withBase(`/services#${s.anchor}`)}>
+                <div>
+                  <h3>{s.title}</h3>
+                  <p>{s.lede}</p>
+                </div>
+                <Icon name="arrow" size={22} />
+              </a>
+            </li>
           ))
         }
-      </div>
-
-      <p class="services-all">
-        <a href={withBase("/services")}>All eight services, in detail <Icon name="arrow" size={15} /></a>
+      </ul>
+      <p class="rows-foot">
+        <a class="more" href={withBase("/services")}>All eight services, in detail <Icon name="arrow" size={16} /></a>
       </p>
     </div>
   </section>
 
-  <!-- Differentiators, line icons rather than emoji -->
-  <section class="why-section" aria-label="Why choose Valencia Health and Wellness">
-    <div class="why-inner">
-      <div class="why-item">
-        <Icon name="stethoscope" size={26} />
-        <h3>DPT-Led Care</h3>
-        <p>
-          Programming informed by clinical physical therapy training, not fitness
-          certification alone.
-        </p>
+  <section class="section" aria-label="Client result">
+    <div class="wrap proof">
+      <div>
+        <p class="label">A1C, before and after</p>
+        <p class="stat">8.2 → 5.8</p>
+        <p class="label">{proof.service}</p>
       </div>
-      <div class="why-item">
-        <Icon name="pin" size={26} />
-        <h3>In Your Home, or Online</h3>
-        <p>
-          Across {practice.regionLong} in person, and anywhere in the country by video.
-        </p>
-      </div>
-      <div class="why-item">
-        <Icon name="clipboard" size={26} />
-        <h3>Evaluated, Not Assumed</h3>
-        <p>
-          Everyone starts with a full evaluation and leaves with a written plan. No
-          template programs.
+      <div>
+        <blockquote>“{proof.quote}”</blockquote>
+        <p class="who">
+          <strong>{proof.name}</strong>
+          <span class="label">Long-term client</span>
         </p>
       </div>
     </div>
   </section>
 
-  <!-- One testimonial; the rest live on the pages they speak to -->
-  <section class="testimonials-section" aria-label="Client testimonials">
-    <div class="testimonials-inner">
-      <p class="testimonials-heading">What Clients Say</p>
-      <h2 class="testimonials-title">Twenty years of people getting their lives back.</h2>
-
-      <article class="testimonial-featured">
-        <blockquote>
-          <p>{testimonials.featured.quote}</p>
-        </blockquote>
-        <footer>
-          <strong>{testimonials.featured.name}</strong>
-          <span>{testimonials.featured.service}</span>
-        </footer>
-      </article>
-
-      <p class="services-all">
-        <a href={withBase("/services")}>More client results <Icon name="arrow" size={15} /></a>
-      </p>
-    </div>
-  </section>
-
-  <section class="cta-band">
-    <div class="cta-band-inner">
-      <h2>Start with an evaluation.</h2>
-      <p>
-        Sixty minutes, in your home or over video. You leave knowing what is going on and
-        what the plan is — whether or not you train with Bruce afterward.
-      </p>
-      <div class="cta-band-actions">
-        <a class="cta-primary" href={withBase("/book")}>Book an evaluation</a>
-        <a class="cta-secondary" href={practice.phoneHref}>Call {practice.phone}</a>
-      </div>
-    </div>
-  </section>
+  <Cta
+    title="Start with an evaluation."
+    body="Sixty minutes, in your home or over video. You leave knowing what is going on and what the plan is, whether or not you train with Bruce afterward."
+  />
 </Site>

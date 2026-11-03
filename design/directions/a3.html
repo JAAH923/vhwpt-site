@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Direction A3 · The room, layered</title>
+<link rel="stylesheet" href="../../public/assets/fonts/fonts.css" />
+<style>
+  :root {
+    --ink: #18181b; --white: #ffffff; --grey: #71717a; --hair: #e4e4e7;
+    --crimson: #c41230; --crimson-press: #a30f28;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Space Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.5; }
+  a { color: inherit; text-decoration: none; }
+  .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* The room is two layers shot from one camera: an empty room on a loop
+     (curtains in the breeze from the open window) and the treatment table as a
+     still cut-out. Both use the same object-fit, so they line up; the table only
+     takes a fixed sideways nudge on wide screens to clear the copy. It never
+     moves against the room, since anything standing on the floor that drifts
+     reads as sliding. */
+  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; background: var(--white); }
+  .stage { position: absolute; inset: 0; overflow: hidden; }
+  .room { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; }
+  .table { transform: translateX(var(--nudge, 0px)); }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to right, rgba(255,255,255,0.86) 0%, rgba(255,255,255,0.55) 30%, rgba(255,255,255,0) 52%); }
+  .hero > :not(.stage) { position: relative; z-index: 1; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 24px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand img { width: 40px; height: 40px; border-radius: 9999px; }
+  .links { display: flex; align-items: center; gap: 32px; font-size: 15px; }
+  .btn { display: inline-flex; align-items: center; border-radius: 9999px; font-size: 17px; font-weight: 700; padding: 15px 22px; }
+  .btn-primary { background: var(--crimson); color: var(--white); }
+  .btn-primary:hover { background: var(--crimson-press); }
+  .btn-line { background: var(--white); border: 1px solid var(--hair); padding: 12px 19px; font-size: 15px; font-weight: 400; }
+
+  .hero-copy { align-self: center; padding: 0 24px; max-width: 560px; margin-left: max(24px, 5vw); }
+  .hero-copy .label { color: var(--grey); }
+  h1 { font-size: clamp(37px, 5.2vw, 66px); line-height: 1.04; letter-spacing: -0.022em; font-weight: 700; margin: 16px 0; }
+  .hero-sub { font-size: 19px; line-height: 1.4; margin: 0 0 32px; max-width: 30ch; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+  .pulse { display: block; width: 100%; height: 120px; }
+  .pulse path { fill: none; stroke: var(--crimson); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .pulse path.draw-on { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .intro { padding: 96px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .intro img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 60% 50%; border-radius: 16px; display: block; }
+  .intro h2 { font-size: clamp(30px, 3.6vw, 45px); line-height: 1.1; letter-spacing: -0.015em; margin: 16px 0 24px; }
+  .intro .label { color: var(--grey); }
+  .intro p { margin: 0 0 16px; max-width: 52ch; }
+  .intro .lead { font-size: 19px; }
+  .rows { list-style: none; margin: 0; padding: 0 0 96px; border-top: 1px solid var(--hair); }
+  .rows a { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 26px 0; border-bottom: 1px solid var(--hair); }
+  .rows a:hover h3 { color: var(--crimson); }
+  .rows h3 { font-size: 26px; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .rows p { margin: 0; color: var(--grey); }
+  .rows svg { width: 22px; height: 22px; stroke: var(--ink); fill: none; stroke-width: 1.5; }
+
+  @media (min-width: 761px) { .hero { --nudge: 7vw; } }
+  @media (max-width: 760px) {
+    .links .hide-sm { display: none; }
+    .links { gap: 16px; }
+    .room { object-position: 50% 50%; }
+    .hero::after { background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 46%, rgba(255,255,255,0) 72%); }
+    .hero-copy { align-self: start; margin: 24px 0 0; }
+    .intro { grid-template-columns: 1fr; gap: 32px; padding: 64px 0; }
+    .rows h3 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+  <header class="hero" data-pulse-scope>
+    <div class="stage" aria-hidden="true">
+      <video class="room plate" autoplay muted loop playsinline preload="auto" poster="../../public/assets/photos/ai/room-open.webp">
+        <source src="../../public/assets/video/room-open-loop.webm" type="video/webm" />
+        <source src="../../public/assets/video/room-open-loop.mp4" type="video/mp4" />
+      </video>
+      <img class="room table" src="../../public/assets/photos/ai/room-table-layer.webp" alt="" />
+    </div>
+    <nav aria-label="Primary">
+      <a class="brand" href="#"><img src="../../public/assets/brand/valencia-health-wellness-icon.png" alt="" />Dr. Bruce Valencia</a>
+      <div class="links">
+        <a class="hide-sm" href="#">Services</a>
+        <a class="hide-sm" href="#">About</a>
+        <a class="hide-sm" href="tel:19542996536">1-954-299-6536</a>
+        <a class="btn btn-line" href="#">Book</a>
+      </div>
+    </nav>
+    <div class="hero-copy">
+      <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
+      <h1>Training that starts where you are.</h1>
+      <p class="hero-sub">In your living room across Broward and Palm Beach, or by video from anywhere.</p>
+      <div class="actions"><a class="btn btn-primary" href="#">Book an evaluation</a></div>
+    </div>
+    <svg class="pulse" data-at="0.5" aria-hidden="true"><path pathLength="1" /></svg>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <img src="../../public/assets/photos/bruce-in-session.webp" alt="Dr. Bruce Valencia working with a patient" />
+      <div>
+        <p class="label">Dr. Bruce Valencia · DPT · CLT · ISSA-CPT</p>
+        <h2>One clinician, from recovery to strength.</h2>
+        <p class="lead">Most trainers cannot read a post-operative report. Most clinics stop the moment insurance does.</p>
+        <p>Working with a doctor of physical therapy who also coaches means one person carries you from recovery through to training, without the handoff where progress usually stalls.</p>
+      </div>
+    </section>
+    <ul class="rows">
+      <li><a href="#"><div><h3>Rehabilitation &amp; Recovery</h3><p>After an injury or an operation, at the pace your body allows.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+      <li><a href="#"><div><h3>Senior Fitness</h3><p>Steady on your feet, and the strength independence depends on.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+      <li><a href="#"><div><h3>Personal Training</h3><p>One-to-one coaching built on an evaluation, not a template.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+      <li><a href="#"><div><h3>Virtual Training</h3><p>The same coaching, from anywhere in the country.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+    </ul>
+  </main>
+  <script>
+    // Motion is opt-out: reduced-motion visitors get the still room. The loop
+    // also pauses once the hero is off screen.
+    (() => {
+      const v = document.querySelector("video.plate");
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) { v.removeAttribute("autoplay"); v.pause(); return; }
+      new IntersectionObserver(([e]) => (e.isIntersecting ? v.play().catch(() => {}) : v.pause())).observe(v);
+    })();
+  </script>
+  <script src="pulse.js"></script>
+</body>
+</html>

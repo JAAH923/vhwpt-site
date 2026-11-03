@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Direction A · Clinical pulse</title>
+<link rel="stylesheet" href="../../public/assets/fonts/fonts.css" />
+<style>
+  :root {
+    --ink: #18181b; --white: #ffffff; --grey: #71717a; --hair: #e4e4e7; --whisper: #f4f4f5;
+    --crimson: #c41230; --crimson-press: #a30f28;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: "Space Mono", ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.5; }
+  a { color: inherit; text-decoration: none; }
+  .label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; color: var(--white); background: #000000; overflow: hidden; }
+  .hero-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; opacity: 0.62; }
+  .hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.35), rgba(0,0,0,0) 30%, rgba(0,0,0,0.25) 60%, rgba(0,0,0,0.8)); }
+  .hero > :not(.hero-photo) { position: relative; z-index: 1; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 24px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+  .brand img { width: 40px; height: 40px; border-radius: 9999px; }
+  .links { display: flex; align-items: center; gap: 32px; font-size: 15px; }
+  .links a[aria-current] { color: var(--white); box-shadow: inset 0 -2px 0 var(--crimson); padding-bottom: 4px; }
+  .links .muted { opacity: 0.8; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 9999px; font-size: 17px; font-weight: 700; padding: 15px 22px; }
+  .btn-primary { background: var(--crimson); color: var(--white); }
+  .btn-primary:hover { background: var(--crimson-press); }
+  .btn-ghost { border: 1px solid rgba(255,255,255,0.5); padding: 12px 19px; font-size: 15px; font-weight: 400; }
+
+  .hero-copy { align-self: end; text-align: center; padding: 0 24px 40px; max-width: 880px; margin: 0 auto; }
+  .hero-copy .label { opacity: 0.8; }
+  h1 { font-size: clamp(37px, 6.4vw, 66px); line-height: 1.06; letter-spacing: -0.022em; font-weight: 700; margin: 16px 0; }
+  .hero-sub { font-size: 19px; line-height: 1.4; margin: 0 auto 32px; max-width: 34ch; opacity: 0.88; }
+  .pulse { display: block; width: 100%; height: 120px; }
+  .pulse path { fill: none; stroke: var(--crimson); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .pulse path.draw-on { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.4s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .intro { padding: 96px 0 64px; display: grid; grid-template-columns: 1fr 1.2fr; gap: 64px; align-items: start; }
+  .intro h2 { font-size: clamp(30px, 3.6vw, 45px); line-height: 1.1; letter-spacing: -0.015em; margin: 0; }
+  .intro p { margin: 0 0 16px; color: var(--ink); max-width: 60ch; }
+  .intro .lead { font-size: 19px; }
+  .rows { list-style: none; margin: 0; padding: 0 0 96px; border-top: 1px solid var(--hair); }
+  .rows a { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; padding: 26px 0; border-bottom: 1px solid var(--hair); }
+  .rows a:hover h3 { color: var(--crimson); }
+  .rows h3 { font-size: 26px; line-height: 1.2; letter-spacing: -0.01em; margin: 0 0 4px; font-weight: 700; }
+  .rows p { margin: 0; color: var(--grey); font-size: 17px; }
+  .rows svg { width: 22px; height: 22px; stroke: var(--ink); fill: none; stroke-width: 1.5; }
+
+  @media (max-width: 760px) {
+    .links .muted, .links .phone { display: none; }
+    .links { gap: 16px; }
+    .intro { grid-template-columns: 1fr; gap: 24px; padding: 64px 0 40px; }
+    .rows h3 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+  <header class="hero" data-pulse-scope>
+    <img class="hero-photo" src="../../public/assets/photos/bruce-in-session.webp" alt="" />
+    <nav aria-label="Primary">
+      <a class="brand" href="#"><img src="../../public/assets/brand/valencia-health-wellness-icon.png" alt="" />Dr. Bruce Valencia</a>
+      <div class="links">
+        <a class="muted" href="#">Services</a>
+        <a class="muted" href="#">About</a>
+        <a class="muted phone" href="tel:19542996536">1-954-299-6536</a>
+        <a class="btn btn-ghost" href="#">Book</a>
+      </div>
+    </nav>
+    <div class="hero-copy">
+      <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
+      <h1>Training that starts where you are.</h1>
+      <p class="hero-sub">Physical therapy and coaching in your home across Broward and Palm Beach, or by video from anywhere.</p>
+      <a class="btn btn-primary" href="#">Book an evaluation</a>
+    </div>
+    <svg class="pulse" data-at="0.5" aria-hidden="true"><path pathLength="1" /></svg>
+  </header>
+
+  <main class="wrap">
+    <section class="intro">
+      <h2>One clinician, from recovery to strength.</h2>
+      <div>
+        <p class="lead">Most trainers cannot read a post-operative report. Most clinics stop the moment insurance does.</p>
+        <p>Working with a doctor of physical therapy who also coaches means one person carries you from recovery through to training, without the handoff where progress usually stalls.</p>
+      </div>
+    </section>
+    <ul class="rows">
+      <li><a href="#"><div><h3>Rehabilitation &amp; Recovery</h3><p>After an injury or an operation, at the pace your body allows.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+      <li><a href="#"><div><h3>Senior Fitness</h3><p>Steady on your feet, and the strength independence depends on.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+      <li><a href="#"><div><h3>Personal Training</h3><p>One-to-one coaching built on an evaluation, not a template.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+      <li><a href="#"><div><h3>Virtual Training</h3><p>The same coaching, from anywhere in the country.</p></div><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a></li>
+    </ul>
+  </main>
+  <script src="pulse.js"></script>
+</body>
+</html>

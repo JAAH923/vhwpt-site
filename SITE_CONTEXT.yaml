@@ -13,14 +13,15 @@ session_continuity:
   updater_script: scripts/update_site_context.sh
 
 current_focus:
-  summary: Real client testimonials integrated from Notion database. Featured Brendan Meehan quote (DPT-reinforcing) with full-width treatment; Paul Duffe, Joseph Leo, and Olga & Ozzie Brannon in 3-card grid below. Howard Kurpit testimonial is marked Needs Review / not published. Notion links added to this file.
+  summary: "Premium redesign on feature/premium-redesign: direction A3 approved 2026-11-03 and built across all five pages. Light living-room hero (an open window, the treatment table as a still layer; the curtain loop is paused as jerky, ENH-392) under the pulse line; Superpower-based monochrome system with one crimson accent. Process trail in design/."
   active_questions: []
   next_steps:
-    - Review Howard Kurpit testimonial with Bruce — confirm attribution/facility context before publishing.
-    - Decide whether WooCommerce/shop functionality is part of the rebuild or deprioritized.
-    - Define redesign brief and target conversion goals.
-    - Integrate single-page copy from Notion (9-section flow) into Astro build.
-    - Calendly booking integration — discuss with Bruce and add CTA link to hero + contact band.
+    - Bruce to review the redesign on the preview, including the green drop (decisions, 2026-11-03).
+    - Smooth the hero curtain loop and switch it back on (ENH-392; playLoop in RoomHero.astro). No new video for now.
+    - Wire the Book form to Bruce's server (ENH-385); until then it shows the phone number instead of sending.
+    - Settle the CONFIRM items on the site (rates, insurance, hours; T-182).
+    - Replace AI placeholder imagery with real photos (the hero room, the service photos tagged AI photo).
+    - Decide the production host (T-184).
     - Keep this file current at the end of meaningful work sessions.
 
 site:
@@ -64,9 +65,12 @@ site:
   design_direction:
     current_site_notes: Dark/black WordPress fitness theme with bright red accent #ff0137; recurring Services, Products, and Connect sections.
     mood: Premium, calm, clinical. White editorial with clean typography.
-    references: []
-    typography: Playfair Display (headings), Manrope (body)
-    color_palette: White background, dark text. Primary accent crimson #c41230; secondary deep green #085041. Confirmed canonical by Bruce 2026-08-29 — supersedes the teal #1D9E75/#0F6E56 named in the v1.1 design review, which was never implemented.
+    references:
+      - "Superpower, Refero style 589c0a33 (primary: monochrome base, one accent, Inter, pill buttons)"
+      - "TidyCal therapist page, Refero screen e887d8c2 (service rows, credential line)"
+      - "Acne Studios private appointment, Refero screen 3acf3200 (Book page split)"
+    typography: "Inter 400/700 for every role, Space Mono for small uppercase labels, self-hosted in public/assets/fonts. Playfair Display and Manrope retired 2026-11-03."
+    color_palette: "White canvas, ink #18181b text, greys #71717a / #e4e4e7 / #f4f4f5. One accent: crimson #c41230, used only for the primary button, the active nav item and the pulse line. Deep green #085041 dropped 2026-11-03 (see decisions); Bruce confirmed crimson + green on 2026-08-29, so he needs to see this change."
     interaction_notes: []
 
 technical:
@@ -210,11 +214,33 @@ decisions:
     decision: GitHub Pages preview builds are served noindex, nofollow.
     rationale: The preview is public and was indexable, which risks Google treating it as a duplicate of vhwpt.com. Site.astro emits the robots tag whenever the build's site is not https://www.vhwpt.com.
 
+  - date: 2026-11-03
+    decision: Premium redesign follows the Superpower-based direction, built as the A3 room variant.
+    rationale: "Justin asked for the site to feel as premium as donovanhunter.com without copying it. The premium-site process ran Refero research, a reference lock and three rendered directions; Justin moved the hero to an animated living room and approved A3 ('lets go with this for now'). Evidence and every decision are in design/ (brief, research, lock, ledger, tokens, directions)."
+  - date: 2026-11-03
+    decision: Drop deep green #085041; crimson #c41230 is the only accent.
+    rationale: "The primary reference allows one accent with one job. Justin approved the drop ('Drop green (Recommended)'). It changes the palette Bruce confirmed on 2026-08-29, so it is flagged for his review."
+  - date: 2026-11-03
+    decision: The home hero is a generated living room, an 8s curtain loop through an open window with the treatment table as a separate still layer that never moves.
+    rationale: "Justin's idea of a room with something alive in it. The curtains move because the window is open; an earlier cut with a closed window, and one where the table drifted with the pointer, were rejected. Placeholder until a real client room is filmed."
+  - date: 2026-11-03
+    decision: Generated images carry an 'AI photo' tag only when a person is in frame.
+    rationale: "Justin: 'remove the ai photo tag if there is no person in the frame'. The tag exists so placeholder people are replaced before launch."
+  - date: 2026-11-03
+    decision: The Book form is a visible placeholder until it is wired to Bruce's server.
+    rationale: "Submitting sends nothing and shows the phone number and email instead, so no request is lost silently (ENH-385)."
+  - date: 2026-11-03
+    decision: Pause the hero curtain loop; the hero shows its first frame as a still.
+    rationale: "Justin: 'it doesn't feel flowy its kinda jerky'. The clip is 24fps over 8s. Re-time or smooth it before regenerating; he doesn't want a new video right now (ENH-392)."
+
 open_tasks:
   - Fill in real client testimonials (currently placeholder text).
   - Define the redesign brief and target conversion goals.
   - Refine further sections using Refero inspiration.
   - Decide whether WooCommerce/shop functionality is part of the rebuild or should be removed/deprioritized.
+  - Bruce to approve dropping the deep green accent.
+  - Smooth the hero curtain loop and re-enable it (ENH-392).
+  - Replace AI placeholder imagery (hero room, service photos) with real photography.
 
 handoff_notes:
   read_first:
