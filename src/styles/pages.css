@@ -1,0 +1,383 @@
+/* ============================================================
+   pages.css — patterns introduced by the multi-page build.
+   Existing look is unchanged: same crimson accent, navy ink,
+   Playfair headings and Manrope body as vhwpt.css.
+   The accent consolidation in the design brief is deliberately
+   NOT applied here — it is still Bruce's decision.
+   ============================================================ */
+
+/* ── Utility strip above the nav ─────────────────────────── */
+.util-strip {
+  background: #17212a;
+  color: #cbd5dc;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+.util-strip-inner {
+  margin: 0 auto;
+  max-width: 1180px;
+  padding: 0.5rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.util-spacer { flex: 1 1 auto; }
+.util-sep { color: #5c6f7d; }
+.util-phone {
+  color: #fff;
+  font-weight: 650;
+  text-decoration: none;
+}
+.util-phone:hover { text-decoration: underline; }
+
+/* ── Nav additions ──────────────────────────────────────── */
+.v4-nav-links a[aria-current="page"] {
+  color: #c41230;
+  font-weight: 650;
+}
+
+/* ── Interior page hero ─────────────────────────────────── */
+.page-hero {
+  padding: 4.5rem 1.5rem 3rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.page-hero-inner { margin: 0 auto; max-width: 780px; }
+.page-hero .eyebrow {
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #c41230;
+  margin: 0 0 1rem;
+}
+.page-hero h1 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(2.1rem, 4.6vw, 3.1rem);
+  line-height: 1.08;
+  font-weight: 600;
+  color: #17212a;
+  margin: 0 0 1.1rem;
+  text-wrap: balance;
+}
+.page-hero .page-lede {
+  font-size: 1.15rem;
+  line-height: 1.65;
+  color: #3a4a52;
+  margin: 0;
+  max-width: 62ch;
+}
+
+/* ── Generic section shell for interior pages ───────────── */
+.page-section { padding: 4rem 1.5rem; }
+.page-section-inner { margin: 0 auto; max-width: 1080px; }
+.page-section-narrow { margin: 0 auto; max-width: 780px; }
+.page-section.alt { background: #fafafa; }
+.page-section h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+  line-height: 1.18;
+  font-weight: 600;
+  color: #17212a;
+  margin: 0 0 1rem;
+  text-wrap: balance;
+}
+.page-section p { color: #3a4a52; }
+
+/* ── Jump links (Services) ──────────────────────────────── */
+.jump-nav {
+  margin: 0 auto;
+  max-width: 1080px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+.jump-nav a {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #17212a;
+  text-decoration: none;
+  padding: 0.38rem 0.78rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+}
+.jump-nav a:hover { border-color: #c41230; color: #c41230; }
+
+/* ── Service sections ───────────────────────────────────── */
+.svc {
+  padding: 3.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  scroll-margin-top: 96px;
+}
+.svc:last-of-type { border-bottom: 0; }
+.svc-inner {
+  margin: 0 auto;
+  max-width: 1080px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: 3rem;
+  align-items: start;
+}
+.svc h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.2;
+  font-weight: 600;
+  color: #17212a;
+  margin: 0 0 0.7rem;
+}
+.svc-lede {
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: #17212a;
+  font-weight: 500;
+  margin: 0 0 0.9rem;
+}
+.svc-body { margin: 0; color: #3a4a52; }
+.svc-covers {
+  margin: 0;
+  padding: 1.25rem 1.4rem;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+.svc-covers dt {
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #64727d;
+  margin: 0 0 0.75rem;
+}
+.svc-covers dd { margin: 0; }
+.svc-covers ul { list-style: none; margin: 0; padding: 0; }
+.svc-covers li {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #17212a;
+  padding: 0.3rem 0;
+}
+.svc-covers li svg { flex: 0 0 auto; margin-top: 0.28em; color: #c41230; }
+
+@media (max-width: 860px) {
+  .svc-inner { grid-template-columns: 1fr; gap: 1.6rem; }
+}
+
+/* ── Numbered process (Health Evaluation) ───────────────── */
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 1px; background: #e5e7eb; border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+.steps li { background: #fff; padding: 1.5rem 1.6rem; display: grid; grid-template-columns: 3.2rem 1fr; gap: 1rem; align-items: start; }
+.step-n {
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  color: #c41230;
+  padding-top: 0.15rem;
+}
+.steps h3 {
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 1.02rem;
+  font-weight: 750;
+  color: #17212a;
+  margin: 0 0 0.35rem;
+}
+.steps p { margin: 0; font-size: 0.97rem; line-height: 1.6; color: #3a4a52; }
+
+/* ── Takeaway / included list ───────────────────────────── */
+.included { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.55rem; }
+.included li { display: flex; gap: 0.65rem; align-items: flex-start; color: #17212a; }
+.included li svg { flex: 0 0 auto; margin-top: 0.3em; color: #085041; }
+
+/* ── Fit / not-fit pair ─────────────────────────────────── */
+.fit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.fit-card { padding: 1.4rem 1.5rem; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; }
+.fit-card h3 { font-family: "Manrope", sans-serif; font-size: 0.95rem; font-weight: 750; margin: 0 0 0.8rem; color: #17212a; }
+.fit-card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.fit-card li { font-size: 0.95rem; line-height: 1.5; color: #3a4a52; padding-left: 1rem; position: relative; }
+.fit-card li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 5px; height: 5px; border-radius: 50%; background: #9aacb5; }
+
+/* ── Fees ───────────────────────────────────────────────── */
+.fees { margin-top: 1.5rem; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; }
+.fees-row { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; justify-content: space-between; align-items: baseline; padding: 1rem 1.4rem; border-bottom: 1px solid #e5e7eb; }
+.fees-row:last-child { border-bottom: 0; }
+.fees-row dt { font-weight: 650; color: #17212a; margin: 0; }
+.fees-row dd { margin: 0; color: #3a4a52; font-variant-numeric: tabular-nums; }
+
+/* A value Bruce still has to supply. Loud on purpose so it cannot ship. */
+.todo {
+  display: inline-block;
+  background: #fff4d6;
+  border: 1px dashed #b5820a;
+  border-radius: 5px;
+  padding: 0.1rem 0.45rem;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: #7a5700;
+}
+
+/* ── Booking form ───────────────────────────────────────── */
+.book-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr); gap: 3.5rem; align-items: start; }
+@media (max-width: 900px) { .book-grid { grid-template-columns: 1fr; gap: 2.25rem; } }
+
+.form-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.75rem; }
+.field { display: grid; gap: 0.4rem; margin-bottom: 1.05rem; }
+.field label { font-size: 0.82rem; font-weight: 750; color: #17212a; letter-spacing: 0.01em; }
+.field input,
+.field select,
+.field textarea {
+  font-family: "Manrope", "Avenir Next", sans-serif;
+  font-size: 0.97rem;
+  color: #17212a;
+  background: #fff;
+  padding: 0.66rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  width: 100%;
+}
+.field textarea { min-height: 7.5rem; resize: vertical; }
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible { outline: 2px solid #c41230; outline-offset: 1px; border-color: #c41230; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+@media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
+.form-submit {
+  font-family: "Manrope", sans-serif;
+  font-size: 0.97rem;
+  font-weight: 750;
+  color: #fff;
+  background: #c41230;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.78rem 1.5rem;
+  cursor: pointer;
+  width: 100%;
+}
+.form-submit:hover { background: #9b1a27; }
+.form-note { font-size: 0.82rem; color: #64727d; margin: 0.85rem 0 0; line-height: 1.5; }
+
+.contact-list { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 0.9rem; }
+.contact-list li { display: flex; gap: 0.7rem; align-items: flex-start; }
+.contact-list svg { flex: 0 0 auto; margin-top: 0.22em; color: #c41230; }
+.contact-list a { color: #17212a; font-weight: 650; }
+.contact-list span { display: block; color: #3a4a52; font-size: 0.93rem; }
+
+/* ── Why band, icons instead of emoji ───────────────────── */
+.why-item svg { color: #c41230; margin-bottom: 0.9rem; }
+
+/* ── Footer additions ───────────────────────────────────── */
+.footer-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 2.5rem;
+  padding-bottom: 2rem;
+}
+@media (max-width: 760px) { .footer-top { grid-template-columns: 1fr; gap: 1.5rem; } }
+.footer-contact { list-style: none; margin: 0.9rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; }
+.footer-contact a { color: #fff; font-weight: 650; }
+.footer-nav { display: grid; gap: 0.55rem; align-content: start; }
+.footer-nav a { color: #cbd5dc; font-size: 0.93rem; text-decoration: none; }
+.footer-nav a:hover { color: #fff; text-decoration: underline; }
+
+/* ── CTA band on interior pages ─────────────────────────── */
+.cta-band { background: #17212a; padding: 3.5rem 1.5rem; }
+.cta-band-inner { margin: 0 auto; max-width: 780px; text-align: center; }
+.cta-band h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+  line-height: 1.15;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 0.9rem;
+  text-wrap: balance;
+}
+.cta-band p { color: #9aacb5; margin: 0 0 1.6rem; font-size: 1.02rem; }
+.cta-band-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; }
+.cta-primary {
+  background: #c41230; color: #fff; font-weight: 750; font-size: 0.97rem;
+  padding: 0.8rem 1.6rem; border-radius: 8px; text-decoration: none;
+  font-family: "Manrope", sans-serif;
+}
+.cta-primary:hover { background: #9b1a27; }
+.cta-secondary {
+  background: transparent; color: #fff; font-weight: 650; font-size: 0.97rem;
+  padding: 0.8rem 1.6rem; border-radius: 8px; text-decoration: none;
+  border: 1px solid #3a4a52; font-family: "Manrope", sans-serif;
+}
+.cta-secondary:hover { border-color: #9aacb5; }
+
+/* ── Service cards on the homepage become real links ────── */
+a.service-card { text-decoration: none; display: block; }
+a.service-card:hover { border-color: #c41230; }
+a.service-card .service-card-more {
+  display: inline-block;
+  margin-top: 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 750;
+  color: #c41230;
+  letter-spacing: 0.02em;
+}
+
+/* ── Homepage additions ─────────────────────────────────── */
+.cta-secondary-inline {
+  /* the hero actions row is display:flex, so this must not stretch or the
+     underline detaches from the text */
+  align-self: center;
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: #17212a;
+  text-decoration: none;
+  border-bottom: 1px solid #d1d5db;
+  padding-bottom: 2px;
+}
+.cta-secondary-inline:hover { color: #c41230; border-color: #c41230; }
+
+.services-sub {
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: #3a4a52;
+  margin: 0.9rem 0 0;
+  max-width: 58ch;
+}
+.services-all { margin: 2.25rem 0 0; }
+.services-all a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: "Manrope", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 750;
+  color: #c41230;
+  text-decoration: none;
+}
+.services-all a:hover { text-decoration: underline; }
+
+/* ── Quote inside a service section ─────────────────────── */
+.svc-quote {
+  margin: 1.5rem 0 0;
+  padding: 0 0 0 1.2rem;
+  border-left: 2px solid #e8a0a8;
+}
+.svc-quote p {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: #17212a;
+  margin: 0 0 0.6rem;
+}
+.svc-quote footer { font-family: "Manrope", sans-serif; font-size: 0.82rem; }
+.svc-quote footer strong { color: #17212a; font-weight: 750; display: block; }
+.svc-quote footer span { color: #64727d; }
+
+/* About CTA link already exists in vhwpt.css; align the icon */
+.about-cta-link { display: inline-flex; align-items: center; gap: 0.4rem; }

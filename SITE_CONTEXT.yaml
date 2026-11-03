@@ -203,6 +203,12 @@ decisions:
   - date: 2026-08-29
     decision: Recover the legacy service copy from the WordPress REST API rather than rewriting it.
     rationale: The three /services/* posts stopped rendering when the custom theme took over, but the content was still in the WP database and readable at /wp-json/wp/v2/posts. It is Bruce's own copy and needed only typo and regional-phrasing edits.
+  - date: 2026-11-03
+    decision: Merge develop's 2026-08-29 work into the five-page rebuild, keeping the five-page code and develop's recorded decisions.
+    rationale: feature/multipage was built on a Mac mini clone whose develop had never been fetched past 2026-05-29, so it missed the 08-29 service-pages merge. The five-page IA (2026-09-19, Services as one deep page, only Health Evaluation earns its own URL) supersedes the per-service /services/<slug> pages, and public/_redirects already 301s the three legacy service URLs to their /services sections. Base.astro, src/data/services.ts and the /services/<slug> routes were dropped; the recovered WordPress service copy stays in git history at 3c6e71d. The crimson palette Bruce confirmed on 08-29 is what the five-page build already ships, so the accent question on the review page is already answered.
+  - date: 2026-11-03
+    decision: GitHub Pages preview builds are served noindex, nofollow.
+    rationale: The preview is public and was indexable, which risks Google treating it as a duplicate of vhwpt.com. Site.astro emits the robots tag whenever the build's site is not https://www.vhwpt.com.
 
 open_tasks:
   - Fill in real client testimonials (currently placeholder text).

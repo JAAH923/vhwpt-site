@@ -1,0 +1,39 @@
+---
+/**
+ * Line icons, 1.5px stroke, currentColor. These replace the colour emoji
+ * that were the loudest "unprofessional" signal on the old single page.
+ */
+export interface Props {
+  name: "check" | "stethoscope" | "pin" | "clipboard" | "phone" | "mail" | "globe" | "arrow";
+  size?: number;
+}
+const { name, size = 20 } = Astro.props;
+
+const paths: Record<Props["name"], string> = {
+  check: '<path d="m4 12 5 5L20 6"/>',
+  stethoscope:
+    '<path d="M4.5 3v5a3.5 3.5 0 0 0 7 0V3"/><path d="M8 11.5V14a6 6 0 0 0 6 6h.5"/><circle cx="18.5" cy="17.5" r="2.5"/>',
+  pin: '<path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
+  clipboard:
+    '<path d="M9 4h6v3H9z"/><path d="M15 5.5h2.5A1.5 1.5 0 0 1 19 7v12a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 5 19V7a1.5 1.5 0 0 1 1.5-1.5H9"/><path d="M9 12h6M9 16h4"/>',
+  phone:
+    '<path d="M6 3h3l1.5 4.5L8.5 9a10 10 0 0 0 6 6l1.5-2L20.5 14.5V18a2 2 0 0 1-2.2 2A15.5 15.5 0 0 1 4 5.2 2 2 0 0 1 6 3Z"/>',
+  mail: '<rect x="3" y="5.5" width="18" height="13" rx="1.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/>',
+  globe:
+    '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.2 2.4 3.4 5.4 3.4 8.5s-1.2 6.1-3.4 8.5c-2.2-2.4-3.4-5.4-3.4-8.5S9.8 5.9 12 3.5Z"/>',
+  arrow: '<path d="M5 12h13"/><path d="m12.5 6 6 6-6 6"/>',
+};
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.5"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={paths[name]}
+/>
