@@ -19,6 +19,9 @@ export interface Props {
 const { title, description, path } = Astro.props;
 const canonical = `https://www.vhwpt.com${path}`;
 const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+// The GitHub Pages preview is public; keep it out of search so it never
+// competes with vhwpt.com.
+const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
 ---
 
 <!doctype html>
@@ -27,6 +30,7 @@ const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {isPreview && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
