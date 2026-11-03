@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - develop
+    # The site plan page commits SITE_CONTEXT.yaml on every batch of edits;
+    # a record-only change has nothing to rebuild.
+    paths-ignore:
+      - SITE_CONTEXT.yaml
+      - docs/**
   workflow_dispatch:
 
 permissions:
