@@ -1,7 +1,7 @@
 ---
 import Site from "../layouts/Site.astro";
 import Icon from "../components/Icon.astro";
-import { practice, services } from "../data/site";
+import { practice } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -14,144 +14,147 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
   description="Book a 60-minute health evaluation with Dr. Bruce Valencia, DPT. In-home across Broward and Palm Beach County, or live over video anywhere in the country."
   path="/book"
 >
-  <header class="page-hero">
-    <div class="page-hero-inner">
-      <p class="eyebrow">Book</p>
-      <h1>Book an evaluation</h1>
-      <p class="page-lede">
+  <section class="book" aria-labelledby="book-title">
+    <div class="book-form">
+      <p class="label">Book</p>
+      <h1 id="book-title">Book an evaluation</h1>
+      <p class="lede">
         Tell Bruce what is going on and where you are. He answers his own messages,
         usually the same day.
       </p>
+
+      <!--
+        Placeholder until it is wired to Bruce's server (ENH-385). It must NOT
+        ship as a mailto: — that is what the old site did and it silently failed
+        on most phones. Until then, submitting shows the phone number instead.
+      -->
+      <form method="post" action="#" data-placeholder novalidate>
+        <div class="field-row">
+          <label class="field">
+            <span>Your name</span>
+            <input name="name" type="text" autocomplete="name" required />
+          </label>
+          <label class="field">
+            <span>Phone</span>
+            <input name="phone" type="tel" autocomplete="tel" required />
+          </label>
+        </div>
+        <label class="field">
+          <span>Email</span>
+          <input name="email" type="email" autocomplete="email" required />
+        </label>
+        <div class="field-row">
+          <label class="field">
+            <span>Where would you like to meet?</span>
+            <select name="where">
+              <option>In my home</option>
+              <option>Over video</option>
+              <option>Not sure yet</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Your city</span>
+            <input name="city" type="text" autocomplete="address-level2" />
+          </label>
+        </div>
+        <label class="field">
+          <span>What is going on?</span>
+          <textarea
+            name="about"
+            placeholder="A recent surgery, an old injury, balance that is not what it was, or just wanting to get stronger safely."
+          ></textarea>
+        </label>
+        <div class="form-foot">
+          <button class="btn btn-primary" type="submit">Request an evaluation</button>
+          <span class="todo">Form not connected yet</span>
+        </div>
+        <p class="form-status" role="status"></p>
+      </form>
+      <p class="form-note">
+        Bruce reads these himself. If it is urgent, call
+        {" "}<a href={practice.phoneHref}>{practice.phone}</a>. If it is a medical
+        emergency, call 911.
+      </p>
     </div>
-  </header>
 
-  <section class="page-section" id="request">
-    <div class="page-section-inner book-grid">
-      <div class="form-card">
-        <!--
-          TODO before launch: point this at a real handler. On Cloudflare Pages
-          that is a Pages Function; on WordPress a form plugin. It must NOT
-          ship as a mailto: — that is what the old site did and it silently
-          failed on most phones.
-        -->
-        <form method="post" action="#" novalidate>
-          <div class="field-row">
-            <div class="field">
-              <label for="name">Your name</label>
-              <input id="name" name="name" type="text" autocomplete="name" required />
-            </div>
-            <div class="field">
-              <label for="phone">Phone</label>
-              <input id="phone" name="phone" type="tel" autocomplete="tel" required />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" autocomplete="email" required />
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="where">Where would you like to meet?</label>
-              <select id="where" name="where">
-                <option>In my home</option>
-                <option>Over video</option>
-                <option>Not sure yet</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="city">Your city</label>
-              <input id="city" name="city" type="text" autocomplete="address-level2" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="about">What is going on?</label>
-            <textarea
-              id="about"
-              name="about"
-              placeholder="A recent surgery, an old injury, balance that is not what it was, or just wanting to get stronger safely."
-            ></textarea>
-          </div>
-
-          <button class="form-submit" type="submit">Request an evaluation</button>
-          <p class="form-note">
-            Bruce reads these himself. If it is urgent, call
-            {" "}<a href={practice.phoneHref}>{practice.phone}</a>. If it is a medical
-            emergency, call 911.
-          </p>
-        </form>
-      </div>
-
-      <aside>
-        <h2>Or just call</h2>
-        <ul class="contact-list">
-          <li>
-            <Icon name="phone" size={20} />
-            <div>
-              <a href={practice.phoneHref}>{practice.phone}</a>
-              <span><span class="todo">CONFIRM HOURS</span></span>
-            </div>
-          </li>
-          <li>
-            <Icon name="mail" size={20} />
-            <div>
-              <a href={`mailto:${practice.email}`}>{practice.email}</a>
-              <span>Usually answered same day</span>
-            </div>
-          </li>
-          <li>
-            <Icon name="pin" size={20} />
-            <div>
-              <a href={withBase("/services")}>In-home visits</a>
-              <span>{practice.regionLong}</span>
-            </div>
-          </li>
-          <li>
-            <Icon name="globe" size={20} />
-            <div>
-              <a href={withBase("/services#virtual")}>Virtual sessions</a>
-              <span>Anywhere in the country</span>
-            </div>
-          </li>
-        </ul>
-
-        <h2 style="margin-top:2.5rem">Fees &amp; insurance</h2>
-        <dl class="fees">
-          <div class="fees-row">
-            <dt>Evaluation, 60 minutes</dt>
-            <dd><span class="todo">CONFIRM RATE</span></dd>
-          </div>
-          <div class="fees-row">
-            <dt>Ongoing sessions</dt>
-            <dd><span class="todo">CONFIRM RATE</span></dd>
-          </div>
-          <div class="fees-row">
-            <dt>Insurance</dt>
-            <dd><span class="todo">CONFIRM</span></dd>
-          </div>
-        </dl>
-        <p class="form-note">
-          Whatever the answer is, saying it here converts better than leaving people to
-          guess — silence reads as expensive.
-        </p>
-      </aside>
+    <div class="book-photo">
+      <img
+        src={withBase("/assets/photos/ai/room-open-table.webp")}
+        alt="A portable treatment table set up in a bright living room"
+      />
     </div>
   </section>
 
-  <section class="page-section alt" id="what-you-book">
-    <div class="page-section-narrow">
-      <h2>What you are booking</h2>
-      <p>
+  <section class="section" aria-labelledby="call-title">
+    <div class="wrap cols">
+      <div>
+        <h2 id="call-title">Or just call</h2>
+        <dl class="facts">
+          <div>
+            <dt>Phone</dt>
+            <dd><a href={practice.phoneHref}>{practice.phone}</a></dd>
+          </div>
+          <div>
+            <dt>Hours</dt>
+            <dd><span class="todo">Confirm hours</span></dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd><a href={`mailto:${practice.email}`}>{practice.email}</a></dd>
+          </div>
+          <div>
+            <dt>In-home visits</dt>
+            <dd>{practice.regionLong}</dd>
+          </div>
+          <div>
+            <dt>Virtual sessions</dt>
+            <dd>Anywhere in the country</dd>
+          </div>
+        </dl>
+      </div>
+      <div>
+        <h2>Fees &amp; insurance</h2>
+        <dl class="facts">
+          <div>
+            <dt>Evaluation, 60 minutes</dt>
+            <dd><span class="todo">Confirm rate</span></dd>
+          </div>
+          <div>
+            <dt>Ongoing sessions</dt>
+            <dd><span class="todo">Confirm rate</span></dd>
+          </div>
+          <div>
+            <dt>Insurance</dt>
+            <dd><span class="todo">Confirm</span></dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="booking-title">
+    <div class="wrap narrow">
+      <h2 id="booking-title">What you are booking</h2>
+      <p class="lead">
         A sixty-minute evaluation: history and goals, a movement and strength assessment,
         the findings explained in plain language, and a written plan you keep.
       </p>
-      <p style="margin-top:1rem">
-        <a class="about-cta-link" href={withBase("/services/health-evaluation")}>
-          The evaluation in full <Icon name="arrow" size={16} />
-        </a>
-      </p>
+      <a class="more" href={withBase("/services/health-evaluation")}>
+        The evaluation in full <Icon name="arrow" size={16} />
+      </a>
     </div>
   </section>
 </Site>
+
+<script>
+  import { practice } from "../data/site";
+
+  // Nothing is sent until the form is wired to Bruce's server; say so plainly
+  // and hand over the phone number instead of failing silently.
+  const form = document.querySelector<HTMLFormElement>("form[data-placeholder]")!;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    form.querySelector(".form-status")!.textContent =
+      `This form isn't connected yet, so nothing was sent. Please call ${practice.phone} or email ${practice.email}.`;
+  });
+</script>

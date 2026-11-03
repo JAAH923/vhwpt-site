@@ -1,0 +1,32 @@
+---
+import { practice } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+export interface Props {
+  title: string;
+  body: string;
+  /** The second, quieter action. Defaults to calling Bruce. */
+  secondary?: { label: string; href: string };
+}
+
+const {
+  title,
+  body,
+  secondary = { label: `Call ${practice.phone}`, href: practice.phoneHref },
+} = Astro.props;
+---
+
+<section class="cta">
+  <div class="wrap">
+    <h2>{title}</h2>
+    <p>{body}</p>
+    <div class="actions">
+      <a class="btn btn-primary" href={withBase("/book")}>Book an evaluation</a>
+      <a class="btn btn-line" href={secondary.href}>{secondary.label}</a>
+    </div>
+  </div>
+</section>

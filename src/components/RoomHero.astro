@@ -1,0 +1,62 @@
+---
+/**
+ * The home hero: a living room shot from one camera as two layers. The empty
+ * room loops (curtains in the breeze from the open window); the treatment
+ * table is a still cut-out laid over it, and it never moves against the room.
+ * Both are generated placeholders until a real client's room is filmed. No
+ * person is in frame, so they carry no AI tag (design/lock.md).
+ */
+import Pulse from "./Pulse.astro";
+import { practice } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+// The curtain loop is paused: it reads jerky rather than flowing (ENH-392).
+// Until it is re-timed or regenerated the room shows as a still (its first frame).
+const playLoop = false;
+const still = withBase("/assets/photos/ai/room-open.webp");
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="stage" aria-hidden="true">
+    {
+      playLoop ? (
+        <video class="room" autoplay muted loop playsinline preload="auto" poster={still}>
+          <source src={withBase("/assets/video/room-open-loop.webm")} type="video/webm" />
+          <source src={withBase("/assets/video/room-open-loop.mp4")} type="video/mp4" />
+        </video>
+      ) : (
+        <img class="room" src={still} alt="" />
+      )
+    }
+    <img class="room room-table" src={withBase("/assets/photos/ai/room-table-layer.webp")} alt="" />
+  </div>
+
+  <div class="hero-copy">
+    <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
+    <h1 id="hero-title">Training that starts where you are.</h1>
+    <p class="hero-sub">
+      In your living room across {practice.region}, or by video from anywhere.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" href={withBase("/book")}>Book an evaluation</a>
+    </div>
+  </div>
+
+  <Pulse flatten />
+</section>
+
+<script>
+  // Motion is opt-out: reduced-motion visitors get the still room. The loop
+  // also pauses once the hero is off screen.
+  const video = document.querySelector<HTMLVideoElement>(".hero video.room");
+  if (video && matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    video.removeAttribute("autoplay");
+    video.pause();
+  } else if (video) {
+    new IntersectionObserver(([e]) => (e.isIntersecting ? video.play().catch(() => {}) : video.pause())).observe(video);
+  }
+</script>
