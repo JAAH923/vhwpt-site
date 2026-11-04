@@ -21,7 +21,7 @@ current_focus:
     - Wire the Book form to Bruce's server (ENH-385); until then it shows the phone number instead of sending.
     - Settle the CONFIRM items on the site (rates, insurance, hours; T-182).
     - Replace AI placeholder imagery with real photos (the hero room, the service photos tagged AI photo).
-    - Decide the production host (T-184).
+    - vhwpt.com stays on its current host for now and moves to a host in Bruce's own name later (decisions, 2026-11-03; T-183).
     - Keep this file current at the end of meaningful work sessions.
 
 site:
@@ -232,6 +232,9 @@ decisions:
   - date: 2026-11-03
     decision: Pause the hero curtain loop; the hero shows its first frame as a still.
     rationale: "Justin: 'it doesn't feel flowy its kinda jerky'. The clip is 24fps over 8s. Re-time or smooth it before regenerating; he doesn't want a new video right now (ENH-392)."
+  - date: 2026-11-03
+    decision: No platform change. vhwpt.com stays on its current host for now and will migrate to a host in Bruce's own name later; the site stays an Astro repo edited through Claude Code with the local dev server.
+    rationale: "Justin: 'we will not change any platform', 'Yes, stays put', 'for now', 'we will migrate to his own host'. Replaces the earlier Cloudflare Pages recommendation (T-183)."
 
 open_tasks:
   - Fill in real client testimonials (currently placeholder text).
