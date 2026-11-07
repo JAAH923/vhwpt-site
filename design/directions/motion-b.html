@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Motion B · The warm-up</title>
+<link rel="stylesheet" href="../../public/assets/fonts/fonts.css" />
+<link rel="stylesheet" href="motion/base.css" />
+<style>
+  /*
+   * Motion B: the warm-up. The headline is the body. Every letter is a small
+   * spring with its weight on the baseline; the type stands up off the floor on
+   * load, then runs a warm-up as a wave across the lines: squats, windmills
+   * (each letter turns a full circle), then jumps. Letters lean away from the
+   * pointer and stretch with scroll speed.
+   */
+  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
+  .stage { align-self: center; padding: 32px 24px 0; max-width: 1280px; width: 100%; margin: 0 auto; }
+  .stage .label { margin-bottom: 48px; }
+  h1.kin { font-size: clamp(52px, min(12.5vw, 19svh), 176px); line-height: 0.94; letter-spacing: -0.035em; margin: 0; }
+  .kin .w { display: inline-block; white-space: nowrap; }
+  .kin .g { display: inline-block; transform-origin: 50% 88%; will-change: transform; }
+  .kin .line { display: block; }
+  .kin .key { color: var(--ink); }
+
+  .foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 48px; align-items: end; padding: 40px 24px 32px; max-width: 1280px; width: 100%; margin: 0 auto; }
+  .foot .sub { font-size: 19px; line-height: 1.4; max-width: 32ch; margin-bottom: 24px; }
+  .moves { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .moves div { display: block; }
+  .moves b { display: block; font-family: var(--mono); font-weight: 400; font-size: 15px; line-height: 1.5; margin-top: 4px; font-variant-numeric: tabular-nums; color: var(--grey); }
+  .moves div[aria-current] .label, .moves div[aria-current] b { color: var(--ink); }
+  .track { display: block; height: 2px; background: var(--hair); margin-top: 8px; overflow: hidden; }
+  .track i { display: block; height: 100%; width: 0; background: var(--ink); }
+
+  @media (max-width: 1023px) { .foot { grid-template-columns: minmax(0, 1fr); gap: 32px; } .foot > :last-child { max-width: 520px; } }
+  @media (max-width: 760px) {
+    .hero { min-height: max(100svh, 720px); }
+    .stage { padding-top: 24px; }
+    h1.kin { font-size: 14.2vw; }
+    .foot { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-bottom: 24px; }
+  }
+</style>
+</head>
+<body>
+<section class="hero" aria-labelledby="hero-title">
+  <nav class="top" aria-label="Primary navigation">
+    <a class="brand" href="#"><img src="../../public/assets/brand/valencia-health-wellness-icon.png" alt="" />Dr. Bruce Valencia</a>
+    <div class="links">
+      <a class="hide-sm" href="#">Services</a>
+      <a class="hide-sm" href="#">About</a>
+      <a class="hide-sm" href="tel:19542996536">1-954-299-6536</a>
+      <a class="btn btn-line" href="#">Book</a>
+    </div>
+  </nav>
+  <div class="stage">
+    <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
+    <h1 class="kin" id="hero-title" aria-label="Training that starts where you are.">
+      <span class="line">Training that</span>
+      <span class="line">starts where</span>
+      <span class="line">you are.</span>
+    </h1>
+  </div>
+  <div class="foot">
+    <div>
+      <p class="sub">In your home across Broward &amp; Palm Beach County, or by video from anywhere.</p>
+      <a class="btn btn-primary" href="#">Book an evaluation</a>
+    </div>
+    <div class="moves" aria-hidden="true">
+      <div><span class="label">01 Squat</span><b data-r="0">00 reps</b><span class="track"><i></i></span></div>
+      <div><span class="label">02 Windmill</span><b data-r="1">00 reps</b><span class="track"><i></i></span></div>
+      <div><span class="label">03 Jump</span><b data-r="2">00 reps</b><span class="track"><i></i></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="intro" aria-labelledby="about-title">
+  <div class="wrap">
+    <figure style="margin:0"><img src="../../public/assets/photos/bruce-in-session.webp" alt="Dr. Bruce Valencia working with a patient" /></figure>
+    <div>
+      <p class="label">Dr. Bruce Valencia · DPT · CLT · ISSA-CPT · ISSA-SSC</p>
+      <h2 id="about-title">One clinician, from recovery to strength.</h2>
+      <p class="lead">Recovery and training usually happen in two places, with two different people. Here they happen with one.</p>
+      <p>Working with a doctor of physical therapy who also coaches means one person carries you from recovery through to training, without the handoff where progress usually stalls.</p>
+      <a class="more" href="#">Read his story →</a>
+    </div>
+  </div>
+</section>
+
+<script type="module">
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const h1 = document.querySelector("h1.kin");
+const hero = document.querySelector(".hero");
+const moveEls = [...document.querySelectorAll(".moves > div")];
+const fills = [...document.querySelectorAll(".moves .track i")];
+const repEls = [...document.querySelectorAll("[data-r]")];
+
+// Split each line into words and letters; the h1 keeps its aria-label.
+const glyphs = [];
+for (const line of h1.querySelectorAll(".line")) {
+  const words = line.textContent.split(" ");
+  line.textContent = "";
+  line.setAttribute("aria-hidden", "true");
+  words.forEach((word, wi) => {
+    const w = document.createElement("span");
+    w.className = "w";
+    for (const ch of word) {
+      const g = document.createElement("span");
+      g.className = "g";
+      g.textContent = ch;
+      w.append(g);
+      glyphs.push({ el: g, x: 0, y: 0, cx: 0, cy: 0, h: 0, sy: 0.04, vsy: 0, sx: 1, vsx: 0, r: 0, vr: 0, ty: 0, vty: 0 });
+    }
+    line.append(w);
+    if (wi < words.length - 1) line.append(" ");
+  });
+}
+
+function measure() {
+  const hr = h1.getBoundingClientRect();
+  for (const g of glyphs) {
+    g.el.style.transform = "none";
+    const r = g.el.getBoundingClientRect();
+    g.cx = r.left + r.width / 2; g.cy = r.top + r.height / 2; g.h = r.height;
+    g.x = (r.left - hr.left) / hr.width;   // 0..1 across the block
+    g.y = (r.top - hr.top) / hr.height;    // 0..1 down the block
+  }
+}
+
+/* ---------- The warm-up ---------- */
+// Each move is a wave that runs across the type, top line slightly ahead. Every
+// letter runs the reps on its own clock, delayed by where it sits.
+const MOVES = [
+  { name: "squat", reps: 2, rep: 1.3, dur: 0.8 },
+  { name: "windmill", reps: 2, rep: 1.4, dur: 0.55 },
+  { name: "jump", reps: 3, rep: 0.9, dur: 0.7 },
+];
+const WAVE = 1.8;   // seconds for a wave to cross a line (a narrow ripple, so the line stays readable)
+const ROW = 0.12;   // extra delay per line height
+const REST = 0.7;   // pause between moves
+const INTRO = 1.6;  // standing up off the floor
+const span = (m) => m.reps * m.rep + WAVE + ROW;
+const total = MOVES.reduce((s, m) => s + span(m) + REST, 0);
+
+const bell = (u) => (u <= 0 || u >= 1 ? 0 : Math.sin(Math.PI * u) ** 2);
+const easeIO = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+/** Where the timeline is: which move, seconds into it, reps counted so far. */
+function where(t) {
+  if (t < INTRO) return null;
+  let u = (t - INTRO) % total;
+  for (let i = 0; i < MOVES.length; i++) {
+    const m = MOVES[i], d = span(m);
+    if (u < d + REST) {
+      const mid = u - 0.5 * WAVE - 0.5 * ROW;
+      const reps = clamp(Math.floor((mid - 0.6 * m.dur) / m.rep) + 1, 0, m.reps);
+      return { i, m, u, reps, frac: Math.min(1, u / d) };
+    }
+    u -= d + REST;
+  }
+  return null;
+}
+
+/** Target pose for one letter at time t (scale, rotation, lift). */
+function target(g, t, w) {
+  const out = { sy: 1, sx: 1, r: 0, ty: 0 };
+  if (t < INTRO) {
+    // Stand up off the floor, left to right.
+    const k = easeIO((t - g.x * 0.7 - g.y * 0.15) / 0.55);
+    out.sy = 0.04 + 0.96 * k;
+    return out;
+  }
+  if (!w) return out;
+  const m = w.m, clock = w.u - g.x * WAVE - g.y * ROW;
+  if (clock < 0 || clock >= m.reps * m.rep) return out;
+  const rep = Math.floor(clock / m.rep), l = (clock - rep * m.rep) / m.dur;
+  if (l >= 1) return out;
+  if (m.name === "squat") {
+    const b = bell(l);
+    out.sy = 1 - 0.34 * b; out.sx = 1 + 0.12 * b;
+  } else if (m.name === "windmill") {
+    // A full turn about the letter's middle, alternating direction each rep.
+    out.r = (rep % 2 ? -1 : 1) * 360 * easeIO(l);
+  } else {
+    // Load, take off, hang, land soft.
+    const load = bell(l / 0.3) * 0.18, land = bell((l - 0.72) / 0.28) * 0.22;
+    const air = l > 0.18 && l < 0.82 ? Math.sin(Math.PI * (l - 0.18) / 0.64) : 0;
+    out.sy = 1 - load - land + 0.08 * air; out.sx = 1 + 0.8 * (load + land) - 0.04 * air;
+    out.ty = -0.26 * air;
+  }
+  return out;
+}
+
+/* ---------- Pointer and scroll ---------- */
+const P = { x: -1e4, y: -1e4, vx: 0, on: false, lx: 0, lt: 0 };
+addEventListener("pointermove", (e) => {
+  const now = performance.now();
+  if (P.lt) P.vx = (e.clientX - P.lx) / Math.max(8, now - P.lt);
+  P.x = e.clientX; P.y = e.clientY; P.lx = e.clientX; P.lt = now; P.on = true;
+});
+addEventListener("pointerleave", () => { P.on = false; P.x = P.y = -1e4; });
+let scrollV = 0, lastY = scrollY, rectTop = 0;
+addEventListener("scroll", () => { scrollV += (scrollY - lastY); lastY = scrollY; }, { passive: true });
+
+/* ---------- Springs ---------- */
+const K = 190, C = 13;
+function spring(g, key, vkey, to, dt, k = K, c = C) {
+  g[vkey] += (k * (to - g[key]) - c * g[vkey]) * dt;
+  g[key] += g[vkey] * dt;
+}
+
+let t = 0, last = 0, running = false;
+function frame(now) {
+  if (!running) return;
+  const dt = Math.min(0.033, (now - last) / 1000 || 0.016);
+  last = now; t += dt;
+  const w = where(t);
+  const stretch = Math.max(-0.12, Math.min(0.18, scrollV * 0.004));
+  scrollV *= Math.exp(-dt * 8);
+  const off = rectTop - hero.getBoundingClientRect().top; // scroll since measuring
+  for (const g of glyphs) {
+    const to = target(g, t, w);
+    // The pointer pushes nearby letters over, away from it, and down a little.
+    const dx = g.cx - P.x, dy = g.cy - off - P.y, d = Math.hypot(dx, dy);
+    const reach = g.h * 1.3;
+    if (d < reach) {
+      const f = (1 - d / reach) ** 2;
+      to.r += Math.sign(dx || 1) * (16 + Math.min(18, Math.abs(P.vx) * 12)) * f;
+      to.sy -= 0.1 * f;
+    }
+    to.sy += stretch * (0.6 + 0.4 * g.x);
+    spring(g, "sy", "vsy", to.sy, dt);
+    spring(g, "sx", "vsx", to.sx, dt);
+    spring(g, "r", "vr", to.r, dt, 260, 22);
+    spring(g, "ty", "vty", to.ty, dt, 260, 16);
+    // Squats and jumps pivot on the baseline; turns pivot on the letter's middle.
+    g.el.style.transform = `translateY(${(g.ty - 0.3).toFixed(3)}em) rotate(${g.r.toFixed(2)}deg) translateY(0.3em) scale(${g.sx.toFixed(3)}, ${g.sy.toFixed(3)})`;
+  }
+  P.vx *= Math.exp(-dt * 6);
+  ui(w);
+  requestAnimationFrame(frame);
+}
+
+let lastUi = "";
+function ui(w) {
+  const key = w ? `${w.i}:${w.reps}:${Math.round(w.frac * 40)}` : "intro";
+  if (key === lastUi) return;
+  lastUi = key;
+  MOVES.forEach((m, i) => {
+    const active = !!w && w.i === i;
+    moveEls[i].toggleAttribute("aria-current", active);
+    fills[i].style.width = `${(w ? (w.i > i ? 1 : active ? w.frac : 0) : 0) * 100}%`;
+    const reps = !w ? 0 : w.i > i ? m.reps : active ? w.reps : 0;
+    repEls[i].textContent = `${String(reps).padStart(2, "0")} reps`;
+  });
+}
+
+function start() { if (running) return; running = true; last = performance.now(); requestAnimationFrame(frame); }
+function stop() { running = false; }
+
+document.fonts.ready.then(() => {
+  measure(); rectTop = hero.getBoundingClientRect().top;
+  if (reduce) { glyphs.forEach((g) => (g.el.style.transform = "none")); repEls.forEach((e) => (e.textContent = "–")); return; }
+  addEventListener("resize", () => { measure(); rectTop = hero.getBoundingClientRect().top; });
+  new IntersectionObserver(([e]) => (e.isIntersecting ? start() : stop())).observe(hero);
+});
+</script>
+</body>
+</html>

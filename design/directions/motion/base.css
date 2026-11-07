@@ -1,0 +1,42 @@
+/* Shared shell for the motion directions: the locked tokens from design/tokens.json. */
+:root {
+  --ink: #18181b; --white: #ffffff; --grey: #71717a; --hair: #e4e4e7; --whisper: #f4f4f5;
+  --crimson: #c41230; --crimson-press: #a30f28;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--white); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.5; }
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+p { margin: 0; }
+h1, h2 { margin: 0; font-weight: 700; }
+.label { font-family: var(--mono); font-size: 11px; line-height: 1.5; letter-spacing: 0.06em; text-transform: uppercase; color: var(--grey); }
+
+nav.top { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 24px; }
+.brand { display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.brand img { width: 40px; height: 40px; border-radius: 9999px; }
+.links { display: flex; align-items: center; gap: 32px; font-size: 15px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 9999px; font-size: 17px; font-weight: 700; line-height: 1.2; padding: 15px 22px; }
+.btn-primary { background: var(--crimson); color: var(--white); }
+.btn-primary:hover { background: var(--crimson-press); }
+.btn-line { background: var(--white); border: 1px solid var(--hair); padding: 12px 19px; font-size: 15px; font-weight: 400; }
+.btn-line:hover { border-color: var(--ink); }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.intro { padding: 96px 0; border-top: 1px solid var(--hair); }
+.intro .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.intro img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 60% 50%; border-radius: 16px; }
+.intro h2 { font-size: clamp(30px, 3.6vw, 45px); line-height: 1.1; letter-spacing: -0.015em; margin: 16px 0 24px; }
+.intro .lead { font-size: 19px; line-height: 1.45; margin-bottom: 16px; max-width: 52ch; }
+.intro p + p { max-width: 52ch; }
+.more { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; border-bottom: 1px solid var(--ink); padding-bottom: 4px; margin-top: 32px; }
+
+@media (max-width: 760px) {
+  nav.top { padding: 16px 24px; }
+  .hide-sm { display: none; }
+  .links { gap: 16px; }
+  .intro { padding: 64px 0; }
+  .intro .wrap { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+}
