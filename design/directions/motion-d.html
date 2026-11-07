@@ -26,8 +26,10 @@
   .kin .g { display: inline-block; transform-origin: 50% 88%; will-change: transform; }
   .figure-slot { display: none; }
 
-  .foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 48px; align-items: end; padding: 64px 24px 32px; max-width: 1280px; width: 100%; margin: 0 auto; }
-  .foot .sub { font-size: 19px; line-height: 1.4; max-width: 32ch; margin-bottom: 24px; }
+  .foot { display: flex; justify-content: flex-end; padding: 64px 24px 32px; max-width: 1280px; width: 100%; margin: 0 auto; }
+  .stage .reach { margin-top: 40px; }
+  .stage .cta { margin-top: 32px; }
+  .foot > * { width: 100%; max-width: 520px; }
   .live { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
   .live .on { color: var(--ink); }
   .live .on::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 9999px; background: var(--crimson); margin-right: 8px; vertical-align: 1px; }
@@ -37,14 +39,23 @@
   .track { display: block; height: 2px; background: var(--hair); margin-top: 8px; overflow: hidden; }
   .track i { display: block; height: 100%; width: 0; background: var(--ink); }
 
-  @media (max-width: 1023px) { .foot { grid-template-columns: minmax(0, 1fr); gap: 32px; } .foot > :last-child { max-width: 520px; } }
+  /* Desktop: the move tracks sit in the bottom-right corner and take no height,
+     so the headline, the in-home / video panel and the button read as one block. */
+  @media (min-width: 1024px) {
+    .hero > .foot { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 24px 32px; }
+    .foot > * { max-width: min(520px, 45%); }
+    .stage { padding-bottom: 32px; }
+  }
+  @media (max-width: 1023px) { .foot { justify-content: flex-start; } }
   @media (max-width: 760px) {
+    .stage .reach { margin-top: 24px; }
+    .stage .cta { margin-top: 24px; }
     .hero { min-height: max(100svh, 800px); }
     .stage { align-self: start; padding-top: 24px; }
     .stage .label { margin-bottom: 24px; }
     h1.kin { font-size: 14.2vw; }
     .figure-slot { display: block; height: clamp(230px, 58vw, 400px); }
-    .foot { grid-template-columns: minmax(0, 1fr); gap: 32px; padding: 16px 24px 24px; }
+    .foot { padding: 16px 24px 24px; }
   }
 </style>
 </head>
@@ -67,13 +78,11 @@
       <span class="line">starts where</span>
       <span class="line">you are.</span>
     </h1>
+    <ul class="reach" aria-label="Where sessions happen"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/></svg><span><b>In your home</b><small>Broward &amp; Palm Beach County</small></span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/></svg><span><b>By video</b><small>From anywhere</small></span></li></ul>
+    <div class="cta"><a class="btn btn-primary" href="#">Book an evaluation</a><span class="with"><img src="../../public/assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
     <div class="figure-slot" aria-hidden="true"></div>
   </div>
   <div class="foot">
-    <div>
-      <p class="sub">In your home across Broward &amp; Palm Beach County, or by video from anywhere.</p>
-      <div class="cta"><a class="btn btn-primary" href="#">Book an evaluation</a><span class="with"><img src="../../public/assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
-    </div>
     <div aria-hidden="true">
       <div class="live"><span class="label on">Warm-up · live</span><span class="label" data-knee>Knee –</span></div>
       <div class="moves">
