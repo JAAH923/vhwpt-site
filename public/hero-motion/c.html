@@ -58,7 +58,7 @@
     <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
     <h1 id="hero-title">Training that starts where you are.</h1>
     <p class="hero-sub">In your home across Broward &amp; Palm Beach County, or by video from anywhere.</p>
-    <div><a class="btn btn-primary" href="#">Book an evaluation</a></div>
+    <div class="cta"><a class="btn btn-primary" href="#">Book an evaluation</a><span class="with"><img src="../assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
   </div>
   <div class="figure-slot" aria-hidden="true"></div>
   <div class="instrument" aria-hidden="true">
@@ -191,9 +191,12 @@ function resize() {
     scale = Math.max(90, Math.min(260, (floorY - (n.bottom - r.top + 40)) / 2.2));
   }
   // Stand the body just past the copy's longest line, not the copy box's edge.
-  const rng = document.createRange(); rng.selectNodeContents(copy);
+  // Measure the headline and sub only; the button row below may run wider.
   let textRight = 0;
-  for (const q of rng.getClientRects()) textRight = Math.max(textRight, q.right);
+  for (const el of copy.querySelectorAll("h1, .hero-sub")) {
+    const rng = document.createRange(); rng.selectNodeContents(el);
+    for (const q of rng.getClientRects()) textRight = Math.max(textRight, q.right);
+  }
   const cx = mobile ? W * 0.5 : Math.min(textRight - r.left + 0.95 * scale, W - 0.9 * scale);
   L = { cx, floorY, scale, mobile };
   const count = W < 761 ? 1500 : 2600;
