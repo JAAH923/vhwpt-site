@@ -17,9 +17,11 @@
   .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
   canvas.lab { position: absolute; inset: 0; width: 100%; height: 100%; }
   .hero > :not(canvas) { position: relative; z-index: 1; }
-  .hero-copy { align-self: center; padding: 0 24px; max-width: 560px; margin-left: max(24px, 5vw); }
-  h1 { font-size: clamp(37px, 5.2vw, 66px); line-height: 1.04; letter-spacing: -0.022em; margin: 16px 0; }
-  .hero-copy .reach { margin: 8px 0 32px; }
+  /* Side by side, the copy is only as wide as its content (so the figure's
+     placement follows it) and the headline sets big, in three lines. */
+  .hero-copy { align-self: center; padding: 0 24px; width: fit-content; margin-left: max(24px, 5vw); }
+  h1 { font-size: clamp(37px, 7.2vw, 112px); line-height: 1.02; letter-spacing: -0.022em; margin: 16px 0 24px; max-width: 6.3em; }
+  .hero-copy .reach { margin: 0 0 32px; }
 
   /* The instrument: live readouts over three stage tracks. */
   .instrument { width: min(560px, calc(100% - 48px)); margin: 0 max(24px, 5vw) 32px auto; }
@@ -37,7 +39,8 @@
   .figure-slot { display: none; }
   @media (max-width: 1023px) {
     .hero { min-height: 100svh; grid-template-rows: auto auto minmax(clamp(260px, 60vw, 460px), 1fr) auto; }
-    .hero-copy { align-self: start; margin: 24px 0 0; max-width: 640px; }
+    .hero-copy { align-self: start; margin: 24px 0 0; width: auto; max-width: 640px; }
+    h1 { max-width: none; }
     .figure-slot { display: block; }
     .instrument { align-self: end; width: auto; max-width: 640px; margin: 0 24px 24px; }
   }
@@ -128,7 +131,7 @@ function resize() {
     floorY = i.top - r.top - 40;
     const top = n.bottom - r.top + 48;
     scale = Math.max(90, Math.min(230, (floorY - top) / 1.9));
-    cx = Math.min(Math.max(c.right - r.left + (W - c.right + r.left) * 0.52, W * 0.62), W - 0.9 * scale);
+    cx = Math.min(Math.max(c.right - r.left + (W - c.right + r.left) * 0.44, W * 0.62), W - 0.9 * scale);
   }
   layout = { cx, floorY, scale, mobile };
   if (reduce) drawStill();
