@@ -32,7 +32,7 @@ const where = s.remote
   ? "live over video, anywhere in the country"
   : `in your home or care facility across ${practice.regionLong}`;
 const description = isPt
-  ? `${s.lede} Physical therapy with Dr. Bruce Valencia, DPT, ${where}. Billed to Medicare and most major plans.`
+  ? `${s.lede} Physical therapy with Dr. Bruce Valencia, DPT, ${where}. ${practice.insurance}`
   : `${s.lede} Wellness and training led by Dr. Bruce Valencia, DPT, ${where}. Self-pay, separate from physical therapy.`;
 ---
 

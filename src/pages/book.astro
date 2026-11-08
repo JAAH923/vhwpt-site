@@ -81,7 +81,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         <dl class="facts" aria-labelledby="fees-title">
           <div>
             <dt>Physical therapy</dt>
-            <dd>Billed to Medicare and most major plans. Call to verify your coverage.</dd>
+            <dd>{practice.insurance}</dd>
           </div>
           <div>
             <dt>Wellness and training</dt>

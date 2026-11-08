@@ -9,6 +9,12 @@ export const practice = {
   email: "info@vhwpt.com",
   region: "Broward & Palm Beach County",
   regionLong: "Broward and Palm Beach County",
+  /** Who physical therapy is billed to (Bruce, 2026-11-08). Used on Book, the booking
+   *  form, each service page's description and the Questions page. */
+  plans: "Original Medicare, Aetna, UnitedHealthcare, Oscar and the VA Community Care Network",
+  /** The insurance line, word for word, everywhere it appears. */
+  insurance:
+    "Billed to Original Medicare, Aetna, UnitedHealthcare, Oscar and the VA Community Care Network. Call to verify your plan.",
 };
 
 export const credentials = [
