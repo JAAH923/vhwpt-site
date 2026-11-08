@@ -7,8 +7,8 @@
 :root {
   --ink: #18181b;
   --white: #ffffff;
-  --grey: #71717a;
-  --hair: #e4e4e7;
+  --grey: #52525b;
+  --hair: #d4d4d8;
   --whisper: #f4f4f5;
   --crimson: #c41230;
   --crimson-press: #a30f28;
@@ -28,7 +28,7 @@ p { margin: 0; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
 
 .wrap { max-width: var(--container); margin: 0 auto; padding: 0 24px; }
-.label { font-family: var(--mono); font-size: 11px; line-height: 1.5; letter-spacing: 0.06em; text-transform: uppercase; color: var(--grey); }
+.label { font-family: var(--mono); font-size: 12px; line-height: 1.5; letter-spacing: 0.06em; text-transform: uppercase; color: var(--grey); }
 .skip { position: absolute; left: 16px; top: -48px; z-index: 3; background: var(--ink); color: var(--white); padding: 8px 12px; border-radius: 5px; }
 .skip:focus { top: 16px; }
 
@@ -94,7 +94,7 @@ p { margin: 0; }
 .section + .section { border-top: 1px solid var(--hair); }
 .section-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: end; margin-bottom: 48px; }
 .section h2 { font-size: clamp(30px, 3.6vw, 45px); line-height: 1.1; letter-spacing: -0.015em; }
-.section-head p { color: var(--grey); max-width: 46ch; }
+.section-head p { font-size: 19px; line-height: 1.45; max-width: 46ch; }
 .narrow > * { max-width: 680px; }
 .narrow h2 { margin-bottom: 24px; }
 .narrow .label + h2 { margin-top: 16px; }
@@ -143,6 +143,8 @@ p { margin: 0; }
 .cols.three { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; }
 .cols h2 + .facts { margin-top: 32px; }
 .note { margin-top: 32px; color: var(--grey); font-size: 15px; max-width: 64ch; }
+/* A note straight under a section headline is that section's sub, so it sets like every other sub: 19px ink. */
+h2 + .note { margin-top: 24px; color: var(--ink); font-size: 19px; line-height: 1.45; max-width: 40ch; }
 
 /* Numbered steps (Health Evaluation). */
 .steps { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hair); }

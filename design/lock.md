@@ -8,7 +8,7 @@ white type, because Justin asked for an animated room.
 ## Primary reference
 - ID + name: 589c0a33-a38c-4f77-a7b0-bf0c602c937d · Superpower ("clinical precision, vibrant pulse")
 - Signature traits to preserve:
-  1. Monochrome base: ink `#18181b` on white, with a grey progression (`#71717a`, `#e4e4e7`, `#f4f4f5`) doing all the hierarchy. No other colour in the interface.
+  1. Monochrome base: ink `#18181b` on white, with a grey progression (`#52525b`, `#d4d4d8`, `#f4f4f5`; darkened from `#71717a` and `#e4e4e7` on 2026-11-07 because secondary text and hairlines read too white) doing all the hierarchy. No other colour in the interface.
   2. One saturated accent with one job. Superpower's vermillion becomes Bruce's crimson `#c41230` in the same role: the primary action, the active nav item, and the key highlight, which here is the pulse line. Never a background, badge, border or section fill.
   3. One neo-grotesk family for everything (Inter, the reference's named substitute): 700 for headlines with tight tracking, 400 for body. A mono only for tiny labels.
   4. Pill buttons (9999px): filled crimson primary, white with hairline-border secondary. Cards 16px and only where something is clicked.
