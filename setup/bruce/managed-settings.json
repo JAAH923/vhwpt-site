@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "disableBypassPermissionsMode": "disable",
+    "deny": [
+      "Bash(ssh *)",
+      "Bash(scp *)",
+      "Bash(sftp *)",
+      "Bash(rsync *)",
+      "Bash(aws *)",
+      "Bash(sudo *)",
+      "Bash(rm -rf *)",
+      "Bash(rm -fr *)",
+      "Bash(gh api *)",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(gh secret *)",
+      "Bash(gh variable *)",
+      "Bash(gh ruleset *)",
+      "Bash(gh workflow *)",
+      "Bash(gh release *)",
+      "Edit(**/.github/**)",
+      "Edit(**/.claude/**)",
+      "Edit(**/CLAUDE.md)",
+      "Edit(**/setup/**)",
+      "Edit(**/deploy/**)",
+      "Read(**/vhwpt-contact.php)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.config/gh/**)"
+    ]
+  }
+}
