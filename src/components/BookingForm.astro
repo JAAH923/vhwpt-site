@@ -76,7 +76,7 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
 
     <div class="step" data-need="one" role="group" aria-labelledby="q1">
       <h2 class="askq" id="q1">What would you like to book?</h2>
-      <p class="askhelp">{ptGroup} is billed to Medicare and most major plans. Wellness and training are self-pay.</p>
+      <p class="askhelp">{ptGroup}: {practice.insurance} Wellness and training are self-pay.</p>
       <div class="chips">
         {bookings.map((o) => <label class="chip"><input type="radio" name="booking" value={o.id} /><span>{o.label}</span></label>)}
       </div>

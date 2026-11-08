@@ -39,18 +39,17 @@ export const topics: Topic[] = [
         id: "medicare-at-home",
         q: "Does Medicare pay for physical therapy at home?",
         a: [
-          `Physical therapy with Bruce is billed to Medicare and most major plans, and he comes to your home or care facility across ${practice.regionLong}. Coverage depends on your plan, so call before your first visit and Bruce will check yours.`,
+          "Yes. Bruce provides mobile outpatient physical therapy billed to Medicare Part B, so visits happen in your home or care facility when therapy is medically necessary. When a home visit isn’t possible, therapy can take place at his clinic.",
         ],
         more: fees,
-        confirm: "That Original Medicare covers his PT visits at home, and any conditions on that.",
       },
       {
         id: "medicare-advantage",
         q: "I have a Medicare Advantage plan. Is that different?",
         a: [
-          "It can be. Medicare Advantage plans are run by private insurers, and each one sets its own rules, such as which therapists are in network and whether visits need approval first. Call with your plan’s name and Bruce will check it before you book.",
+          `It can be. Medicare Advantage plans are run by private insurers, and each one sets its own network, copays and approval rules. Bruce is in network with ${practice.plans}. Call before your first visit to verify your specific plan.`,
         ],
-        confirm: "Which Advantage plans he is in network with, and whether they need prior approval.",
+        confirm: "Whether his Aetna, UnitedHealthcare and Oscar contracts include their Medicare Advantage plans (Bruce is checking). Until then the answer says call to verify.",
       },
       {
         id: "home-health",
@@ -64,18 +63,17 @@ export const topics: Topic[] = [
         id: "visit-limits",
         q: "How many visits will I get?",
         a: [
-          "That depends on what the evaluation finds and what your plan allows. Bruce writes the number of visits into your plan of care and tells you up front if your coverage limits it.",
+          "It depends on your needs. Bruce sets the number in your plan of care after the evaluation, and adjusts it as you progress. Your insurance may also set limits or require approval.",
         ],
-        confirm: "Typical visit counts, and how he handles plan limits.",
       },
       {
         id: "no-insurance",
         q: "What does it cost without insurance?",
         a: [
-          `Wellness and training are self-pay, and Bruce shares rates once he understands what you need. Physical therapy is billed to Medicare and most major plans; if you don’t have coverage for it, call and Bruce will talk through your options. Travel is included across ${practice.regionLong}.`,
+          "Wellness and training are self-pay. Self-pay physical therapy is also available. Bruce shares rates once he understands what you need. Physical therapy for Medicare patients is billed through Medicare.",
         ],
         more: fees,
-        confirm: "Whether he offers self-pay physical therapy, and at what rate.",
+        confirm: "Check with the biller that self-pay physical therapy is offered only where Medicare rules allow; Medicare-enrolled providers generally must bill Medicare for covered services to Medicare patients.",
       },
     ],
   },
@@ -104,10 +102,9 @@ export const topics: Topic[] = [
         id: "visit-length",
         q: "How long is a visit?",
         a: [
-          "The first visit has four parts: your history and goals, a movement and strength assessment, the findings explained, and a written plan. Bruce will tell you how long to set aside when you book.",
+          "Most visits last about an hour. Some run shorter or a little longer, depending on what you need and your insurance plan’s rules.",
         ],
         more: { label: "What happens at the first visit", href: "/services/health-evaluation" },
-        confirm: "How long the first visit and follow-up visits usually run.",
       },
       {
         id: "equipment",
@@ -228,15 +225,15 @@ export const topics: Topic[] = [
         a: [
           `Yes. Bruce treats Parkinson’s and other neurological conditions in your home or care facility across ${practice.regionLong}, coordinated with your neurologist or physician.`,
         ],
-        confirm: "Any Parkinson’s-specific training to name, such as LSVT BIG or PWR!.",
+        confirm: "Any Parkinson’s-specific training to name, such as PWR! (he is not LSVT BIG certified).",
       },
       {
         id: "lsvt-big",
         q: "What is LSVT BIG?",
         a: [
-          "LSVT BIG is a structured Parkinson’s program that trains large, deliberate movements so everyday ones get easier. It usually runs as 16 one-hour sessions over four weeks with a certified clinician.",
+          "LSVT BIG is a structured exercise program for people with Parkinson’s. It focuses on large, deliberate movements for walking, balance and daily tasks, and it is delivered by clinicians certified in the program.",
+          "Bruce’s Parkinson’s care is his own physical therapy program. If you want LSVT BIG specifically, he can point you to a certified provider.",
         ],
-        confirm: "Whether he is LSVT BIG certified. If not, this question goes or points elsewhere.",
       },
     ],
   },
@@ -293,9 +290,8 @@ export const topics: Topic[] = [
         id: "dry-needling-insurance",
         q: "Does insurance cover dry needling?",
         a: [
-          "Often not. Medicare and many other plans don’t pay for dry needling, so it is usually self-pay. Ask Bruce what your plan covers and what it costs.",
+          "It depends on your plan. Some insurers cover dry needling, while Original Medicare generally does not. When it isn’t covered, it’s self-pay, and Bruce shares rates once he understands what you need. Call to verify your coverage before your visit.",
         ],
-        confirm: "How he bills dry needling, and its price.",
       },
       {
         id: "lymphedema",
@@ -311,8 +307,8 @@ export const topics: Topic[] = [
         q: "How many lymphedema sessions will I need?",
         a: [
           "It depends on how much swelling there is and how your body responds. Treatment often starts with several sessions a week for a few weeks, then moves to a home routine with compression. Bruce sets the number after the evaluation.",
+          "Lymphedema therapy is provided as physical therapy and billed to Medicare and the plans Bruce is in network with. Coverage depends on your plan, so call to verify before your first visit.",
         ],
-        confirm: "The typical course, and how lymphedema care is billed.",
       },
     ],
   },
