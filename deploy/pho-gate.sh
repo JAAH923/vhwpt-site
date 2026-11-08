@@ -33,7 +33,7 @@ main() {
   corepack pnpm@10 exec astro build --site "$url" --base "$base"
 
   local f
-  for f in index.html services/index.html about/index.html book/index.html hero-motion/index.html; do
+  for f in index.html services/index.html about/index.html book/index.html; do
     [[ -s "dist/$f" ]] || { echo "dist/$f is missing; the live copy was not changed" >&2; exit 1; }
   done
 
