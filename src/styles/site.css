@@ -146,6 +146,7 @@ li, dd, blockquote { text-wrap: pretty; }
 .cols.three > div { display: grid; grid-row: span 2; grid-template-rows: subgrid; }
 .cols h2 + .facts { margin-top: 32px; }
 .note { margin-top: 32px; color: var(--grey); font-size: 15px; max-width: 64ch; }
+.note + .more { margin-top: 24px; }
 /* A note straight under a section headline is that section's sub, so it sets like every other sub: 19px ink. */
 h2 + .note { margin-top: 24px; color: var(--ink); font-size: 19px; line-height: 1.45; max-width: 40ch; }
 
