@@ -2,8 +2,9 @@
 /**
  * Questions, answered. What people ask before booking, in their words
  * (Domatik, niche vhwpt-qa), grouped by topic, one hairline accordion row per
- * question (refs: Mercury and Ripple FAQ rows, DJI's topic column). The
- * questions and answers live in src/data/questions.ts.
+ * question (refs: Mercury and Ripple FAQ rows, DJI's topic column). The rows
+ * are components/QaList.astro; the questions and answers live in
+ * src/data/questions.ts. Five of them also sit on the home page.
  *
  * DRAFT: the answers wait on Bruce. Rows with a fact for him carry a
  * "To confirm" pill, and the page stays out of search (`noindex`) until he
@@ -12,14 +13,9 @@
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
 import Cta from "../components/Cta.astro";
-import Icon from "../components/Icon.astro";
+import QaList from "../components/QaList.astro";
 import { practice } from "../data/site";
 import { topics, allQuestions } from "../data/questions";
-
-const basePath = import.meta.env.BASE_URL.endsWith("/")
-  ? import.meta.env.BASE_URL
-  : `${import.meta.env.BASE_URL}/`;
-const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
 const toConfirm = allQuestions.filter((q) => q.confirm).length;
 
@@ -61,30 +57,7 @@ const faq = {
       <section class="section qa" id={t.id} aria-labelledby={`${t.id}-title`}>
         <div class="wrap qa-group">
           <h2 id={`${t.id}-title`}>{t.title}</h2>
-          <div class="qa-list">
-            {t.questions.map((q) => (
-              <details class="qa-item" id={q.id}>
-                <summary>
-                  <h3>{q.q}</h3>
-                  {q.confirm && <span class="todo">To confirm</span>}
-                  <span class="qa-icon" aria-hidden="true" />
-                </summary>
-                <div class="qa-a">
-                  {q.a.map((p) => <p>{p}</p>)}
-                  {q.more && (
-                    <a class="more" href={withBase(q.more.href)}>
-                      {q.more.label} <Icon name="arrow" size={16} />
-                    </a>
-                  )}
-                  {q.confirm && (
-                    <p class="confirm">
-                      <span class="todo">Bruce to confirm</span> {q.confirm}
-                    </p>
-                  )}
-                </div>
-              </details>
-            ))}
-          </div>
+          <QaList questions={t.questions} />
         </div>
       </section>
     ))
@@ -135,39 +108,9 @@ const faq = {
   .section.qa { padding: 64px 0; }
   .qa-group { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 64px; }
   .qa-group h2 { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; align-self: start; position: sticky; top: 32px; }
-  .qa-list { border-top: 1px solid var(--hair); }
-
-  .qa-item { border-bottom: 1px solid var(--hair); }
-  .qa-item summary { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 16px; padding: 22px 0; cursor: pointer; list-style: none; }
-  .qa-item summary::-webkit-details-marker { display: none; }
-  .qa-item summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; border-radius: 4px; }
-  .qa-item h3 { font-size: 19px; line-height: 1.35; font-weight: 600; text-wrap: pretty; }
-  .qa-item summary:hover h3 { color: var(--grey); }
-
-  /* The plus turns into a minus when the answer is open. */
-  .qa-icon { position: relative; width: 20px; height: 20px; flex: none; }
-  .qa-icon::before, .qa-icon::after { content: ""; position: absolute; left: 3px; right: 3px; top: 50%; height: 1.5px; margin-top: -0.75px; background: var(--ink); transition: transform 0.2s ease; }
-  .qa-icon::after { transform: rotate(90deg); }
-  .qa-item[open] .qa-icon::after { transform: rotate(0deg); }
-
-  .qa-a { padding: 0 36px 28px 0; max-width: 64ch; }
-  .qa-a p { font-size: 17px; line-height: 1.55; text-wrap: pretty; }
-  .qa-a p + p { margin-top: 12px; }
-  .qa-a .more { margin-top: 20px; }
-  .qa-a .confirm { margin-top: 20px; font-size: 15px; line-height: 1.5; color: var(--grey); }
-  .qa-a .confirm .todo { margin-right: 6px; color: var(--ink); }
-
   @media (max-width: 760px) {
     .section.qa { padding: 48px 0; }
     .qa-group { grid-template-columns: minmax(0, 1fr); gap: 16px; }
     .qa-group h2 { position: static; }
-    /* The pill drops under the question so the question keeps the width. */
-    .qa-item summary { grid-template-columns: minmax(0, 1fr) auto; row-gap: 8px; }
-    .qa-item summary .todo { grid-row: 2; justify-self: start; }
-    .qa-icon { grid-column: 2; grid-row: 1; }
-    .qa-a { padding-right: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .qa-icon::before, .qa-icon::after { transition: none; }
   }
 </style>

@@ -2,13 +2,15 @@
 /**
  * The home page, rendered by src/pages/index.astro. The hero is the movement lab
  * (MotionHero), chosen by Justin on 2026-11-08 over the room photo and the other
- * motion options.
+ * motion options. Five questions people ask sit above the closing (QaList).
  */
 import Site from "../layouts/Site.astro";
 import Icon from "./Icon.astro";
 import MotionHero from "./MotionHero.astro";
 import Cta from "./Cta.astro";
+import QaList from "./QaList.astro";
 import { practice, services, featured, testimonials, credentialLine } from "../data/site";
+import { allQuestions, homeQuestions } from "../data/questions";
 
 export interface Props {
   /** Canonical path; review pages pass their own. */
@@ -115,6 +117,24 @@ const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
           <span class="label">Long-term client</span>
         </p>
       </div>
+    </div>
+  </section>
+
+  <!--
+    Five of the questions people actually ask (Domatik), answered in place, with
+    the rest one link away: the questions are hard to find from the footer alone
+    (Justin, 2026-11-08).
+  -->
+  <section class="section" aria-labelledby="questions-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="questions-title">Questions people ask before they book.</h2>
+        <p>Medicare, referrals, recovering from surgery, and how training differs from therapy, in plain answers.</p>
+      </div>
+      <QaList questions={homeQuestions} />
+      <p class="rows-foot">
+        <a class="more" href={withBase("/questions")}>All {allQuestions.length} questions <Icon name="arrow" size={16} /></a>
+      </p>
     </div>
   </section>
 

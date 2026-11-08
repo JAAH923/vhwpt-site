@@ -28,6 +28,7 @@ export const credentialLine =
 export const nav = [
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
+  { label: "Questions", href: "/questions" },
   { label: "Book", href: "/book" },
 ];
 

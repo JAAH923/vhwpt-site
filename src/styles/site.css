@@ -126,6 +126,8 @@ li, dd, blockquote { text-wrap: pretty; }
 .groups { display: grid; gap: 64px; }
 /* An h2 for structure, set as a label (beats .section h2). */
 .section h2.group-label { font-size: 12px; line-height: 1.5; letter-spacing: 0.06em; font-weight: 400; margin-bottom: 16px; }
+/* Services: each group's label sits in a grey pill, so PT and wellness read as two groups (Justin, 2026-11-08). */
+.section h2.group-label { display: inline-block; background: var(--whisper); color: var(--ink); border-radius: 9999px; padding: 6px 14px; }
 
 /* Proof: one number, the client's own words beside it. */
 .proof { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 64px; align-items: start; }

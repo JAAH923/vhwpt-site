@@ -319,3 +319,15 @@ export const topics: Topic[] = [
 ];
 
 export const allQuestions = topics.flatMap((t) => t.questions);
+
+/**
+ * The five shown on the home page, by `id`: coverage, referral, surgery,
+ * PT or trainer, and virtual training, so both halves of the practice show.
+ */
+export const homeQuestions = [
+  "medicare-at-home",
+  "referral",
+  "when-to-start",
+  "pt-or-trainer",
+  "virtual-weight-loss",
+].map((id) => allQuestions.find((q) => q.id === id)!);
