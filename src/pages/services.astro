@@ -19,7 +19,7 @@ const byGroup = groups.map((g) => ({
 }));
 
 // One photograph per view at most, so only four sections carry one. `ai`
-// marks a generated image of a person, which shows the placeholder tag.
+// marks a generated image of a person, which shows the "Illustrative image" caption.
 const photos: Record<string, { src: string; alt: string; ai: boolean }> = {
   rehab: {
     src: "/assets/photos/ai/knee-hands.webp",
@@ -124,7 +124,7 @@ const photos: Record<string, { src: string; alt: string; ai: boolean }> = {
                 {photo && (
                   <figure>
                     <img src={withBase(photo.src)} alt={photo.alt} loading="lazy" />
-                    {photo.ai && <span class="tag label">AI photo</span>}
+                    {photo.ai && <span class="tag">Illustrative image</span>}
                   </figure>
                 )}
                 <div class="covers">

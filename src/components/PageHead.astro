@@ -32,7 +32,7 @@ const { label, title, lede, creds, photo } = Astro.props;
             style={photo.position ? `object-position:${photo.position}` : undefined}
             loading="eager"
           />
-          {photo.ai && <span class="tag label">AI photo</span>}
+          {photo.ai && <span class="tag">Illustrative image</span>}
         </figure>
       )
     }
