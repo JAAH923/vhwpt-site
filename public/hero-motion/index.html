@@ -62,7 +62,7 @@
 <header>
   <div class="title">
     <strong>Hero motion · vhwpt.com</strong>
-    <span class="label">Five options · pick one</span>
+    <span class="label">Seven options · pick one</span>
   </div>
   <div class="seg" role="group" aria-label="Version" data-versions></div>
   <div class="seg" role="group" aria-label="Device" data-devices></div>
@@ -80,6 +80,9 @@
 </main>
 <script>
 const VERSIONS = [
+  // The window hero is the real home page (Astro), so it opens at its own route.
+  { id: "w", name: "Window", file: "window/", about: "The current home hero: a living room with the treatment table set up by an open window, shown as a still. This is the real home page." },
+  { id: "f", name: "Window, flowing", file: "window-flow/", about: "The same room with the curtains moving in the breeze from the open window. The loop still reads a little jerky (ENH-392)." },
   { id: "d", name: "Warm-up scan", file: "d.html", about: "The letters from B stand up and settle, then the body from C scans in beside them and runs the warm-up while the type holds still." },
   { id: "e", name: "Smoosh and scan", file: "e.html", about: "The headline opens spread wide, smooshes to the left, then the body scans in and runs the warm-up while the type holds still." },
   { id: "a", name: "Movement lab", file: "a.html", about: "A motion-capture figure runs windmill stretches, a walk and kettlebell swings beside a big headline, with live measurements." },

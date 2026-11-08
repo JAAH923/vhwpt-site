@@ -3,15 +3,20 @@ import Site from "../layouts/Site.astro";
 import Icon from "../components/Icon.astro";
 import PageHead from "../components/PageHead.astro";
 import Cta from "../components/Cta.astro";
-import { practice, services, testimonials } from "../data/site";
+import { practice, services, groups, testimonialByName } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
-const quoteFor = (anchor: string) =>
-  testimonials.cards.find((t) => t.anchor === anchor);
+// Physical therapy and wellness stay clearly separate (insurance compliance):
+// the index and the sections both run group by group, and every section
+// carries its group's label.
+const byGroup = groups.map((g) => ({
+  ...g,
+  items: services.filter((s) => s.group === g.id),
+}));
 
 // One photograph per view at most, so only four sections carry one. `ai`
 // marks a generated image of a person, which shows the placeholder tag.
@@ -41,94 +46,103 @@ const photos: Record<string, { src: string; alt: string; ai: boolean }> = {
 
 <Site
   title="Services | Dr. Bruce Valencia, DPT | Broward & Palm Beach"
-  description="Rehabilitation and recovery, senior fitness, personal training, weight management, youth conditioning, pre and postnatal fitness, virtual training and wellness programming, all led by a Doctor of Physical Therapy."
+  description="Physical therapy (rehabilitation and recovery, balance and fall prevention) and wellness and training (senior fitness, personal training, weight loss, youth conditioning, pre and postnatal, virtual and corporate wellness), all led by a Doctor of Physical Therapy."
   path="/services"
 >
   <PageHead
     label="Services"
-    title="Eight ways to work together. One person running all of them."
-    lede={`Whatever you come in for, it starts the same way: a full evaluation, then a written plan built for your body and your history. Sessions happen in your home across ${practice.regionLong}, or live over video from anywhere.`}
+    title="Two kinds of care. One person running all of them."
+    lede={`Physical therapy starts with a PT evaluation. Wellness and training start with a wellness screening. Either way, you get a written plan built for your body and your history. Sessions happen in your home or care facility across ${practice.regionLong}, and virtual training is available anywhere.`}
   />
 
   <!-- The first visit gets top billing: it is the entry point to everything below. -->
   <section class="section" id="start-here" aria-labelledby="start-title">
     <div class="wrap narrow">
       <p class="label">Start here</p>
-      <h2 id="start-title">Everything starts with the evaluation.</h2>
+      <h2 id="start-title">Everything starts with a first visit.</h2>
       <p class="lead">
-        Sixty minutes going through your history, watching how you actually move, and
-        explaining what is going on. You leave with a written plan, and an honest answer
-        if what you need is a physician rather than a trainer.
+        A PT evaluation or a wellness screening. Bruce goes through your history, watches
+        how you actually move, and explains what is going on. You leave with a written
+        plan, and an honest answer if what you need is a physician.
       </p>
       <a class="more" href={withBase("/services/health-evaluation")}>
-        What happens in an evaluation <Icon name="arrow" size={16} />
+        What happens at the first visit <Icon name="arrow" size={16} />
       </a>
     </div>
   </section>
 
   <section class="section" aria-label="All services">
-    <div class="wrap">
-      <ul class="rows">
-        {
-          services.map((s) => (
-            <li>
-              <a href={`#${s.anchor}`}>
-                <div>
-                  <h3>{s.title}</h3>
-                  <p>{s.lede}</p>
-                </div>
-                <Icon name="arrow" size={22} />
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+    <div class="wrap groups">
+      {
+        byGroup.map((g) => (
+          <div class="group">
+            <h2 class="label group-label" id={`group-${g.id}`}>{g.label}</h2>
+            <ul class="rows" aria-labelledby={`group-${g.id}`}>
+              {g.items.map((s) => (
+                <li>
+                  <a href={`#${s.anchor}`}>
+                    <div>
+                      <h3>{s.title}</h3>
+                      {s.tag && <p class="label row-tag">{s.tag}</p>}
+                      <p>{s.lede}</p>
+                    </div>
+                    <Icon name="arrow" size={22} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
     </div>
   </section>
 
   {
-    services.map((s) => {
-      const q = quoteFor(s.anchor);
-      const photo = photos[s.anchor];
-      return (
-        <section class="section svc" id={s.anchor} aria-labelledby={`${s.anchor}-title`}>
-          <div class="wrap">
-            <div>
-              <h2 id={`${s.anchor}-title`}>{s.title}</h2>
-              <p class="lede">{s.lede}</p>
-              <p>{s.body}</p>
-              {q && (
-                <blockquote class="quote">
-                  <p>“{q.quote}”</p>
-                  <footer>
-                    <strong>{q.name}</strong>
-                    {q.detail && <span class="label">{q.detail}</span>}
-                  </footer>
-                </blockquote>
-              )}
-            </div>
-            <div>
-              {photo && (
-                <figure>
-                  <img src={withBase(photo.src)} alt={photo.alt} loading="lazy" />
-                  {photo.ai && <span class="tag label">AI photo</span>}
-                </figure>
-              )}
-              <div class="covers">
-                <span class="label">Commonly covers</span>
-                <ul class="lines">
-                  {s.covers.map((c) => <li>{c}</li>)}
-                </ul>
+    byGroup.map((g) =>
+      g.items.map((s) => {
+        const q = testimonialByName(s.testimonial);
+        const photo = photos[s.anchor];
+        return (
+          <section class="section svc" id={s.anchor} aria-labelledby={`${s.anchor}-title`}>
+            <div class="wrap">
+              <div>
+                <p class="label svc-group">{g.label}{s.tag && ` · ${s.tag}`}</p>
+                <h2 id={`${s.anchor}-title`}>{s.title}</h2>
+                <p class="lede">{s.lede}</p>
+                <p>{s.body}</p>
+                {q && (
+                  <blockquote class="quote">
+                    <p>“{q.quote}”</p>
+                    <footer>
+                      <strong>{q.name}</strong>
+                      {"detail" in q && q.detail && <span class="label">{q.detail}</span>}
+                    </footer>
+                  </blockquote>
+                )}
+              </div>
+              <div>
+                {photo && (
+                  <figure>
+                    <img src={withBase(photo.src)} alt={photo.alt} loading="lazy" />
+                    {photo.ai && <span class="tag label">AI photo</span>}
+                  </figure>
+                )}
+                <div class="covers">
+                  <span class="label">Commonly covers</span>
+                  <ul class="lines">
+                    {s.covers.map((c) => <li>{c}</li>)}
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-      );
-    })
+          </section>
+        );
+      })
+    )
   }
 
   <Cta
     title="Not sure which one you need?"
-    body="That is what the evaluation is for. Book it and Bruce will tell you, including if the answer is someone other than him."
+    body="That is what the first visit is for. Book a PT evaluation or a wellness screening, and Bruce will tell you, including if the answer is someone other than him."
   />
 </Site>

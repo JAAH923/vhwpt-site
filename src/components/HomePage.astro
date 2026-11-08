@@ -1,0 +1,125 @@
+---
+/**
+ * The home page. src/pages/index.astro renders it as-is; the hero comparison
+ * pages (src/pages/hero-motion/) render it with the window hero still or
+ * flowing, kept out of search.
+ */
+import Site from "../layouts/Site.astro";
+import Icon from "./Icon.astro";
+import RoomHero from "./RoomHero.astro";
+import Cta from "./Cta.astro";
+import { practice, services, featured, testimonials, credentialLine } from "../data/site";
+
+export interface Props {
+  /** Play the window hero's curtain loop. */
+  heroLoop?: boolean;
+  /** Canonical path; review pages pass their own. */
+  path?: string;
+  noindex?: boolean;
+}
+const { heroLoop = false, path: pagePath = "/", noindex = false } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const rows = featured.map((a) => services.find((s) => s.anchor === a)!);
+// The strongest proof on the site, in the client's own words.
+const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
+---
+
+<Site
+  title="Dr. Bruce Valencia, DPT | Physical Therapy & Training | Broward & Palm Beach"
+  description="Physical therapy and wellness from a Doctor of Physical Therapy, in your home or care facility across Broward and Palm Beach County. Start with a PT evaluation or a wellness screening. Virtual training nationwide."
+  path={pagePath}
+  overlay
+  noindex={noindex}
+>
+  <RoomHero playLoop={heroLoop} />
+
+  <!--
+    About sits ahead of the service list. Bruce is the product: the credential
+    is the differentiator, so it should land before the menu.
+  -->
+  <section class="section" aria-labelledby="about-title">
+    <div class="wrap split">
+      <figure>
+        <img
+          src={withBase("/assets/photos/bruce-in-session.webp")}
+          alt={`${practice.doctor} working with a patient`}
+          width="1402"
+          height="1122"
+          loading="lazy"
+        />
+      </figure>
+      <div>
+        <p class="label">Dr. Bruce Valencia · {credentialLine}</p>
+        <h2 id="about-title">One clinician, from recovery to strength and weight loss.</h2>
+        <p class="lead">
+          Most trainers cannot read a post-operative report. Most clinics stop the moment
+          insurance does.
+        </p>
+        <p>
+          Working with a doctor of physical therapy who also coaches means one person
+          carries you from recovery through training and weight loss, without the handoff
+          where progress usually stalls.
+        </p>
+        <a class="more" href={withBase("/about")}>Read his story <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="services-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="services-title">Care built around your body, not a package.</h2>
+        <p>
+          Rehabilitation, training and wellness under one practitioner, so nobody has to
+          be caught up on your history.
+        </p>
+      </div>
+      <ul class="rows">
+        {
+          rows.map((s) => (
+            <li>
+              <a href={withBase(`/services#${s.anchor}`)}>
+                <div>
+                  <h3>{s.title}</h3>
+                  {s.tag && <p class="label row-tag">{s.tag}</p>}
+                  <p>{s.lede}</p>
+                </div>
+                <Icon name="arrow" size={22} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="rows-foot">
+        <a class="more" href={withBase("/services")}>All services, in detail <Icon name="arrow" size={16} /></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section" aria-label="Client result">
+    <div class="wrap proof">
+      <div>
+        <p class="label">A1C, before and after</p>
+        <p class="stat">8.2 → 5.8</p>
+        <p class="label">{proof.service}</p>
+      </div>
+      <div>
+        <blockquote>“{proof.quote}”</blockquote>
+        <p class="who">
+          <strong>{proof.name}</strong>
+          <span class="label">Long-term client</span>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Cta
+    title="Start with your first visit."
+    body="Book a PT evaluation or a wellness screening, in your home or care facility. You leave knowing what is going on and what the plan is, whether or not you continue with Bruce."
+  />
+</Site>

@@ -14,9 +14,11 @@ export interface Props {
   path: string;
   /** Lay the nav over the page's first section (the home hero). */
   overlay?: boolean;
+  /** Keep the page out of search everywhere (review-only pages). */
+  noindex?: boolean;
 }
 
-const { title, description, path, overlay = false } = Astro.props;
+const { title, description, path, overlay = false, noindex = false } = Astro.props;
 const canonical = `https://www.vhwpt.com${path}`;
 const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
 // The GitHub Pages preview is public; keep it out of search so it never
@@ -30,7 +32,7 @@ const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    {isPreview && <meta name="robots" content="noindex, nofollow" />}
+    {(isPreview || noindex) && <meta name="robots" content="noindex, nofollow" />}
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
@@ -127,7 +129,7 @@ const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
           </div>
           <nav class="footer-nav" aria-label="Footer navigation">
             <a href={withBase("/services")}>Services</a>
-            <a href={withBase("/services/health-evaluation")}>Health Evaluation</a>
+            <a href={withBase("/services/health-evaluation")}>Your first visit</a>
             <a href={withBase("/about")}>About</a>
             <a href={withBase("/book")}>Book</a>
           </nav>

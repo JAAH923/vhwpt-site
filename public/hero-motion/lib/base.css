@@ -41,6 +41,10 @@ nav.top { position: relative; z-index: 2; display: flex; align-items: center; ju
 .with small { display: block; font-size: 13px; line-height: 1.3; color: var(--grey); }
 .btn-line { background: var(--white); border: 1px solid var(--hair); padding: 12px 19px; font-size: 15px; font-weight: 400; }
 .btn-line:hover { border-color: var(--ink); }
+/* The hero's three actions (Bruce's locked copy, 11/7): PT evaluation, wellness
+   screening, and a quiet "Ask a question" link. The avatar takes its own row. */
+.btn-line.btn-lg { padding: 15px 22px; font-size: 17px; }
+.ask { font-size: 17px; font-weight: 700; border-bottom: 1px solid var(--ink); padding-bottom: 4px; }
 
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
 .intro { padding: 96px 0; border-top: 1px solid var(--hair); }

@@ -1,5 +1,6 @@
 ---
-import { practice } from "../data/site";
+import Icon from "./Icon.astro";
+import { actions } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -9,15 +10,11 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 export interface Props {
   title: string;
   body: string;
-  /** The second, quieter action. Defaults to calling Bruce. */
-  secondary?: { label: string; href: string };
+  /** The quiet third action, a text link. Defaults to "Ask a question". */
+  third?: { label: string; href: string };
 }
 
-const {
-  title,
-  body,
-  secondary = { label: `Call ${practice.phone}`, href: practice.phoneHref },
-} = Astro.props;
+const { title, body, third = actions.question } = Astro.props;
 ---
 
 <section class="cta">
@@ -25,8 +22,9 @@ const {
     <h2>{title}</h2>
     <p>{body}</p>
     <div class="actions">
-      <a class="btn btn-primary" href={withBase("/book")}>Book an evaluation</a>
-      <a class="btn btn-line" href={secondary.href}>{secondary.label}</a>
+      <a class="btn btn-primary" href={withBase(actions.pt.href)}>{actions.pt.label}</a>
+      <a class="btn btn-line" href={withBase(actions.wellness.href)}>{actions.wellness.label}</a>
+      <a class="more" href={withBase(third.href)}>{third.label} <Icon name="arrow" size={16} /></a>
     </div>
   </div>
 </section>

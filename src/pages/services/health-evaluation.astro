@@ -1,4 +1,10 @@
 ---
+/**
+ * "Your first visit" (was "The Health Evaluation"). The URL stays
+ * /services/health-evaluation so the old WordPress redirect and any inbound
+ * links keep working. It covers both entry points: the PT evaluation and the
+ * wellness screening.
+ */
 import Site from "../../layouts/Site.astro";
 import PageHead from "../../components/PageHead.astro";
 import Cta from "../../components/Cta.astro";
@@ -11,14 +17,14 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 ---
 
 <Site
-  title="The Health Evaluation | Dr. Bruce Valencia, DPT"
-  description="A 60-minute evaluation with a Doctor of Physical Therapy: history, movement and strength assessment, findings explained, and a written plan you keep. In your home across Broward and Palm Beach County, or over video."
+  title="Your First Visit | Dr. Bruce Valencia, DPT"
+  description="Your first visit with a Doctor of Physical Therapy: a PT evaluation or a wellness screening, in your home or care facility across Broward and Palm Beach County. History, a movement and strength assessment, findings explained, and a written plan you keep."
   path="/services/health-evaluation"
 >
   <PageHead
     label="The first visit"
-    title="The Health Evaluation"
-    lede="Sixty minutes with a Doctor of Physical Therapy, in your home or over video. You leave knowing what is actually going on in your body and what to do about it, written down, whether or not you train with Bruce afterward."
+    title="Your first visit"
+    lede="PT patients start with a PT evaluation. Wellness clients start with a wellness screening. Both happen with a doctor of physical therapy, in your home or care facility. You leave knowing what is going on and what to do about it, written down."
     photo={{
       src: withBase("/assets/photos/ai/living-room-ready.webp"),
       alt: "A living room cleared for a session, with a mat and a chair by the window",
@@ -30,7 +36,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     <div class="wrap">
       <div class="section-head">
         <h2 id="happens-title">What happens</h2>
-        <p>Four parts, in this order, in about an hour.</p>
+        <p>Four parts, in this order, for both the PT evaluation and the wellness screening.</p>
       </div>
       <ol class="steps">
         {
@@ -56,7 +62,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         <li>A written plan, with the progression spelled out</li>
         <li>A home program you can do between sessions</li>
         <li>An explanation you can repeat to your family</li>
-        <li>A referral, if a physician is what you actually need</li>
+        <li>A recommendation to see your physician, if that is what you need</li>
       </ul>
     </div>
   </section>
@@ -66,13 +72,21 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
       <div class="section-head">
         <h2 id="suits-title">Who it suits</h2>
       </div>
-      <div class="cols">
+      <div class="cols three">
         <div>
-          <h3>A good fit if you are</h3>
+          <h3>A good fit for a PT evaluation if you are</h3>
+          <ul class="lines">
+            <li>Recovering from surgery or an injury</li>
+            <li>Living with Parkinson's or another condition that affects movement</li>
+            <li>Worried about balance, falls or losing independence</li>
+            <li>Referred by your physician for physical therapy</li>
+          </ul>
+        </div>
+        <div>
+          <h3>A good fit for a wellness screening if you are</h3>
           <ul class="lines">
             <li>Finished with formal PT but not back to normal</li>
-            <li>Recovering from surgery or an injury</li>
-            <li>Worried about balance, falls or losing independence</li>
+            <li>Wanting to lose weight or build healthier habits</li>
             <li>Training around a history your last trainer did not understand</li>
             <li>Cleared by a physician and unsure what is safe</li>
           </ul>
@@ -80,17 +94,16 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         <div>
           <h3>Not the right call if you</h3>
           <ul class="lines">
-            <li>Have a new, undiagnosed or worsening injury: see a physician first</li>
             <li>Need emergency or urgent medical care</li>
-            <li>Are looking for a diagnosis or a prescription</li>
+            <li>Are looking for a medical diagnosis or a prescription</li>
             <li>Want a program emailed over without being assessed</li>
           </ul>
         </div>
       </div>
       <p class="note">
-        Bruce is a licensed DPT providing physical therapy-informed coaching through
-        {" "}{practice.legalName}. That is not a substitute for medical diagnosis or
-        treatment, and saying so plainly is part of the job.
+        Bruce provides physical therapy as a licensed DPT through {practice.legalName}.
+        Wellness screenings, training and coaching are separate services and are not
+        physical therapy. Neither replaces diagnosis or care from your physician.
       </p>
     </div>
   </section>
@@ -99,20 +112,16 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     <div class="wrap cols">
       <div>
         <h2 id="fees-title">Fees</h2>
-        <p class="note">Straight answers before you call, because nobody should have to ask twice.</p>
+        <p class="note">Rates for wellness services are shared once Bruce understands what you need.</p>
       </div>
-      <dl class="facts">
+      <dl class="facts stack">
         <div>
-          <dt>Health Evaluation, 60 minutes</dt>
-          <dd><span class="todo">Confirm rate</span></dd>
+          <dt>Physical therapy: evaluation and treatment</dt>
+          <dd>Billed to Medicare and most major plans. Call to verify your coverage.</dd>
         </div>
         <div>
-          <dt>Ongoing sessions</dt>
-          <dd><span class="todo">Confirm rate</span></dd>
-        </div>
-        <div>
-          <dt>Insurance</dt>
-          <dd><span class="todo">Confirm: self-pay, or which plans</span></dd>
+          <dt>Wellness and training</dt>
+          <dd>Self-pay, not billed to insurance. Card, cash, PayPal or Zelle.</dd>
         </div>
         <div>
           <dt>Travel</dt>
@@ -123,7 +132,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
   </section>
 
   <Cta
-    title="Book the evaluation."
-    body="Tell Bruce what is going on and he will come to you, or meet you on video."
+    title="Book your first visit."
+    body="Tell Bruce what is going on and he will come to your home or care facility."
   />
 </Site>
