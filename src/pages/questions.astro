@@ -1,0 +1,116 @@
+---
+/**
+ * Questions, answered. What people ask before booking, in their words
+ * (Domatik, niche vhwpt-qa), grouped by topic, one hairline accordion row per
+ * question (refs: Mercury and Ripple FAQ rows, DJI's topic column). The rows
+ * are components/QaList.astro; the questions and answers live in
+ * src/data/questions.ts. Five of them also sit on the home page.
+ *
+ * DRAFT: the answers wait on Bruce. Rows with a fact for him carry a
+ * "To confirm" pill, and the page stays out of search (`noindex`) until he
+ * has approved them; then drop the pills' data, the draft note and `noindex`.
+ */
+import Site from "../layouts/Site.astro";
+import PageHead from "../components/PageHead.astro";
+import Cta from "../components/Cta.astro";
+import QaList from "../components/QaList.astro";
+import { practice } from "../data/site";
+import { topics, allQuestions } from "../data/questions";
+
+const toConfirm = allQuestions.filter((q) => q.confirm).length;
+
+// FAQPage structured data, for search and AI answers once the page is indexed.
+const faq = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: allQuestions.map((q) => ({
+    "@type": "Question",
+    name: q.q,
+    acceptedAnswer: { "@type": "Answer", text: q.a.join(" ") },
+  })),
+};
+---
+
+<Site
+  title="Questions, Answered | Dr. Bruce Valencia, DPT"
+  description={`Plain answers about physical therapy at home, Medicare, referrals, knee and hip surgery recovery, balance, Parkinson’s, training, dry needling and lymphedema, from Dr. Bruce Valencia, DPT, across ${practice.regionLong}.`}
+  path="/questions"
+  noindex
+>
+  <PageHead
+    label="Questions"
+    title="Questions, answered"
+    lede={`Plain answers to what people ask before they book. If yours isn’t here, call Bruce at ${practice.phone}.`}
+  >
+    <nav class="qa-topics" aria-label="Topics">
+      {topics.map((t) => <a href={`#${t.id}`}>{t.title}</a>)}
+    </nav>
+    <button class="more qa-toggle" type="button" hidden>Open all answers</button>
+    <p class="form-note">
+      <span class="todo">Draft</span> These answers are for Bruce to check before launch.
+      {toConfirm} of {allQuestions.length} name a fact for him to confirm.
+    </p>
+  </PageHead>
+
+  {
+    topics.map((t) => (
+      <section class="section qa" id={t.id} aria-labelledby={`${t.id}-title`}>
+        <div class="wrap qa-group">
+          <h2 id={`${t.id}-title`}>{t.title}</h2>
+          <QaList questions={t.questions} />
+        </div>
+      </section>
+    ))
+  }
+
+  <Cta
+    title="Still have a question?"
+    body="Call Bruce or tell him what is going on when you book. He answers his own messages within one business day."
+  />
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faq)} />
+</Site>
+
+<script>
+  // Open all / close all, and open the answer a link points at (/questions#referral).
+  const items = [...document.querySelectorAll<HTMLDetailsElement>(".qa-item")];
+  const toggle = document.querySelector<HTMLButtonElement>(".qa-toggle");
+  const sync = () => {
+    if (toggle) toggle.textContent = items.every((d) => d.open) ? "Close all answers" : "Open all answers";
+  };
+  if (toggle) {
+    toggle.hidden = false;
+    toggle.addEventListener("click", () => {
+      const open = !items.every((d) => d.open);
+      items.forEach((d) => (d.open = open));
+      sync();
+    });
+  }
+  items.forEach((d) => d.addEventListener("toggle", sync));
+  const openFromHash = () => {
+    const el = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+    if (el instanceof HTMLDetailsElement) el.open = true;
+  };
+  openFromHash();
+  addEventListener("hashchange", openFromHash);
+</script>
+
+<style>
+  /* Topic chips under the lede, then the open-all toggle as a text link. */
+  .qa-topics { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 32px; }
+  .qa-topics a { font-size: 15px; line-height: 1.3; padding: 8px 14px; border: 1px solid var(--hair); border-radius: 9999px; }
+  .qa-topics a:hover { border-color: var(--ink); }
+  .qa-toggle { margin-top: 24px; background: none; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; padding: 0 0 4px; font: inherit; font-weight: 700; color: var(--ink); cursor: pointer; }
+  .qa-toggle:hover { color: var(--grey); }
+  .qa-toggle[hidden] { display: none; }
+
+  /* One topic per section: its title holds the left column while its rows scroll. */
+  .section.qa { padding: 64px 0; }
+  .qa-group { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 64px; }
+  .qa-group h2 { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; align-self: start; position: sticky; top: 32px; }
+  @media (max-width: 760px) {
+    .section.qa { padding: 48px 0; }
+    .qa-group { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .qa-group h2 { position: static; }
+  }
+</style>
