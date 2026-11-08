@@ -44,9 +44,9 @@ p { margin: 0; }
 .more svg { transition: transform 0.2s ease; }
 .more:hover svg { transform: translateX(4px); }
 
-/* AI placeholder tag: only on generated images that show a person. */
-.tag { position: absolute; left: 12px; top: 12px; background: rgba(24, 24, 27, 0.72); color: var(--white); padding: 4px 8px; border-radius: 5px; }
-.tag.label { color: var(--white); }
+/* Quiet caption on generated images that show a person: small light type in the
+   bottom-right corner, so it is honest without competing with the photo. */
+.tag { position: absolute; right: 14px; bottom: 12px; font-size: 11px; line-height: 1; letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.8); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5); pointer-events: none; }
 /* Facts Bruce still has to confirm before launch (T-182). */
 .todo { display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; background: var(--whisper); border: 1px dashed var(--grey); border-radius: 5px; padding: 0 8px; }
 
