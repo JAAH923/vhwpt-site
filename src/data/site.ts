@@ -23,7 +23,7 @@ export const credentials = [
 
 /** The short credential row used in labels (Home, About). */
 export const credentialLine =
-  "DPT · CLT · Dry Needling · ISSA-CPT · ISSA Strength and Conditioning";
+  "DPT\u00a0· CLT\u00a0· Dry Needling\u00a0· ISSA-CPT\u00a0· ISSA Strength and Conditioning";
 
 export const nav = [
   { label: "Services", href: "/services" },
@@ -55,15 +55,23 @@ export const groups = [
 export type GroupId = (typeof groups)[number]["id"];
 
 /**
- * The service line. `anchor` is the section id on /services — these are
- * sections of one deep page, not separate pages. A section earns its own URL
- * only once it has enough of its own content to justify one; the first visit
- * is the one that does. `testimonial` names the client quote shown with it.
+ * The service line. Each service has its own page at /services/<slug>, built
+ * by src/pages/services/[slug].astro, so search and AI answers can cite one
+ * URL per service (AI-search teardown, T-888). /services is the index.
+ * `id` is the short key used by `featured`. `testimonial` names the client
+ * quote shown with it.
  */
 export const services: {
-  anchor: string;
+  id: string;
+  /** The URL segment under /services. personal-training keeps the old WordPress URL. */
+  slug: string;
   group: GroupId;
   title: string;
+  /** One photograph for the page head. `ai` marks a generated image of a
+   *  person, which shows the "Illustrative image" caption. */
+  photo?: { src: string; alt: string; ai: boolean };
+  /** Delivered live over video rather than in person, so no travel line. */
+  remote?: boolean;
   /** A short tag shown beside the title, such as Virtual Training's scope. */
   tag?: string;
   lede: string;
@@ -72,7 +80,13 @@ export const services: {
   testimonial?: string;
 }[] = [
   {
-    anchor: "rehab",
+    id: "rehab",
+    slug: "rehabilitation",
+    photo: {
+      src: "/assets/photos/ai/knee-hands.webp",
+      alt: "A clinician’s hands supporting a client’s knee on an exercise mat at home",
+      ai: true,
+    },
     group: "pt",
     title: "Rehabilitation & Recovery",
     lede:
@@ -81,7 +95,7 @@ export const services: {
       "Recovery rarely ends when the discharge paperwork does. Programs here are built around where you are now, progressed as you earn it, and coordinated with the surgeon or physician already managing your care.",
     covers: [
       "Total knee, hip and back surgery recovery",
-      "Parkinson's and neurological conditions",
+      "Parkinson’s and neurological conditions",
       "Injury rehabilitation",
       "Strength and range of motion",
       "Swelling and lymphatic care",
@@ -89,7 +103,8 @@ export const services: {
     testimonial: "Paul Duffe",
   },
   {
-    anchor: "balance",
+    id: "balance",
+    slug: "balance-and-fall-prevention",
     group: "pt",
     title: "Balance & Fall Prevention",
     lede: "Skilled therapy for balance, walking and fall risk, in your home or care facility.",
@@ -104,7 +119,13 @@ export const services: {
     ],
   },
   {
-    anchor: "senior",
+    id: "senior",
+    slug: "senior-fitness",
+    photo: {
+      src: "/assets/photos/ai/hallway-walk.webp",
+      alt: "An older man walking steadily down a hallway at home",
+      ai: true,
+    },
     group: "wellness",
     title: "Senior Fitness",
     lede:
@@ -119,7 +140,13 @@ export const services: {
     testimonial: "Howard Kurpit",
   },
   {
-    anchor: "training",
+    id: "training",
+    slug: "personal-training",
+    photo: {
+      src: "/assets/photos/ai/kettlebell-light.webp",
+      alt: "A kettlebell and a foam roller on a wooden floor in window light",
+      ai: false,
+    },
     group: "wellness",
     title: "Personal Training",
     lede: "One-to-one coaching, built on a wellness screening rather than a template.",
@@ -135,7 +162,8 @@ export const services: {
     testimonial: "Brendan Meehan",
   },
   {
-    anchor: "weight",
+    id: "weight",
+    slug: "weight-loss-and-nutrition",
     group: "wellness",
     title: "Weight Loss & Nutrition",
     lede: "Body composition and metabolic health, handled together rather than separately.",
@@ -150,7 +178,8 @@ export const services: {
     testimonial: "Olga & Ozzie Brannon",
   },
   {
-    anchor: "youth",
+    id: "youth",
+    slug: "youth-sports-conditioning",
     group: "wellness",
     title: "Youth Sports Conditioning",
     lede: "Athletic development for young athletes, starting with how they move.",
@@ -164,7 +193,8 @@ export const services: {
     ],
   },
   {
-    anchor: "prenatal",
+    id: "prenatal",
+    slug: "pre-and-postnatal-fitness",
     group: "wellness",
     title: "Pre & Postnatal Fitness",
     lede: "Programming through pregnancy and the months after it.",
@@ -178,7 +208,14 @@ export const services: {
     ],
   },
   {
-    anchor: "virtual",
+    id: "virtual",
+    slug: "virtual-training",
+    photo: {
+      src: "/assets/photos/ai/virtual-session.webp",
+      alt: "A client working with a resistance band in front of a laptop video session",
+      ai: true,
+    },
+    remote: true,
     group: "wellness",
     title: "Virtual Training",
     tag: "Wellness only · Nationwide",
@@ -193,12 +230,13 @@ export const services: {
     ],
   },
   {
-    anchor: "holistic",
+    id: "holistic",
+    slug: "holistic-and-corporate-wellness",
     group: "wellness",
     title: "Holistic & Corporate Wellness",
     lede: "Whole-body coaching for individuals, and wellness programming for teams.",
     body:
-      "Fitness, mindfulness and coaching for people who want a broader approach, plus on-site or virtual classes and workshops sized to an organization's team and schedule.",
+      "Fitness, mindfulness and coaching for people who want a broader approach, plus on-site or virtual classes and workshops sized to an organization’s team and schedule.",
     covers: [
       "Whole-body coaching",
       "Mindfulness and yoga-inspired movement",
@@ -209,13 +247,13 @@ export const services: {
   },
 ];
 
-/** The four sections featured as cards on the homepage. */
+/** The four services featured as rows on the homepage, by `id`. */
 export const featured = ["rehab", "senior", "training", "virtual"];
 
 export const testimonials = {
   featured: {
     quote:
-      "Dr. Valencia's vast experience as a personal trainer and doctor of physical therapy proved invaluable to my fitness journey, improving my strength, stamina, metabolic health, diet, and lifestyle.",
+      "Dr. Valencia’s vast experience as a personal trainer and doctor of physical therapy proved invaluable to my fitness journey, improving my strength, stamina, metabolic health, diet, and lifestyle.",
     name: "Brendan Meehan",
     service: "Personal Training · Weight Management · Holistic Wellness",
     anchor: "training",
@@ -231,7 +269,7 @@ export const testimonials = {
     },
     {
       quote:
-        "His holistic approach includes exercise, nutrition, natural supplements, and motivational material — all tailored to my needs. It's everything I need, and nothing I don't.",
+        "His holistic approach includes exercise, nutrition, natural supplements, and motivational material — all tailored to my needs. It’s everything I need, and nothing I don’t.",
       name: "Joseph Leo",
       service: "Personal Training · Holistic Wellness",
       anchor: "holistic",
@@ -246,7 +284,7 @@ export const testimonials = {
     },
     {
       quote:
-        "Thanks to you I am healthy, wealthy, and wise. My A1C dropped from 8.2 down to 5.8. My doctor confirmed my weight reduction, improved muscle tone, and I'm no longer at risk for diabetes.",
+        "Thanks to you I am healthy, wealthy, and wise. My A1C dropped from 8.2 down to 5.8. My doctor confirmed my weight reduction, improved muscle tone, and I’m no longer at risk for diabetes.",
       name: "Olga Brannon",
       service: "Weight Management",
       anchor: "weight",

@@ -1,0 +1,405 @@
+---
+/**
+ * The booking form: a pop-out that asks one question at a time, after
+ * donovanhunter.com's (Justin, 2026-11-08). Every link carrying `data-book`
+ * opens it ("pt" or "wellness" picks the first answer and starts at the
+ * second question; empty starts at the first). Without JavaScript those links
+ * still go to /book, which lists the phone and email.
+ *
+ * Answers go to /api/inquiry.php (public/api), which emails Bruce through
+ * Resend and keeps a private copy. Off vhwpt.com (staging, local) nothing is
+ * sent: the last step says so instead. The option ids here are mirrored in
+ * public/api/inquiry.php; change both together.
+ *
+ * Health details: the form asks which service, not what is wrong, and the
+ * free-text step asks people to leave medical details for the first visit
+ * (T-883, the BAA question).
+ */
+import { practice, services, groups } from "../data/site";
+
+export interface Props {
+  /** On /book, arriving with ?for=pt or ?for=wellness opens the form. */
+  autoOpen?: boolean;
+}
+const { autoOpen = false } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const bookings = [
+  { id: "pt", label: "A PT evaluation" },
+  { id: "wellness", label: "A wellness screening" },
+  { id: "unsure", label: "Not sure yet" },
+];
+const places = [
+  { id: "home", label: "At home" },
+  { id: "facility", label: "At a care facility" },
+  { id: "video", label: "Over video" },
+];
+const timings = [
+  { id: "week", label: "This week" },
+  { id: "weeks", label: "In the next few weeks" },
+  { id: "exploring", label: "Just looking into it" },
+];
+// How people found Bruce, with AI assistants named so those referrals can be counted (AI-search teardown).
+const sources = [
+  { id: "search", label: "A search engine" },
+  { id: "ai", label: "An AI assistant (ChatGPT, Claude, Gemini)" },
+  { id: "doctor", label: "A doctor or other referral" },
+  { id: "friend", label: "A friend or family member" },
+  { id: "social", label: "Social media" },
+  { id: "other", label: "Something else" },
+];
+const ptGroup = groups.find((g) => g.id === "pt")!.label;
+---
+
+<dialog class="ask" id="ask" aria-labelledby="q1" data-autoopen={autoOpen ? "1" : undefined}>
+  <form
+    class="askform"
+    id="askform"
+    method="post"
+    action={withBase("/api/inquiry.php")}
+    novalidate
+    data-turnstile=""
+    data-failed={`That didn’t go through. Please call ${practice.phone} or email ${practice.email}.`}
+  >
+    <div class="askbar" aria-hidden="true"><i id="askprogress"></i></div>
+    <div class="asktop">
+      <span class="label" id="askcount">1 of 7</span>
+      <button type="button" class="askx" data-close aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 2l10 10M12 2 2 12" /></svg>
+      </button>
+    </div>
+    <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <div class="step" data-need="one" role="group" aria-labelledby="q1">
+      <h2 class="askq" id="q1">What would you like to book?</h2>
+      <p class="askhelp">{ptGroup} is billed to Medicare and most major plans. Wellness and training are self-pay.</p>
+      <div class="chips">
+        {bookings.map((o) => <label class="chip"><input type="radio" name="booking" value={o.id} /><span>{o.label}</span></label>)}
+      </div>
+    </div>
+
+    <div class="step" data-need="any" role="group" aria-labelledby="q2">
+      <h2 class="askq" id="q2">What can Bruce help with?</h2>
+      <p class="askhelp">Pick any that fit.</p>
+      <div class="chips">
+        {
+          services.map((s) => (
+            <label class="chip" data-group={s.group}>
+              <input type="checkbox" name="services[]" value={s.id} />
+              <span>{s.title}</span>
+            </label>
+          ))
+        }
+        <label class="chip"><input type="checkbox" name="services[]" value="unsure" /><span>Not sure yet</span></label>
+      </div>
+    </div>
+
+    <div class="step" data-need="one" role="group" aria-labelledby="q3">
+      <h2 class="askq" id="q3">Where would you like to meet?</h2>
+      <div class="chips">
+        {places.map((o) => <label class="chip"><input type="radio" name="place" value={o.id} /><span>{o.label}</span></label>)}
+      </div>
+    </div>
+
+    <div class="step" data-need="one" role="group" aria-labelledby="q4">
+      <h2 class="askq" id="q4">When would you like to start?</h2>
+      <div class="chips">
+        {timings.map((o) => <label class="chip"><input type="radio" name="timing" value={o.id} /><span>{o.label}</span></label>)}
+      </div>
+    </div>
+
+    <div class="step" data-need="none" role="group" aria-labelledby="q5">
+      <h2 class="askq" id="q5">How did you hear about Bruce?</h2>
+      <p class="askhelp">Optional.</p>
+      <div class="chips">
+        {sources.map((o) => <label class="chip"><input type="radio" name="heard" value={o.id} /><span>{o.label}</span></label>)}
+      </div>
+    </div>
+
+    <div class="step" data-need="none">
+      <label class="askq" id="q6" for="ask-note">Anything Bruce should know before he calls?</label>
+      <p class="askhelp">
+        Optional. Your goals, or good times to reach you. Please leave out medical details;
+        Bruce goes over those with you at the first visit.
+      </p>
+      <textarea id="ask-note" name="note" rows="4" maxlength="2000"></textarea>
+    </div>
+
+    <div class="step" data-need="contact" role="group" aria-labelledby="q7">
+      <h2 class="askq" id="q7">Where should Bruce reach you?</h2>
+      <p class="askhelp">A phone number or an email, whichever you prefer.</p>
+      <div class="fields">
+        <label class="field"><span>Name</span><input name="name" autocomplete="name" maxlength="100" /></label>
+        <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="tel" maxlength="30" /></label>
+        <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email" maxlength="200" /></label>
+        <label class="field"><span>City, for home visits (optional)</span><input name="city" autocomplete="address-level2" maxlength="80" /></label>
+      </div>
+      <div class="askcaptcha" id="askcaptcha"></div>
+      <p class="askprivacy">
+        Your answers go straight to Bruce. Nothing is shared or added to a list. If it is
+        urgent, call {practice.phone}. If it is a medical emergency, call 911.
+      </p>
+    </div>
+
+    <div class="step askdone" id="askdone" tabindex="-1">
+      <h2 class="askq" id="qdone">Thank you<span id="askname"></span>.</h2>
+      <p class="askhelp">Bruce reads every request himself and will be in touch within one business day.</p>
+      <p class="askhelp asknote" id="asknote" hidden>Preview only: nothing was sent from this copy of the site.</p>
+      <button type="button" class="btn btn-line" data-close>Close</button>
+    </div>
+
+    <p class="askerr" id="askerr" role="alert" hidden></p>
+    <div class="asknav" id="asknav">
+      <button type="button" class="askback" data-back>Back</button>
+      <span class="label askkey" aria-hidden="true">Enter ↵</span>
+      <button type="submit" class="btn btn-primary" data-next>Continue</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  // One question at a time: a single choice moves on by itself, Enter moves on,
+  // Escape or a click outside closes. Ported from donovanhunter.com's form.
+  const dlgEl = document.getElementById("ask") as HTMLDialogElement | null;
+  const formEl = document.getElementById("askform") as HTMLFormElement | null;
+  if (dlgEl && formEl && typeof dlgEl.showModal === "function") setup(dlgEl, formEl);
+
+  function setup(dlg: HTMLDialogElement, form: HTMLFormElement) {
+    const steps = [...form.querySelectorAll<HTMLElement>(".step")].filter((s) => s.id !== "askdone");
+    const done = document.getElementById("askdone")!;
+    const nav = document.getElementById("asknav")!;
+    const err = document.getElementById("askerr")!;
+    const back = form.querySelector<HTMLButtonElement>("[data-back]")!;
+    const next = form.querySelector<HTMLButtonElement>("[data-next]")!;
+    const bar = document.getElementById("askprogress")!;
+    const count = document.getElementById("askcount")!;
+    let i = 0;
+    let openedAt = 0;
+    let sending = false;
+    let auto = 0;
+
+    // Only vhwpt.com sends. Staging and local copies stop at the thank-you with a note.
+    const live = /(^|\.)vhwpt\.com$/.test(location.hostname);
+
+    // Cloudflare Turnstile, loaded on first open, once a site key is set on the form.
+    const siteKey = live ? form.dataset.turnstile || "" : "";
+    let captcha = "";
+    let widget: string | null = null;
+    let tsLoading = false;
+    type Turnstile = { render: (el: string, o: object) => string; reset: (id: string) => void };
+    const ts = () => (window as unknown as { turnstile?: Turnstile }).turnstile;
+    function loadCaptcha() {
+      if (!siteKey || tsLoading) return;
+      tsLoading = true;
+      (window as unknown as { vhwptTurnstile: () => void }).vhwptTurnstile = () => {
+        widget = ts()!.render("#askcaptcha", {
+          sitekey: siteKey,
+          appearance: "interaction-only",
+          action: "inquiry",
+          callback: (tok: string) => { captcha = tok; next.disabled = !valid(steps[i]); },
+          "expired-callback": () => { captcha = ""; next.disabled = !valid(steps[i]); },
+          "error-callback": () => { captcha = ""; },
+        });
+      };
+      const sc = document.createElement("script");
+      sc.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=vhwptTurnstile";
+      sc.async = true;
+      document.head.appendChild(sc);
+    }
+
+    const field = (n: string) => form.elements.namedItem(n) as HTMLInputElement | HTMLTextAreaElement | null;
+    const val = (n: string) => (field(n)?.value || "").trim();
+    const picked = (n: string) => form.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.value || "";
+    const emailOk = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val("email"));
+    const phoneOk = () => val("phone").replace(/\D/g, "").length >= 10;
+
+    function valid(s: HTMLElement) {
+      switch (s.dataset.need) {
+        case "one":
+        case "any":
+          return !!s.querySelector("input:checked:not(:disabled)");
+        case "contact":
+          return val("name").length > 0 && (emailOk() || phoneOk()) && (!siteKey || !!captcha);
+        default:
+          return true;
+      }
+    }
+    const answered = (s: HTMLElement) =>
+      !!s.querySelector("input:checked") || !!(s.querySelector("textarea")?.value.trim());
+
+    // The services question shows only the group that was picked: physical
+    // therapy and wellness stay apart here too. "Not sure" shows both.
+    function filterServices() {
+      const b = picked("booking");
+      form.querySelectorAll<HTMLElement>(".chip[data-group]").forEach((chip) => {
+        const hide = (b === "pt" || b === "wellness") && chip.dataset.group !== b;
+        const input = chip.querySelector("input")!;
+        chip.hidden = hide;
+        input.disabled = hide;
+        if (hide) input.checked = false;
+      });
+    }
+
+    function show(n: number, backward = false) {
+      steps.forEach((s) => s.classList.remove("on", "backward"));
+      done.classList.remove("on");
+      i = n;
+      const s = steps[i];
+      s.classList.add("on");
+      if (backward) s.classList.add("backward");
+      dlg.setAttribute("aria-labelledby", s.querySelector(".askq")?.id || "q1");
+      bar.style.width = `${(i / steps.length) * 100}%`;
+      count.textContent = `${i + 1} of ${steps.length}`;
+      back.style.visibility = i ? "visible" : "hidden";
+      next.textContent = i === steps.length - 1 ? "Send" : s.dataset.need === "none" && !answered(s) ? "Skip" : "Continue";
+      next.disabled = !valid(s);
+      err.hidden = true;
+      const focus = s.querySelector<HTMLElement>("textarea, input:not([type=radio]):not([type=checkbox])");
+      setTimeout(() => {
+        if (focus) focus.focus({ preventScroll: true });
+        else {
+          const q = s.querySelector<HTMLElement>(".askq")!;
+          q.setAttribute("tabindex", "-1");
+          q.focus({ preventScroll: true });
+        }
+      }, 60);
+    }
+
+    function open(kind: string) {
+      if (done.classList.contains("on")) form.reset(); // a fresh request after a sent one
+      const pick = form.querySelector<HTMLInputElement>(`input[name="booking"][value="${kind}"]`);
+      if (pick) pick.checked = true;
+      filterServices();
+      if (!dlg.open) {
+        dlg.showModal();
+        document.documentElement.classList.add("asking");
+      }
+      openedAt = Date.now();
+      nav.hidden = false;
+      count.hidden = false;
+      show(pick ? 1 : 0);
+      loadCaptcha();
+    }
+
+    function payload() {
+      return {
+        booking: picked("booking"),
+        services: [...form.querySelectorAll<HTMLInputElement>('input[name="services[]"]:checked')].map((c) => c.value),
+        place: picked("place"),
+        timing: picked("timing"),
+        heard: picked("heard"),
+        note: val("note"),
+        name: val("name"),
+        phone: val("phone"),
+        email: val("email"),
+        city: val("city"),
+        website: val("website"),
+        t: Date.now() - openedAt,
+        turnstile: captcha,
+      };
+    }
+
+    function finished(preview: boolean) {
+      steps.forEach((s) => s.classList.remove("on"));
+      const first = val("name").split(/\s+/)[0];
+      document.getElementById("askname")!.textContent = first ? `, ${first}` : "";
+      document.getElementById("asknote")!.hidden = !preview;
+      nav.hidden = true;
+      count.hidden = true;
+      bar.style.width = "100%";
+      done.classList.add("on");
+      dlg.setAttribute("aria-labelledby", "qdone");
+      done.focus({ preventScroll: true });
+    }
+
+    const failed = form.dataset.failed || "That didn’t go through. Please call or email instead.";
+    function send() {
+      if (sending) return;
+      if (!live) {
+        finished(true);
+        return;
+      }
+      sending = true;
+      next.disabled = true;
+      next.textContent = "Sending";
+      fetch(form.action, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload()) })
+        .then((r) => r.json().catch(() => ({ ok: false })))
+        .then((j: { ok?: boolean; error?: string }) => {
+          if (j && j.ok) return finished(false);
+          err.textContent = (j && j.error) || failed;
+          err.hidden = false;
+        })
+        .catch(() => {
+          err.textContent = failed;
+          err.hidden = false;
+        })
+        .then(() => {
+          sending = false;
+          next.textContent = "Send";
+          if (!done.classList.contains("on") && widget !== null && ts()) {
+            captcha = ""; // a token works once
+            ts()!.reset(widget);
+          }
+          next.disabled = !valid(steps[i]);
+        });
+    }
+
+    function advance() {
+      clearTimeout(auto);
+      if (!valid(steps[i])) return;
+      if (i < steps.length - 1) show(i + 1);
+      else send();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      advance();
+    });
+    back.addEventListener("click", () => {
+      if (i > 0) show(i - 1, true);
+    });
+    form.addEventListener("input", (e) => {
+      const t = e.target as HTMLInputElement;
+      const s = steps[i];
+      if (t.name === "booking") filterServices();
+      next.disabled = !valid(s);
+      if (s.dataset.need === "none" && i < steps.length - 1) next.textContent = answered(s) ? "Continue" : "Skip";
+      if (t.type === "radio") {
+        clearTimeout(auto);
+        auto = window.setTimeout(advance, 320);
+      }
+    });
+    form.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.isComposing) return;
+      const t = e.target as HTMLElement;
+      if (t.tagName === "TEXTAREA" && !(e.metaKey || e.ctrlKey)) return; // new lines stay possible
+      e.preventDefault();
+      advance();
+    });
+
+    // Any link marked data-book opens the form in place; a modified click still opens /book in a new tab.
+    document.addEventListener("click", (e) => {
+      const a = (e.target as Element).closest<HTMLElement>("[data-book]");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      open(a.dataset.book || "");
+    });
+    form.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => dlg.close()));
+    dlg.addEventListener("click", (e) => {
+      if (e.target === dlg) dlg.close();
+    });
+    dlg.addEventListener("close", () => {
+      document.documentElement.classList.remove("asking");
+      clearTimeout(auto);
+    });
+
+    if (dlg.dataset.autoopen) {
+      const wanted = new URLSearchParams(location.search).get("for");
+      if (wanted === "pt" || wanted === "wellness") open(wanted);
+    }
+  }
+</script>
