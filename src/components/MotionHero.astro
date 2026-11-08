@@ -1,0 +1,106 @@
+---
+/**
+ * The home hero: the movement lab (hero option A, chosen by Justin 2026-11-08 from the
+ * seven-way comparison). A canvas draws a body as motion-capture markers working
+ * through recovery, balance and walking, and strength, over the pulse line from
+ * Bruce's logo. The motion lives in src/scripts/lab-hero.js.
+ *
+ * One decision up top: "Book your first visit" opens the booking form at its first
+ * question, which splits PT evaluation from wellness screening (insurance compliance).
+ * Bruce sits beside the button as who you book with, not as another link.
+ */
+import { practice, actions } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<section class="lab-hero" aria-labelledby="hero-title">
+  <canvas class="lab-canvas" aria-hidden="true"></canvas>
+  <div class="lab-copy">
+    <p class="label"><span class="nb">Doctor of Physical Therapy&nbsp;·</span> <span class="nb">U.S. Navy Veteran</span></p>
+    <h1 id="hero-title">Care that comes to you. From recovery to strength.</h1>
+    <p class="lab-sub">
+      Physical therapy and wellness <span class="nb">in your home or care facility</span>
+      {" "}<span class="nb">across {practice.regionLong}.</span>
+    </p>
+    <p class="sub-note">Clinic and telehealth visits available case by case.</p>
+    <div class="lab-actions">
+      <a class="btn btn-primary" href={withBase(actions.first.href)} data-book="">{actions.first.label}</a>
+      <span class="with">
+        <img src={withBase("/assets/photos/bruce-avatar-bw.webp")} alt="" width="44" height="44" />
+        <span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span>
+      </span>
+    </div>
+  </div>
+  <div class="lab-slot" aria-hidden="true"></div>
+  <div class="instrument" aria-hidden="true">
+    <div class="readouts">
+      <div><span class="label" data-k="0">Exercise</span><b data-v="0">Windmill</b></div>
+      <div><span class="label" data-k="1">Reps</span><b data-v="1">–</b></div>
+      <div><span class="label" data-k="2">Turn</span><b data-v="2">–</b></div>
+      <div><span class="label" data-k="3">Hand to foot</span><b data-v="3">–</b></div>
+    </div>
+    <div class="stages">
+      <button type="button" tabindex="-1"><span class="label">01 Recovery</span><span class="track"><i></i></span></button>
+      <button type="button" tabindex="-1"><span class="label">02 Balance &amp; walking</span><span class="track"><i></i></span></button>
+      <button type="button" tabindex="-1"><span class="label">03 Strength</span><span class="track"><i></i></span></button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import "../scripts/lab-hero.js";
+</script>
+
+<style>
+  /* The nav lies over the hero (Site overlay), so the copy starts below it. */
+  .lab-hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto; padding-top: 80px; overflow: hidden; background: var(--white); }
+  .lab-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .lab-hero > :not(.lab-canvas) { position: relative; z-index: 1; }
+  /* Side by side, the copy is only as wide as its content (the figure's placement
+     follows it) and the headline sets big, in three lines. */
+  .lab-copy { align-self: center; padding: 0 24px; width: fit-content; max-width: 800px; margin-left: max(24px, 5vw); }
+  .lab-copy h1 { font-size: clamp(37px, min(6.2vw, 10svh), 92px); line-height: 1.02; letter-spacing: -0.022em; margin: 16px 0 24px; max-width: 6.9em; }
+  /* Bruce's subtext, word for word, in two weights: the promise, breaking only
+     between its phrases, then the case-by-case exception as quieter fine print. */
+  .lab-sub { font-size: 19px; line-height: 1.45; margin: 0; max-width: 34em; }
+  /* The credential line breaks only at its dot (the site balances labels, which split it mid-phrase). */
+  .lab-copy .label { text-wrap: wrap; }
+  .nb { display: inline-block; }
+  .sub-note { font-size: 15px; line-height: 1.45; color: var(--grey); margin: 12px 0 32px; text-wrap: balance; }
+  .lab-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+  .with { display: inline-flex; align-items: center; gap: 12px; }
+  .with img { width: 44px; height: 44px; border-radius: 9999px; flex: none; }
+  .with b { display: block; font-size: 15px; line-height: 1.3; font-weight: 600; }
+  .with small { display: block; font-size: 13px; line-height: 1.3; color: var(--grey); }
+
+  /* The instrument: live readouts over three stage tracks. */
+  .instrument { width: min(560px, calc(100% - 48px)); margin: 0 max(24px, 5vw) 32px auto; }
+  .readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+  .readouts div { border-top: 1px solid var(--hair); padding-top: 8px; }
+  .readouts b { display: block; font-family: var(--mono); font-weight: 400; font-size: 15px; line-height: 1.5; font-variant-numeric: tabular-nums; }
+  .stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .stages button { all: unset; cursor: pointer; display: block; }
+  .stages button:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+  .track { display: block; height: 2px; background: var(--hair); margin-top: 8px; overflow: hidden; }
+  .track i { display: block; height: 100%; width: 0; background: var(--ink); }
+  .stages button[aria-current="step"] .label { color: var(--ink); }
+
+  /* Below laptop width the figure gets its own band in the flow, so it never sits on the copy. */
+  .lab-slot { display: none; }
+  @media (max-width: 1199px) { .lab-copy { max-width: 620px; } }
+  @media (max-width: 1023px) {
+    .lab-hero { grid-template-rows: auto minmax(clamp(260px, 60vw, 460px), 1fr) auto; }
+    .lab-copy { align-self: start; margin: 24px 0 0; width: auto; max-width: 640px; }
+    .lab-copy h1 { max-width: none; }
+    .lab-slot { display: block; }
+    .instrument { align-self: end; width: auto; max-width: 640px; margin: 0 24px 24px; }
+  }
+  @media (max-width: 760px) {
+    .lab-sub { font-size: 17px; }
+    .readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  }
+</style>

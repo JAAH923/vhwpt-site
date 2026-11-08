@@ -32,12 +32,15 @@ export const nav = [
 ];
 
 /**
- * The three actions every hero and closing offers. Physical therapy and
- * wellness are booked separately (insurance compliance), so each has its own
- * button; both land on /book with the matching option picked. "Ask a
- * question" goes to the phone and email block on /book.
+ * The booking actions. The home hero offers one decision, `first`: it opens the
+ * booking form at its first question, which asks PT evaluation, wellness
+ * screening or not sure, so the two stay booked separately (insurance
+ * compliance) without two buttons up top (Justin, 2026-11-08). Closings, where
+ * people know which they need, keep both: each lands on /book with the matching
+ * option picked. "Ask a question" goes to the phone and email block on /book.
  */
 export const actions = {
+  first: { label: "Book your first visit", href: "/book" },
   pt: { label: "Book an evaluation", href: "/book?for=pt" },
   wellness: { label: "Book a wellness screening", href: "/book?for=wellness" },
   question: { label: "Ask a question", href: "/book#call" },
