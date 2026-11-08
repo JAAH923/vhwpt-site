@@ -7,7 +7,6 @@
  * person is in frame, so they carry no AI tag (design/lock.md).
  */
 import Pulse from "./Pulse.astro";
-import Icon from "./Icon.astro";
 import { practice, actions } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
@@ -48,10 +47,9 @@ const still = withBase("/assets/photos/ai/room-open.webp");
       Physical therapy and wellness in your home or care facility across
       {" "}{practice.regionLong}. Clinic and telehealth visits available case by case.
     </p>
+    <!-- One decision: the form's first question splits PT from wellness. -->
     <div class="actions">
-      <a class="btn btn-primary" href={withBase(actions.pt.href)} data-book="pt">{actions.pt.label}</a>
-      <a class="btn btn-line" href={withBase(actions.wellness.href)} data-book="wellness">{actions.wellness.label}</a>
-      <a class="more" href={withBase(actions.question.href)}>{actions.question.label} <Icon name="arrow" size={16} /></a>
+      <a class="btn btn-primary" href={withBase(actions.first.href)} data-book="">{actions.first.label}</a>
     </div>
   </div>
 

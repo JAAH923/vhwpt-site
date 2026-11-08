@@ -10,18 +10,28 @@
 <style>
   /*
    * Motion A: the movement lab. A body drawn only as motion-capture markers
-   * moves on a measured walkway and leaves a chronophotograph trail behind it
-   * (Marey's plates). Three sets play in order: standing windmills, a walk, then
-   * kettlebell swings. One measurement is drawn live in crimson.
+   * leaves a chronophotograph trail behind it (Marey's plates). Three sets play
+   * in order, named for Bruce's services: recovery (standing windmills), balance
+   * and walking (a walk), then strength (kettlebell swings). The floor is the
+   * pulse line from his logo, beating once under every step and every rep; it is
+   * the only crimson here. One measurement is drawn live in ink.
    */
   .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
   canvas.lab { position: absolute; inset: 0; width: 100%; height: 100%; }
   .hero > :not(canvas) { position: relative; z-index: 1; }
   /* Side by side, the copy is only as wide as its content (so the figure's
      placement follows it) and the headline sets big, in three lines. */
-  .hero-copy { align-self: center; padding: 0 24px; width: fit-content; margin-left: max(24px, 5vw); }
+  .hero-copy { align-self: center; padding: 0 24px; width: fit-content; max-width: 800px; margin-left: max(24px, 5vw); }
   h1 { font-size: clamp(37px, min(6.2vw, 10svh), 92px); line-height: 1.02; letter-spacing: -0.022em; margin: 16px 0 24px; max-width: 6.9em; }
-  .hero-copy .sub { margin: 0 0 32px; }
+  /* Bruce's subtext, word for word, set in two weights: the promise (where the
+     care happens) as the sub, breaking only between its phrases, then the
+     case-by-case exception as quieter fine print. */
+  .hero-copy .sub { margin: 0; max-width: 34em; }
+  .hero-copy .nb { display: inline-block; }
+  .sub-note { font-size: 15px; line-height: 1.45; color: var(--grey); margin: 12px 0 32px; text-wrap: balance; }
+  /* One decision: a single booking button (the form's first question splits PT from wellness),
+     with Bruce beside it as who you book with, not as another link. */
+  .hero-copy .cta { gap: 16px 28px; }
 
   /* The instrument: live readouts over three stage tracks. */
   .instrument { width: min(560px, calc(100% - 48px)); margin: 0 max(24px, 5vw) 32px auto; }
@@ -37,6 +47,8 @@
 
   /* Below laptop width the figure gets its own band in the flow, so it can never sit on the copy. */
   .figure-slot { display: none; }
+  /* Small laptops: the copy narrows so the figure keeps its room. */
+  @media (max-width: 1199px) { .hero-copy { max-width: 620px; } }
   @media (max-width: 1023px) {
     .hero { min-height: 100svh; grid-template-rows: auto auto minmax(clamp(260px, 60vw, 460px), 1fr) auto; }
     .hero-copy { align-self: start; margin: 24px 0 0; width: auto; max-width: 640px; }
@@ -62,22 +74,23 @@
     </div>
   </nav>
   <div class="hero-copy">
-    <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
+    <p class="label">Doctor of Physical Therapy · <span class="nb">U.S. Navy Veteran</span></p>
     <h1 id="hero-title">Care that comes to you. From recovery to strength.</h1>
-    <p class="sub">Physical therapy and wellness in your home or care facility across Broward and Palm Beach County. Clinic and telehealth visits available case by case.</p>
-    <div class="cta"><a class="btn btn-primary" href="#">Book an evaluation</a><a class="btn btn-line btn-lg" href="#">Book a wellness screening</a><a class="ask" href="#">Ask a question →</a><span class="with"><img src="../assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
+    <p class="sub">Physical therapy and wellness <span class="nb">in your home or care facility</span> <span class="nb">across Broward and Palm Beach County.</span></p>
+    <p class="sub-note">Clinic and telehealth visits available case by case.</p>
+    <div class="cta"><a class="btn btn-primary" href="#">Book your first visit</a><span class="with"><img src="../assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
   </div>
   <div class="figure-slot" aria-hidden="true"></div>
   <div class="instrument" aria-hidden="true">
     <div class="readouts">
-      <div><span class="label" data-k="0">Windmill</span><b data-v="0">–</b></div>
-      <div><span class="label" data-k="1">Reach</span><b data-v="1">–</b></div>
-      <div><span class="label" data-k="2">Rotation</span><b data-v="2">–</b></div>
-      <div><span class="label" data-k="3">Gap</span><b data-v="3">–</b></div>
+      <div><span class="label" data-k="0">Exercise</span><b data-v="0">Windmill</b></div>
+      <div><span class="label" data-k="1">Reps</span><b data-v="1">–</b></div>
+      <div><span class="label" data-k="2">Turn</span><b data-v="2">–</b></div>
+      <div><span class="label" data-k="3">Hand to foot</span><b data-v="3">–</b></div>
     </div>
     <div class="stages">
-      <button type="button" tabindex="-1"><span class="label">01 Mobility</span><span class="track"><i></i></span></button>
-      <button type="button" tabindex="-1"><span class="label">02 Stride</span><span class="track"><i></i></span></button>
+      <button type="button" tabindex="-1"><span class="label">01 Recovery</span><span class="track"><i></i></span></button>
+      <button type="button" tabindex="-1"><span class="label">02 Balance &amp; walking</span><span class="track"><i></i></span></button>
       <button type="button" tabindex="-1"><span class="label">03 Strength</span><span class="track"><i></i></span></button>
     </div>
   </div>
@@ -139,12 +152,16 @@
 <script type="module">
 import { GAIT, walkPose, swingPose, windmillPose, blendPose, fk, contact, BONES, MARKERS, makeCamera, angleAt, ease, clamp } from "./lib/body.js";
 
-const INK = "#18181b", GREY = "#71717a", HAIR = "#e4e4e7", CRIMSON = "#c41230", WHITE = "#ffffff";
+// The current tokens (contrast pass, 11/7): grey #52525b, hairline #d4d4d8.
+const INK = "#18181b", GREY = "#52525b", CRIMSON = "#c41230", WHITE = "#ffffff";
+// The heartbeat from Bruce's logo (src/components/Pulse.astro), [dx, dy] in px at full size.
+const BEAT = [[-150, 0], [-120, -14], [-106, 0], [-88, 0], [-72, 36], [-50, -54],
+  [-28, 48], [-12, -20], [0, 0], [30, 0], [44, -9], [58, 0]];
+const BEAT_SPIKE = -40; // where the tall spike sits in BEAT, so it lands under the foot
 const hero = document.querySelector(".hero");
 const canvas = document.querySelector("canvas.lab");
 const ctx = canvas.getContext("2d");
 const copy = document.querySelector(".hero-copy");
-const inst = document.querySelector(".instrument");
 const nav = document.querySelector("nav.top");
 const slot = document.querySelector(".figure-slot");
 const fills = [...document.querySelectorAll(".track i")];
@@ -153,27 +170,34 @@ const keys = [...document.querySelectorAll("[data-k]")];
 const vals = [...document.querySelectorAll("[data-v]")];
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-let W = 0, H = 0, dpr = 1, layout = { cx: 0, floorY: 0, scale: 150, mobile: false };
+let W = 0, H = 0, dpr = 1, layout = { cx: 0, floorY: 0, scale: 150, mobile: false, from: 0 };
 function resize() {
   dpr = Math.min(2, devicePixelRatio || 1);
   const r = hero.getBoundingClientRect();
   W = r.width; H = r.height;
   canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
   const mobile = W < 1024; // stacked: the figure has its own band
-  const c = copy.getBoundingClientRect(), i = inst.getBoundingClientRect(), n = nav.getBoundingClientRect();
-  let floorY, scale, cx;
+  const c = copy.getBoundingClientRect(), n = nav.getBoundingClientRect();
+  let floorY, scale, cx, from;
   if (mobile) {
     const s = slot.getBoundingClientRect();
     floorY = s.bottom - r.top - 32;
     scale = Math.min((s.height - 48) / 1.95, (W - 48) / 1.9);
-    cx = W * 0.5;
+    cx = W * 0.5; from = 0;
   } else {
-    floorY = i.top - r.top - 40;
-    const top = n.bottom - r.top + 48;
-    scale = Math.max(90, Math.min(230, (floorY - top) / 1.9));
-    cx = Math.min(Math.max(c.right - r.left + (W - c.right + r.left) * 0.44, W * 0.62), W - 0.9 * scale);
+    // Side by side: the body stands on the buttons' baseline, as tall as the
+    // space from the nav down allows, and starts just past the copy.
+    const b = copy.querySelector(".btn-primary").getBoundingClientRect();
+    floorY = b.bottom - r.top;
+    from = c.right - r.left;
+    const top = n.bottom - r.top + 24;
+    const left = from + 40;
+    const tall = (floorY - top) / 2.0;      // a raised hand reaches about 2 m
+    const wide = (W - 24 - left) / 1.9;     // the windmill's arm span, with a little air
+    scale = Math.max(90, Math.min(340, tall, wide));
+    cx = Math.min(left + 0.95 * scale, W - 24 - 0.95 * scale);
   }
-  layout = { cx, floorY, scale, mobile };
+  layout = { cx, floorY, scale, mobile, from };
   if (reduce) drawStill();
 }
 
@@ -190,7 +214,7 @@ function fresh(stage = 0) {
     stage, st: 0, mode: stage === 0 ? "windmill" : "walk", wu: 0, phi: 0.05, pending: stage === 2,
     blend: 0, sphi: 0, reps: 0, ...(stage === 0 ? VIEW.windmill : VIEW.walk),
     ...keep, prevJ: null, prevC: null, ghosts: [], lastGhost: 0, alpha: 0, fading: null, v: 0,
-    J: null, pose: null, bell: null, bellA: 0,
+    J: null, pose: null, bell: null, bellA: 0, beats: [], side: null, repBeat: false, lastGap: null,
   };
 }
 S = fresh(0);
@@ -224,7 +248,7 @@ function step(dt) {
     const before = S.wu;
     S.wu += dt / WM;
     // A rep is each hand reaching its foot.
-    if (Math.floor(before * 2 + 0.5) !== Math.floor(S.wu * 2 + 0.5)) S.reps++;
+    if (Math.floor(before * 2 + 0.5) !== Math.floor(S.wu * 2 + 0.5)) { S.reps++; S.repBeat = true; }
     // After the set, stand tall and walk out of it.
     if (S.st >= STAGES[0].dur - 0.05 && Math.floor(before) !== Math.floor(S.wu)) {
       S.stage = 1; S.st = 0; S.mode = "toWalk"; S.blend = 0; S.phi = 0.1; S.wu = 0; S.reps = 0;
@@ -239,7 +263,7 @@ function step(dt) {
   else {
     const before = S.sphi;
     S.sphi += dt / SWING;
-    if (Math.floor(before - 0.5) !== Math.floor(S.sphi - 0.5)) S.reps++;
+    if (Math.floor(before - 0.5) !== Math.floor(S.sphi - 0.5)) { S.reps++; S.repBeat = true; }
     if (S.mode === "toSwing") {
       S.blend = Math.min(1, S.blend + dt / 0.65);
       const b = ease(S.blend);
@@ -260,6 +284,14 @@ function step(dt) {
   const world = {};
   for (const k in J) world[k] = [J[k][0] + S.worldX, J[k][1], J[k][2]];
   S.J = world;
+  // The pulse: a beat on the floor under every footstrike, and under the body on every rep.
+  if (S.mode === "walk" || S.mode === "toWalk") {
+    const side = S.prevC[0];
+    if (S.side && side !== S.side) S.beats.push({ x: world[S.prevC][0], t: S.t });
+    S.side = side;
+  } else S.side = null;
+  if (S.repBeat) { S.beats.push({ x: (world.lankle[0] + world.rankle[0]) / 2, t: S.t }); S.repBeat = false; }
+  while (S.beats.length && S.t - S.beats[0].t > 2) S.beats.shift();
   S.bell = S.bellA > 0 ? bellAt(world) : null;
   S.v += ((dt > 0 ? (S.worldX - (S.lastX ?? S.worldX)) / dt : 0) - S.v) * Math.min(1, dt * 2);
   S.lastX = S.worldX;
@@ -294,34 +326,37 @@ function bellAt(J) {
 /* ---------- Drawing ---------- */
 function cam() {
   // Lead the figure by its speed so a walking body stays centred.
-  return makeCamera({ yaw: S.yaw, pitch: S.pitch, dist: 7, scale: layout.scale, cx: layout.cx, cy: layout.floorY, focus: [S.camX + S.v / 2.4 + (layout.mobile ? 0 : 0.15), 0, 0] });
+  return makeCamera({ yaw: S.yaw, pitch: S.pitch, dist: 7, scale: layout.scale, cx: layout.cx, cy: layout.floorY, focus: [S.camX + S.v / 2.4, 0, 0] });
 }
 
+/** The floor is the pulse line: flat crimson, with a heartbeat wherever a step or rep just landed. */
 function drawFloor(C) {
-  const y = layout.floorY;
-  // The walkway starts past the copy on wide screens, fading in.
-  const from = layout.mobile ? 0 : layout.cx - layout.scale * 3.2;
-  const grad = ctx.createLinearGradient(from, 0, from + layout.scale * 1.2, 0);
-  grad.addColorStop(0, "rgba(228,228,231,0)"); grad.addColorStop(1, HAIR);
-  ctx.globalAlpha = 1;
-  ctx.strokeStyle = layout.mobile ? HAIR : grad; ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(from, y + 0.5); ctx.lineTo(W, y + 0.5); ctx.stroke();
-  const span = W / layout.scale + 2;
-  const x0 = Math.floor((S.camX - span) * 10), x1 = Math.ceil((S.camX + span) * 10);
-  ctx.font = "11px 'Space Mono', monospace"; ctx.textAlign = "center"; ctx.textBaseline = "top";
-  for (let i = x0; i <= x1; i++) {
-    const [sx] = C.project([i / 10, 0, 0]);
-    if (sx < -20 || sx > W + 20) continue;
-    const metre = i % 10 === 0, half = i % 5 === 0;
-    const h = metre ? 10 : half ? 6 : 3;
-    // Ticks fade out toward the copy so the walkway never runs under the text.
-    const fadeL = layout.mobile ? 1 : clamp((sx - from) / (layout.scale * 1.2));
-    ctx.globalAlpha = fadeL;
-    ctx.strokeStyle = metre ? GREY : HAIR;
-    ctx.beginPath(); ctx.moveTo(Math.round(sx) + 0.5, y + 1); ctx.lineTo(Math.round(sx) + 0.5, y + 1 + h); ctx.stroke();
-    if (metre && i >= 0) { ctx.fillStyle = GREY; ctx.fillText(`${i / 10} M`, sx, y + 16); }
+  const y = Math.round(layout.floorY) + 0.5;
+  const from = layout.from;
+  const a = Math.min(1, layout.scale / 300) * (layout.mobile ? 0.7 : 0.85); // the beat's size follows the body
+  let end = -Infinity;
+  const pts = [[from, y]];
+  const live = S.beats.map((b) => {
+    const age = S.t - b.t;
+    const k = age < 0.12 ? ease(age / 0.12) : Math.exp(-(age - 0.12) / 0.5);
+    return { x: C.project([b.x, 0, 0])[0], k };
+  }).sort((p, q) => p.x - q.x);
+  for (const b of live) {
+    if (b.k < 0.02) continue;
+    const x0 = b.x + (BEAT[0][0] - BEAT_SPIKE) * a;
+    if (x0 <= end || x0 < from) continue; // never fold the line back over itself
+    for (const [dx, dy] of BEAT) pts.push([b.x + (dx - BEAT_SPIKE) * a, y + dy * a * b.k]);
+    end = pts[pts.length - 1][0];
   }
+  pts.push([W, y]);
+  // On wide screens the line fades in past the copy, so it never runs under the text.
+  const grad = ctx.createLinearGradient(from, 0, from + 0.8 * layout.scale, 0);
+  grad.addColorStop(0, "rgba(196,18,48,0)"); grad.addColorStop(1, CRIMSON);
   ctx.globalAlpha = 1;
+  ctx.strokeStyle = layout.mobile ? CRIMSON : grad; ctx.lineWidth = 2; ctx.lineJoin = "round";
+  ctx.beginPath();
+  pts.forEach(([x, py], i) => (i ? ctx.lineTo(x, py) : ctx.moveTo(x, py)));
+  ctx.stroke();
 }
 
 function drawBones(P, color, width, alphaNear, alphaFar, alpha) {
@@ -355,42 +390,45 @@ function measure(P, from, at, to, name) {
   const ux = ex / em, uy = ey / em;
   const len = 0.2 * layout.scale, r = 0.1 * layout.scale;
   ctx.globalAlpha = 1;
-  ctx.strokeStyle = CRIMSON; ctx.lineWidth = 1.25;
+  ctx.strokeStyle = GREY; ctx.lineWidth = 1.25;
   ctx.setLineDash([3, 3]);
   ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax + ux * len, ay + uy * len); ctx.stroke();
   ctx.setLineDash([]);
   const a1 = Math.atan2(uy, ux), a2 = Math.atan2(ty - ay, tx - ax);
   let d = a2 - a1; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
   ctx.beginPath(); ctx.arc(ax, ay, r, a1, a1 + d, d < 0); ctx.stroke();
-  ctx.fillStyle = CRIMSON; ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
-  // The tag: a crimson label with the live value, on a short leader.
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(ax, ay, 4, 0, Math.PI * 2); ctx.fill();
+  // The tag: an ink label with the live value, on a short leader.
   const deg = Math.round(180 - angleAt(S.J[from], S.J[at], S.J[to]));
   const text = `${name} ${deg}°`;
-  ctx.font = "11px 'Space Mono', monospace"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  ctx.font = "12px 'Space Mono', monospace"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
   const tw = ctx.measureText(text).width + 12;
-  const lx = ax + 0.3 * layout.scale, ly = ay - 0.06 * layout.scale;
-  ctx.strokeStyle = CRIMSON; ctx.lineWidth = 1;
+  const lx = Math.min(ax + 0.3 * layout.scale, W - tw - 12), ly = ay - 0.06 * layout.scale;
+  ctx.strokeStyle = INK; ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo(ax + r + 2, ay); ctx.lineTo(lx, ly); ctx.stroke();
   ctx.beginPath(); ctx.roundRect(lx, ly - 10, tw, 20, 5); ctx.fill();
   ctx.fillStyle = WHITE; ctx.fillText(text, lx + 6, ly + 1);
   return deg;
 }
 
-/** The windmill measure: a dashed crimson line from the reaching hand to the foot. */
+/** The windmill measure: a dashed line from the reaching hand to the foot. */
 function measureGap(P, r) {
   const [hx, hy] = P[r.hand], [fx, fy] = P[r.foot];
   ctx.globalAlpha = clamp((r.depth - 0.55) / 0.15) * S.alpha;
-  ctx.strokeStyle = CRIMSON; ctx.fillStyle = CRIMSON; ctx.lineWidth = 1.25;
+  ctx.strokeStyle = GREY; ctx.fillStyle = INK; ctx.lineWidth = 1.25;
   ctx.setLineDash([3, 3]);
   ctx.beginPath(); ctx.moveTo(hx, hy); ctx.lineTo(fx, fy); ctx.stroke();
   ctx.setLineDash([]);
   for (const [x, y] of [[hx, hy], [fx, fy]]) { ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill(); }
-  const text = `GAP ${Math.round(r.gap * 100)} CM`;
-  ctx.font = "11px 'Space Mono', monospace"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  const text = `HAND TO FOOT ${Math.round(r.gap * 100)} CM`;
+  ctx.strokeStyle = INK;
+  ctx.font = "12px 'Space Mono', monospace"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
   const tw = ctx.measureText(text).width + 12;
   // Tag sits outside the body, on the side the hand is reaching to.
   const out = hx < P.rhip[0] / 2 + P.lhip[0] / 2 ? -1 : 1;
-  const lx = out > 0 ? Math.max(hx, fx) + 0.22 * layout.scale : Math.min(hx, fx) - 0.22 * layout.scale - tw;
+  // ...but never off the edge of the screen or back over the copy.
+  const lx = clamp(out > 0 ? Math.max(hx, fx) + 0.22 * layout.scale : Math.min(hx, fx) - 0.22 * layout.scale - tw,
+    layout.from + 40, W - tw - 12);
   const ly = (hy + fy) / 2 - 0.12 * layout.scale;
   ctx.lineWidth = 1;
   ctx.beginPath(); ctx.moveTo((hx + fx) / 2, (hy + fy) / 2); ctx.lineTo(out > 0 ? lx : lx + tw, ly); ctx.stroke();
@@ -426,9 +464,23 @@ function draw() {
   ctx.globalAlpha = 1;
   if (S.alpha > 0.6) {
     const r = reachState();
-    if (S.mode === "windmill") { if (r && r.depth > 0.55) measureGap(P, r); }
+    if (S.mode === "windmill") {
+      // Track the closest reach of this rep in the same frame the tag draws, so the readout never lags it.
+      if (r && r.depth > 0.55) {
+        measureGap(P, r);
+        S.repGap = Math.min(S.repGap ?? Infinity, Math.round(r.gap * 100));
+        if (S.repGap !== S.lastGap) { S.lastGap = S.repGap; if (S.stage === 0) vals[3].textContent = `${S.lastGap} cm`; }
+      } else S.repGap = null;
+    }
     else if (S.mode === "toWalk") {}
-    else measured = S.mode === "walk" ? measure(P, "rhip", "rknee", "rankle", "KNEE") : measure(P, "neck", "rhip", "rknee", "HIP");
+    else measured = S.mode === "walk" ? measure(P, "rhip", "rknee", "rankle", "KNEE BEND") : measure(P, "neck", "rhip", "rknee", "HIP HINGE");
+  }
+  // Side by side, nothing drawn may reach back over the copy: wipe anything left of its edge.
+  if (!layout.mobile) {
+    const g = ctx.createLinearGradient(layout.from - 8, 0, layout.from + 32, 0);
+    g.addColorStop(0, "rgba(0,0,0,1)"); g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.save(); ctx.globalCompositeOperation = "destination-out"; ctx.fillStyle = g;
+    ctx.fillRect(0, 0, layout.from + 32, H); ctx.restore();
   }
 }
 const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
@@ -446,23 +498,26 @@ function ui(now) {
   });
   const g = GAIT.steady;
   const set = (i, k, v) => { keys[i].textContent = k; vals[i].textContent = v; };
+  // Plain words for a patient: what the exercise is, how many, and one or two measures.
   const r = reachState();
+  const reps = String(S.reps).padStart(2, "0");
   if (S.stage === 0 && r) {
-    set(0, "Windmill", `${String(S.reps).padStart(2, "0")} reps`);
-    set(1, "Reach", r.side > 0 ? "R → L foot" : "L → R foot");
-    set(2, "Rotation", `${Math.round(r.twist)}°`);
-    set(3, "Gap", r.depth > 0.55 ? `${Math.round(r.gap * 100)} cm` : "–");
+    // The closest reach of the rep in progress (tracked per frame in draw), held between reps.
+    set(0, "Exercise", "Windmill");
+    set(1, "Reps", reps);
+    set(2, "Turn", `${Math.round(r.twist)}°`);
+    set(3, "Hand to foot", S.lastGap === null ? "–" : `${S.lastGap} cm`);
   } else if (S.mode === "walk" || S.mode === "toWalk") {
     const speed = Math.max(0, S.v);
-    set(0, "Cadence", `${Math.round(120 / g.cycle)} spm`);
-    set(1, "Stride", `${(speed * g.cycle).toFixed(2)} m`);
-    set(2, "Speed", `${speed.toFixed(2)} m/s`);
-    set(3, "Knee", `${measured}°`);
+    set(0, "Exercise", "Walk");
+    set(1, "Steps a minute", `${Math.round(120 / g.cycle)}`);
+    set(2, "Stride", `${(speed * g.cycle).toFixed(2)} m`);
+    set(3, "Knee bend", `${measured}°`);
   } else {
-    set(0, "Swing", `${String(S.reps).padStart(2, "0")} reps`);
-    set(1, "Bell", "12 kg");
-    set(2, "Tempo", `${SWING.toFixed(1)} s`);
-    set(3, "Hip", `${measured}°`);
+    set(0, "Exercise", "Swing");
+    set(1, "Reps", reps);
+    set(2, "Weight", "12 kg");
+    set(3, "Hip hinge", `${measured}°`);
   }
 }
 
@@ -487,6 +542,8 @@ function drawStill() {
   S = fresh(1); S.alpha = 1;
   for (let i = 0; i < 150; i++) step(1 / 60);
   S.ghosts.forEach((g) => (g.t = S.t - 0.4));
+  // Keep the last two footsteps' beats on the floor, the nearest one strongest.
+  S.beats = S.beats.slice(-2).map((b, i, all) => ({ x: b.x, t: S.t - (i === all.length - 1 ? 0.12 : 0.5) }));
   draw(); ui(Infinity);
 }
 
