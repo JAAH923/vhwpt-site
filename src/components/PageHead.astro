@@ -10,18 +10,25 @@ export interface Props {
   /** One contained photograph beside the copy. `ai` marks a generated image
    *  of a person, which carries the placeholder tag. */
   photo?: { src: string; alt: string; ai?: boolean; position?: string };
+  /** A parent page linked ahead of the label, as a one-step breadcrumb. */
+  crumb?: { label: string; href: string };
 }
 
-const { label, title, lede, creds, photo } = Astro.props;
+const { label, title, lede, creds, photo, crumb } = Astro.props;
 ---
 
 <header class:list={["page-head", { "with-photo": photo }]}>
   <div class="wrap">
     <div>
-      <p class="label">{label}</p>
+      <p class="label">
+        {crumb && <><a class="crumb" href={crumb.href}>{crumb.label}</a><span aria-hidden="true"> / </span></>}
+        {label}
+      </p>
       <h1>{title}</h1>
       <p class="lede">{lede}</p>
       {creds && <p class="label creds">{creds}</p>}
+      <slot />
+
     </div>
     {
       photo && (

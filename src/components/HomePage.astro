@@ -24,7 +24,7 @@ const basePath = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
-const rows = featured.map((a) => services.find((s) => s.anchor === a)!);
+const rows = featured.map((id) => services.find((s) => s.id === id)!);
 // The strongest proof on the site, in the client's own words.
 const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
 ---
@@ -54,7 +54,7 @@ const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
         />
       </figure>
       <div>
-        <p class="label">Dr. Bruce Valencia · {credentialLine}</p>
+        <p class="label">Dr. Bruce Valencia&nbsp;· {credentialLine}</p>
         <h2 id="about-title">One clinician, from recovery to strength and weight loss.</h2>
         <p class="lead">
           Most trainers cannot read a post-operative report. Most clinics stop the moment
@@ -83,10 +83,12 @@ const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
         {
           rows.map((s) => (
             <li>
-              <a href={withBase(`/services#${s.anchor}`)}>
+              <a href={withBase(`/services/${s.slug}`)}>
                 <div>
-                  <h3>{s.title}</h3>
-                  {s.tag && <p class="label row-tag">{s.tag}</p>}
+                  <div class="row-title">
+                    <h3>{s.title}</h3>
+                    {s.tag && <p class="label row-tag">{s.tag}</p>}
+                  </div>
                   <p>{s.lede}</p>
                 </div>
                 <Icon name="arrow" size={22} />
@@ -96,7 +98,7 @@ const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
         }
       </ul>
       <p class="rows-foot">
-        <a class="more" href={withBase("/services")}>All services, in detail <Icon name="arrow" size={16} /></a>
+        <a class="more" href={withBase("/services")}>All services <Icon name="arrow" size={16} /></a>
       </p>
     </div>
   </section>
@@ -105,7 +107,7 @@ const proof = testimonials.cards.find((t) => t.name === "Olga Brannon")!;
     <div class="wrap proof">
       <div>
         <p class="label">A1C, before and after</p>
-        <p class="stat">8.2 → 5.8</p>
+        <p class="stat"><span class="was">8.2</span> → <span class="is">5.8</span></p>
         <p class="label">{proof.service}</p>
       </div>
       <div>

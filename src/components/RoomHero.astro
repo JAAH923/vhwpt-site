@@ -42,15 +42,15 @@ const still = withBase("/assets/photos/ai/room-open.webp");
   </div>
 
   <div class="hero-copy">
-    <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
+    <p class="label">Doctor of Physical Therapy&nbsp;· U.S. Navy Veteran</p>
     <h1 id="hero-title">Care that comes to you. From recovery to strength.</h1>
     <p class="hero-sub">
       Physical therapy and wellness in your home or care facility across
       {" "}{practice.regionLong}. Clinic and telehealth visits available case by case.
     </p>
     <div class="actions">
-      <a class="btn btn-primary" href={withBase(actions.pt.href)}>{actions.pt.label}</a>
-      <a class="btn btn-line" href={withBase(actions.wellness.href)}>{actions.wellness.label}</a>
+      <a class="btn btn-primary" href={withBase(actions.pt.href)} data-book="pt">{actions.pt.label}</a>
+      <a class="btn btn-line" href={withBase(actions.wellness.href)} data-book="wellness">{actions.wellness.label}</a>
       <a class="more" href={withBase(actions.question.href)}>{actions.question.label} <Icon name="arrow" size={16} /></a>
     </div>
   </div>

@@ -20,7 +20,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     label="About"
     title="Dr. Bruce Valencia, DPT"
     lede="A doctor of physical therapy who has coached for 30-plus years, so recovery, strength and weight loss are one conversation here."
-    creds={`${credentialLine} · U.S. Navy Veteran`}
+    creds={`${credentialLine}\u00a0· U.S. Navy Veteran`}
     photo={{
       src: withBase("/assets/photos/bruce-headshot-bw.webp"),
       alt: practice.doctor,
@@ -34,7 +34,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
       <h2 id="story-title">From Brooklyn to a doctorate</h2>
       <p class="lead">
         Bruce grew up in Brooklyn and found coaching at 17, going on to train clients
-        across Manhattan's most demanding training rooms. He chose to serve instead of
+        across Manhattan’s most demanding training rooms. He chose to serve instead of
         going straight on with it, and spent five years in the United States Navy.
       </p>
       <p>
@@ -44,7 +44,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         in physical therapy.
       </p>
       <blockquote class="pull">
-        “If you want something bad enough, you can achieve it, but you can't do it alone.
+        “If you want something bad enough, you can achieve it, but you can’t do it alone.
         Asking for help is a strength, not a weakness.”
       </blockquote>
       <p>

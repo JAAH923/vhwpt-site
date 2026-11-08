@@ -1,47 +1,25 @@
 ---
+/**
+ * The services index. Each service has its own page at /services/<slug>
+ * ([slug].astro); this page lists them, group by group, and points to the
+ * first visit. Fees live on /book only. Physical therapy and wellness stay clearly separate
+ * (insurance compliance), here and on every service page.
+ */
 import Site from "../layouts/Site.astro";
 import Icon from "../components/Icon.astro";
 import PageHead from "../components/PageHead.astro";
 import Cta from "../components/Cta.astro";
-import { practice, services, groups, testimonialByName } from "../data/site";
+import { practice, services, groups } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
-// Physical therapy and wellness stay clearly separate (insurance compliance):
-// the index and the sections both run group by group, and every section
-// carries its group's label.
 const byGroup = groups.map((g) => ({
   ...g,
   items: services.filter((s) => s.group === g.id),
 }));
-
-// One photograph per view at most, so only four sections carry one. `ai`
-// marks a generated image of a person, which shows the "Illustrative image" caption.
-const photos: Record<string, { src: string; alt: string; ai: boolean }> = {
-  rehab: {
-    src: "/assets/photos/ai/knee-hands.webp",
-    alt: "A clinician's hands supporting a client's knee on an exercise mat at home",
-    ai: true,
-  },
-  senior: {
-    src: "/assets/photos/ai/hallway-walk.webp",
-    alt: "An older man walking steadily down a hallway at home",
-    ai: true,
-  },
-  training: {
-    src: "/assets/photos/ai/kettlebell-light.webp",
-    alt: "A kettlebell and a foam roller on a wooden floor in window light",
-    ai: false,
-  },
-  virtual: {
-    src: "/assets/photos/ai/virtual-session.webp",
-    alt: "A client working with a resistance band in front of a laptop video session",
-    ai: true,
-  },
-};
 ---
 
 <Site
@@ -80,10 +58,12 @@ const photos: Record<string, { src: string; alt: string; ai: boolean }> = {
             <ul class="rows" aria-labelledby={`group-${g.id}`}>
               {g.items.map((s) => (
                 <li>
-                  <a href={`#${s.anchor}`}>
+                  <a href={withBase(`/services/${s.slug}`)}>
                     <div>
-                      <h3>{s.title}</h3>
-                      {s.tag && <p class="label row-tag">{s.tag}</p>}
+                      <div class="row-title">
+                        <h3>{s.title}</h3>
+                        {s.tag && <p class="label row-tag">{s.tag}</p>}
+                      </div>
                       <p>{s.lede}</p>
                     </div>
                     <Icon name="arrow" size={22} />
@@ -96,50 +76,6 @@ const photos: Record<string, { src: string; alt: string; ai: boolean }> = {
       }
     </div>
   </section>
-
-  {
-    byGroup.map((g) =>
-      g.items.map((s) => {
-        const q = testimonialByName(s.testimonial);
-        const photo = photos[s.anchor];
-        return (
-          <section class="section svc" id={s.anchor} aria-labelledby={`${s.anchor}-title`}>
-            <div class="wrap">
-              <div>
-                <p class="label svc-group">{g.label}{s.tag && ` · ${s.tag}`}</p>
-                <h2 id={`${s.anchor}-title`}>{s.title}</h2>
-                <p class="lede">{s.lede}</p>
-                <p>{s.body}</p>
-                {q && (
-                  <blockquote class="quote">
-                    <p>“{q.quote}”</p>
-                    <footer>
-                      <strong>{q.name}</strong>
-                      {"detail" in q && q.detail && <span class="label">{q.detail}</span>}
-                    </footer>
-                  </blockquote>
-                )}
-              </div>
-              <div>
-                {photo && (
-                  <figure>
-                    <img src={withBase(photo.src)} alt={photo.alt} loading="lazy" />
-                    {photo.ai && <span class="tag">Illustrative image</span>}
-                  </figure>
-                )}
-                <div class="covers">
-                  <span class="label">Commonly covers</span>
-                  <ul class="lines">
-                    {s.covers.map((c) => <li>{c}</li>)}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </section>
-        );
-      })
-    )
-  }
 
   <Cta
     title="Not sure which one you need?"

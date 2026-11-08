@@ -1,7 +1,14 @@
 ---
+/**
+ * Book. The booking form pops out (components/BookingForm.astro, in the
+ * layout), so this page is the page head with the two booking buttons, then
+ * the phone, email and fees. Arriving with ?for=pt or ?for=wellness opens the
+ * form with that answer picked. Fees and insurance live here only.
+ */
 import Site from "../layouts/Site.astro";
 import Icon from "../components/Icon.astro";
-import { practice } from "../data/site";
+import PageHead from "../components/PageHead.astro";
+import { practice, actions } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -14,85 +21,29 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
   description="Book a PT evaluation or a wellness screening with Dr. Bruce Valencia, DPT, in your home or care facility across Broward and Palm Beach County. Virtual training anywhere in the country."
   path="/book"
 >
-  <section class="book" aria-labelledby="book-title">
-    <div class="book-form">
-      <p class="label">Book</p>
-      <h1 id="book-title">Book your first visit</h1>
-      <p class="lede">
-        Tell Bruce what is going on and where you are. He answers his own messages
-        within one business day.
-      </p>
-
-      <!--
-        Placeholder until it is wired to Bruce's server (ENH-385). It must NOT
-        ship as a mailto: — that is what the old site did and it silently failed
-        on most phones. Until then, submitting shows the phone number instead.
-      -->
-      <form method="post" action="#" data-placeholder novalidate>
-        <div class="field-row">
-          <label class="field">
-            <span>Your name</span>
-            <input name="name" type="text" autocomplete="name" required />
-          </label>
-          <label class="field">
-            <span>Phone</span>
-            <input name="phone" type="tel" autocomplete="tel" required />
-          </label>
-        </div>
-        <label class="field">
-          <span>Email</span>
-          <input name="email" type="email" autocomplete="email" required />
-        </label>
-        <label class="field">
-          <span>What are you booking?</span>
-          <select name="booking">
-            <option value="pt">PT evaluation</option>
-            <option value="wellness">Wellness screening</option>
-            <option value="unsure">Not sure yet</option>
-          </select>
-        </label>
-        <div class="field-row">
-          <label class="field">
-            <span>Where would you like to meet?</span>
-            <select name="where">
-              <option>In my home</option>
-              <option>In my care facility</option>
-              <option>Over video</option>
-              <option>Not sure yet</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>Your city</span>
-            <input name="city" type="text" autocomplete="address-level2" />
-          </label>
-        </div>
-        <label class="field">
-          <span>What is going on?</span>
-          <textarea
-            name="about"
-            placeholder="A recent surgery, an old injury, balance that is not what it was, losing weight, or just wanting to get stronger safely."
-          ></textarea>
-        </label>
-        <div class="form-foot">
-          <button class="btn btn-primary" type="submit">Send my request</button>
-          <span class="todo">Form not connected yet</span>
-        </div>
-        <p class="form-status" role="status"></p>
-      </form>
-      <p class="form-note">
-        Bruce reads these himself. If it is urgent, call
-        {" "}<a href={practice.phoneHref}>{practice.phone}</a>. If it is a medical
-        emergency, call 911.
-      </p>
+  <PageHead
+    label="Book"
+    title="Book your first visit"
+    lede="Tell Bruce what you need and where you are. He answers his own messages within one business day."
+    photo={{
+      src: withBase("/assets/photos/ai/room-open.webp"),
+      alt: "A sunlit living room with a sofa, a chair and a foam roller, ready for a home session",
+      position: "62% 50%",
+    }}
+  >
+    <div class="actions">
+      <a class="btn btn-primary" href={withBase(actions.pt.href)} data-book="pt">{actions.pt.label}</a>
+      <a class="btn btn-line" href={withBase(actions.wellness.href)} data-book="wellness">{actions.wellness.label}</a>
+      <a class="more" href={withBase("/services/health-evaluation")}>What happens at the first visit <Icon name="arrow" size={16} /></a>
     </div>
-
-    <div class="book-photo">
-      <img
-        src={withBase("/assets/photos/ai/room-open-table.webp")}
-        alt="A portable treatment table set up in a bright living room"
-      />
-    </div>
-  </section>
+    <p class="form-note">
+      If it is urgent, call <a href={practice.phoneHref}>{practice.phone}</a>. If it is a
+      medical emergency, call 911.
+    </p>
+    <noscript>
+      <p class="form-note">Booking online needs JavaScript. Call or email Bruce instead; both are below.</p>
+    </noscript>
+  </PageHead>
 
   <section class="section" id="call" aria-labelledby="call-title">
     <div class="wrap cols">
@@ -126,8 +77,8 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         </dl>
       </div>
       <div>
-        <h2>Fees &amp; insurance</h2>
-        <dl class="facts stack">
+        <h2 id="fees-title">Fees &amp; insurance</h2>
+        <dl class="facts" aria-labelledby="fees-title">
           <div>
             <dt>Physical therapy</dt>
             <dd>Billed to Medicare and most major plans. Call to verify your coverage.</dd>
@@ -136,42 +87,13 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
             <dt>Wellness and training</dt>
             <dd>Self-pay, not billed to insurance. Card, cash, PayPal or Zelle.</dd>
           </div>
+          <div>
+            <dt>Travel</dt>
+            <dd>Included across {practice.regionLong}</dd>
+          </div>
         </dl>
         <p class="note">Rates for wellness services are shared once Bruce understands what you need.</p>
       </div>
     </div>
   </section>
-
-  <section class="section" aria-labelledby="booking-title">
-    <div class="wrap narrow">
-      <h2 id="booking-title">What you are booking</h2>
-      <p class="lead">
-        A PT evaluation or a wellness screening: history and goals, a movement and
-        strength assessment, the findings explained in plain language, and a written plan
-        you keep.
-      </p>
-      <a class="more" href={withBase("/services/health-evaluation")}>
-        Your first visit in full <Icon name="arrow" size={16} />
-      </a>
-    </div>
-  </section>
 </Site>
-
-<script>
-  import { practice } from "../data/site";
-
-  // The hero and closing buttons arrive as /book?for=pt or ?for=wellness:
-  // pick the matching option so nobody has to choose twice.
-  const form = document.querySelector<HTMLFormElement>("form[data-placeholder]")!;
-  const wanted = new URLSearchParams(location.search).get("for");
-  const booking = form.querySelector<HTMLSelectElement>('select[name="booking"]')!;
-  if (wanted && [...booking.options].some((o) => o.value === wanted)) booking.value = wanted;
-
-  // Nothing is sent until the form is wired to Bruce's server; say so plainly
-  // and hand over the phone number instead of failing silently.
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    form.querySelector(".form-status")!.textContent =
-      `This form isn't connected yet, so nothing was sent. Please call ${practice.phone} or email ${practice.email}.`;
-  });
-</script>

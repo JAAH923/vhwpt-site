@@ -12,9 +12,17 @@ export interface Props {
   body: string;
   /** The quiet third action, a text link. Defaults to "Ask a question". */
   third?: { label: string; href: string };
+  /** Which booking leads (the crimson button). A wellness service page leads
+   *  with the wellness screening; everywhere else leads with the PT evaluation. */
+  primary?: "pt" | "wellness";
 }
 
-const { title, body, third = actions.question } = Astro.props;
+const { title, body, third = actions.question, primary = "pt" } = Astro.props;
+// `id` rides along as data-book, so the button opens the booking form with that answer picked.
+const [lead, second] =
+  primary === "wellness"
+    ? [{ ...actions.wellness, id: "wellness" }, { ...actions.pt, id: "pt" }]
+    : [{ ...actions.pt, id: "pt" }, { ...actions.wellness, id: "wellness" }];
 ---
 
 <section class="cta">
@@ -22,8 +30,8 @@ const { title, body, third = actions.question } = Astro.props;
     <h2>{title}</h2>
     <p>{body}</p>
     <div class="actions">
-      <a class="btn btn-primary" href={withBase(actions.pt.href)}>{actions.pt.label}</a>
-      <a class="btn btn-line" href={withBase(actions.wellness.href)}>{actions.wellness.label}</a>
+      <a class="btn btn-primary" href={withBase(lead.href)} data-book={lead.id}>{lead.label}</a>
+      <a class="btn btn-line" href={withBase(second.href)} data-book={second.id}>{second.label}</a>
       <a class="more" href={withBase(third.href)}>{third.label} <Icon name="arrow" size={16} /></a>
     </div>
   </div>

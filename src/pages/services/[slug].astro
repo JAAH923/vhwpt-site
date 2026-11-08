@@ -1,0 +1,85 @@
+---
+/**
+ * One short page per service, at /services/<slug> (AI-search teardown, T-888):
+ * the head, how it works, what it covers, the client quote, and the closing.
+ * Nothing that repeats elsewhere (Justin, 2026-11-08): fees live on /book, the
+ * first visit on /services/health-evaluation. Physical therapy and wellness
+ * stay clearly separate: the label carries the group, and the closing leads
+ * with the matching booking. health-evaluation.astro is a static page and
+ * wins over this route.
+ */
+import Site from "../../layouts/Site.astro";
+import PageHead from "../../components/PageHead.astro";
+import Cta from "../../components/Cta.astro";
+import { practice, services, groups, testimonialByName } from "../../data/site";
+
+export function getStaticPaths() {
+  return services.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+
+const { s } = Astro.props as { s: (typeof services)[number] };
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const group = groups.find((g) => g.id === s.group)!;
+const isPt = s.group === "pt";
+const q = testimonialByName(s.testimonial);
+
+const where = s.remote
+  ? "live over video, anywhere in the country"
+  : `in your home or care facility across ${practice.regionLong}`;
+const description = isPt
+  ? `${s.lede} Physical therapy with Dr. Bruce Valencia, DPT, ${where}. Billed to Medicare and most major plans.`
+  : `${s.lede} Wellness and training led by Dr. Bruce Valencia, DPT, ${where}. Self-pay, separate from physical therapy.`;
+---
+
+<Site
+  title={`${s.title} | Dr. Bruce Valencia, DPT`}
+  description={description}
+  path={`/services/${s.slug}`}
+>
+  <PageHead
+    crumb={{ label: "Services", href: withBase("/services") }}
+    label={s.tag ? `${group.label} · ${s.tag.replace(/^Wellness only · /, "")}` : group.label}
+    title={s.title}
+    lede={s.lede}
+    photo={s.photo && { ...s.photo, src: withBase(s.photo.src) }}
+  />
+
+  <section class="section" id="how-it-works" aria-labelledby="how-title">
+    <div class="wrap cols">
+      <div>
+        <h2 id="how-title">How it works</h2>
+        <p class="lead">{s.body}</p>
+        {
+          q && (
+            <blockquote class="quote">
+              <p>“{q.quote}”</p>
+              <footer>
+                <strong>{q.name}</strong>
+                {"detail" in q && q.detail && <span class="label">{q.detail}</span>}
+              </footer>
+            </blockquote>
+          )
+        }
+      </div>
+      <div class="covers">
+        <span class="label">Commonly covers</span>
+        <ul class="lines">
+          {s.covers.map((c) => <li>{c}</li>)}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <Cta
+    title={isPt ? "Start with a PT evaluation." : "Start with a wellness screening."}
+    body={s.remote
+      ? "Tell Bruce what you are working toward. Sessions run live over video, wherever you are."
+      : "Tell Bruce what is going on and he will come to your home or care facility."}
+    primary={isPt ? "pt" : "wellness"}
+  />
+</Site>
