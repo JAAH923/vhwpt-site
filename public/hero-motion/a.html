@@ -21,7 +21,7 @@
      placement follows it) and the headline sets big, in three lines. */
   .hero-copy { align-self: center; padding: 0 24px; width: fit-content; margin-left: max(24px, 5vw); }
   h1 { font-size: clamp(37px, min(6.2vw, 10svh), 92px); line-height: 1.02; letter-spacing: -0.022em; margin: 16px 0 24px; max-width: 6.9em; }
-  .hero-copy .reach { margin: 0 0 32px; }
+  .hero-copy .sub { margin: 0 0 32px; }
 
   /* The instrument: live readouts over three stage tracks. */
   .instrument { width: min(560px, calc(100% - 48px)); margin: 0 max(24px, 5vw) 32px auto; }
@@ -64,7 +64,7 @@
   <div class="hero-copy">
     <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
     <h1 id="hero-title">Care that comes to you. From recovery to strength.</h1>
-    <ul class="reach" aria-label="Where visits happen"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/></svg><span><b>In your home or care facility</b><small>Broward &amp; Palm Beach County</small></span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/></svg><span><b>Clinic and telehealth</b><small>Available case by case</small></span></li></ul>
+    <p class="sub">Physical therapy and wellness in your home or care facility across Broward and Palm Beach County. Clinic and telehealth visits available case by case.</p>
     <div class="cta"><a class="btn btn-primary" href="#">Book an evaluation</a><a class="btn btn-line btn-lg" href="#">Book a wellness screening</a><a class="ask" href="#">Ask a question →</a><span class="with"><img src="../assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
   </div>
   <div class="figure-slot" aria-hidden="true"></div>
@@ -95,6 +95,46 @@
     </div>
   </div>
 </section>
+
+<!-- The rest of the home page, word for word from Bruce's locked copy (11/7), so every option reads as the full page. -->
+<section class="block" aria-labelledby="services-title">
+  <div class="wrap">
+    <div class="block-head">
+      <h2 id="services-title">Care built around your body, not a package.</h2>
+      <p>Rehabilitation, training and wellness under one practitioner, so nobody has to be caught up on your history.</p>
+    </div>
+    <ul class="rows">
+      <li><a href="#"><div><h3>Rehabilitation &amp; Recovery</h3><p>Getting back to normal after an injury or an operation, at the pace your body actually allows.</p></div><span aria-hidden="true">→</span></a></li>
+      <li><a href="#"><div><h3>Senior Fitness</h3><p>Staying steady on your feet, and keeping the strength that independence depends on.</p></div><span aria-hidden="true">→</span></a></li>
+      <li><a href="#"><div><h3>Personal Training</h3><p>One-to-one coaching, built on a wellness screening rather than a template.</p></div><span aria-hidden="true">→</span></a></li>
+      <li><a href="#"><div><h3>Virtual Training</h3><p class="label row-tag">Wellness only · Nationwide</p><p>The same coaching, from anywhere in the country.</p></div><span aria-hidden="true">→</span></a></li>
+    </ul>
+    <p class="rows-foot"><a class="more" href="#">All services, in detail →</a></p>
+  </div>
+</section>
+
+<section class="block" aria-label="Client result">
+  <div class="wrap proof">
+    <div>
+      <p class="label">A1C, before and after</p>
+      <p class="stat">8.2 → 5.8</p>
+      <p class="label">Weight Management</p>
+    </div>
+    <div>
+      <blockquote>“Thanks to you I am healthy, wealthy, and wise. My A1C dropped from 8.2 down to 5.8. My doctor confirmed my weight reduction, improved muscle tone, and I'm no longer at risk for diabetes.”</blockquote>
+      <p class="who"><strong>Olga Brannon</strong><span class="label">Long-term client</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="closing" aria-labelledby="closing-title">
+  <div class="wrap">
+    <h2 id="closing-title">Start with your first visit.</h2>
+    <p>Book a PT evaluation or a wellness screening, in your home or care facility. You leave knowing what is going on and what the plan is, whether or not you continue with Bruce.</p>
+    <div class="actions"><a class="btn btn-primary" href="#">Book an evaluation</a><a class="btn btn-line" href="#">Book a wellness screening</a><a class="more" href="#">Ask a question →</a></div>
+  </div>
+</section>
+
 
 <script type="module">
 import { GAIT, walkPose, swingPose, windmillPose, blendPose, fk, contact, BONES, MARKERS, makeCamera, angleAt, ease, clamp } from "./lib/body.js";
