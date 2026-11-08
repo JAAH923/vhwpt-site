@@ -1,0 +1,27 @@
+# Paths that need Justin's review before a pull request can merge. The develop and main
+# rulesets (setup/github/) require a code owner's approval, so anything listed here waits
+# for him. Copy and practice details (src/data/), page text (src/pages/) and photos are left
+# out on purpose: Bruce can change those and see them on staging without waiting.
+# Pull requests from develop into main need Justin's approval whatever they touch.
+
+/.github/               @JAAH923
+/.claude/               @JAAH923
+/CLAUDE.md              @JAAH923
+/setup/                 @JAAH923
+/deploy/                @JAAH923
+/scripts/               @JAAH923
+/design/                @JAAH923
+/astro.config.mjs       @JAAH923
+/package.json           @JAAH923
+/pnpm-lock.yaml         @JAAH923
+/tsconfig.json          @JAAH923
+/src/components/        @JAAH923
+/src/layouts/           @JAAH923
+/src/styles/            @JAAH923
+/src/scripts/           @JAAH923
+/public/api/            @JAAH923
+/public/_redirects      @JAAH923
+/public/robots.txt      @JAAH923
+/public/sitemap.xml     @JAAH923
+/public/assets/brand/   @JAAH923
+/public/assets/fonts/   @JAAH923
