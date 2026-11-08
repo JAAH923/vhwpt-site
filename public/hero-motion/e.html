@@ -23,7 +23,7 @@
   .hero > :not(canvas) { position: relative; z-index: 1; }
   .stage { align-self: center; padding: 24px 24px 0; max-width: 1280px; width: 100%; margin: 0 auto; }
   .stage .label { margin-bottom: 48px; }
-  h1.kin { display: inline-block; font-size: clamp(44px, min(12vw, 18.5svh, calc((100vw - 48px) / 8.4)), 176px); line-height: 0.94; letter-spacing: -0.035em; margin: 0; }
+  h1.kin { display: inline-block; font-size: clamp(40px, min(12vw, 13.5svh, calc((100vw - 48px) / 6.9)), 150px); line-height: 0.94; letter-spacing: -0.035em; margin: 0; }
   .kin .line { display: block; }
   .kin .w { display: inline-block; white-space: nowrap; }
   .kin .g { display: inline-block; transform-origin: 50% 88%; will-change: transform; }
@@ -48,6 +48,11 @@
     .hero > .foot { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 24px 32px; }
     .foot > * { max-width: min(520px, 45%); }
     .stage { padding-bottom: 32px; }
+    /* The three actions stay left of the move tracks; the avatar wraps under them. */
+    .stage .cta { max-width: calc(100% - min(520px, 45%) - 32px); }
+    .stage .label { margin-bottom: 32px; }
+    .stage .reach { margin-top: 32px; }
+    .stage .cta { margin-top: 24px; }
   }
   @media (max-width: 1023px) { .foot { justify-content: flex-start; } }
   @media (max-width: 760px) {
@@ -56,7 +61,7 @@
     .hero { min-height: max(100svh, 800px); }
     .stage { align-self: start; padding-top: 24px; }
     .stage .label { margin-bottom: 24px; }
-    h1.kin { font-size: 14.2vw; }
+    h1.kin { font-size: calc((100vw - 48px) / 6.9); }
     .figure-slot { display: block; height: clamp(230px, 58vw, 400px); }
     .foot { padding: 16px 24px 24px; }
   }
@@ -76,13 +81,14 @@
   </nav>
   <div class="stage">
     <p class="label">Doctor of Physical Therapy · U.S. Navy Veteran</p>
-    <h1 class="kin" id="hero-title" aria-label="Training that starts where you are.">
-      <span class="line">Training that</span>
-      <span class="line">starts where</span>
-      <span class="line">you are.</span>
+    <h1 class="kin" id="hero-title" aria-label="Care that comes to you. From recovery to strength.">
+      <span class="line">Care that</span>
+      <span class="line">comes to you.</span>
+      <span class="line">From recovery</span>
+      <span class="line">to strength.</span>
     </h1>
-    <ul class="reach" aria-label="Where sessions happen"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/></svg><span><b>In your home</b><small>Broward &amp; Palm Beach County</small></span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/></svg><span><b>By video</b><small>From anywhere</small></span></li></ul>
-    <div class="cta"><a class="btn btn-primary" href="#">Book an evaluation</a><span class="with"><img src="../assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
+    <ul class="reach" aria-label="Where visits happen"><li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v12h14V9"/><path d="M10 21v-6h4v6"/></svg><span><b>In your home or care facility</b><small>Broward &amp; Palm Beach County</small></span></li><li><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="13" height="12" rx="2"/><path d="m15.5 10.5 6-3.5v10l-6-3.5"/></svg><span><b>Clinic and telehealth</b><small>Available case by case</small></span></li></ul>
+    <div class="cta"><a class="btn btn-primary" href="#">Book an evaluation</a><a class="btn btn-line btn-lg" href="#">Book a wellness screening</a><a class="ask" href="#">Ask a question →</a><span class="with"><img src="../assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
     <div class="figure-slot" aria-hidden="true"></div>
   </div>
   <div class="foot">
@@ -101,10 +107,10 @@
   <div class="wrap">
     <figure style="margin:0"><img src="../assets/photos/bruce-in-session.webp" alt="Dr. Bruce Valencia working with a patient" /></figure>
     <div>
-      <p class="label">Dr. Bruce Valencia · DPT · CLT · ISSA-CPT · ISSA-SSC</p>
-      <h2 id="about-title">One clinician, from recovery to strength.</h2>
-      <p class="lead">Recovery and training usually happen in two places, with two different people. Here they happen with one.</p>
-      <p>Working with a doctor of physical therapy who also coaches means one person carries you from recovery through to training, without the handoff where progress usually stalls.</p>
+      <p class="label">Dr. Bruce Valencia · DPT · CLT · Dry Needling · ISSA-CPT · ISSA Strength and Conditioning</p>
+      <h2 id="about-title">One clinician, from recovery to strength and weight loss.</h2>
+      <p class="lead">Most trainers cannot read a post-operative report. Most clinics stop the moment insurance does.</p>
+      <p>Working with a doctor of physical therapy who also coaches means one person carries you from recovery through training and weight loss, without the handoff where progress usually stalls.</p>
       <a class="more" href="#">Read his story →</a>
     </div>
   </div>

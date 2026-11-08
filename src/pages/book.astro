@@ -10,17 +10,17 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 ---
 
 <Site
-  title="Book an Evaluation | Dr. Bruce Valencia, DPT"
-  description="Book a 60-minute health evaluation with Dr. Bruce Valencia, DPT. In-home across Broward and Palm Beach County, or live over video anywhere in the country."
+  title="Book Your First Visit | Dr. Bruce Valencia, DPT"
+  description="Book a PT evaluation or a wellness screening with Dr. Bruce Valencia, DPT, in your home or care facility across Broward and Palm Beach County. Virtual training anywhere in the country."
   path="/book"
 >
   <section class="book" aria-labelledby="book-title">
     <div class="book-form">
       <p class="label">Book</p>
-      <h1 id="book-title">Book an evaluation</h1>
+      <h1 id="book-title">Book your first visit</h1>
       <p class="lede">
-        Tell Bruce what is going on and where you are. He answers his own messages,
-        usually the same day.
+        Tell Bruce what is going on and where you are. He answers his own messages
+        within one business day.
       </p>
 
       <!--
@@ -43,11 +43,20 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
           <span>Email</span>
           <input name="email" type="email" autocomplete="email" required />
         </label>
+        <label class="field">
+          <span>What are you booking?</span>
+          <select name="booking">
+            <option value="pt">PT evaluation</option>
+            <option value="wellness">Wellness screening</option>
+            <option value="unsure">Not sure yet</option>
+          </select>
+        </label>
         <div class="field-row">
           <label class="field">
             <span>Where would you like to meet?</span>
             <select name="where">
               <option>In my home</option>
+              <option>In my care facility</option>
               <option>Over video</option>
               <option>Not sure yet</option>
             </select>
@@ -61,11 +70,11 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
           <span>What is going on?</span>
           <textarea
             name="about"
-            placeholder="A recent surgery, an old injury, balance that is not what it was, or just wanting to get stronger safely."
+            placeholder="A recent surgery, an old injury, balance that is not what it was, losing weight, or just wanting to get stronger safely."
           ></textarea>
         </label>
         <div class="form-foot">
-          <button class="btn btn-primary" type="submit">Request an evaluation</button>
+          <button class="btn btn-primary" type="submit">Send my request</button>
           <span class="todo">Form not connected yet</span>
         </div>
         <p class="form-status" role="status"></p>
@@ -85,7 +94,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     </div>
   </section>
 
-  <section class="section" aria-labelledby="call-title">
+  <section class="section" id="call" aria-labelledby="call-title">
     <div class="wrap cols">
       <div>
         <h2 id="call-title">Or just call</h2>
@@ -95,8 +104,8 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
             <dd><a href={practice.phoneHref}>{practice.phone}</a></dd>
           </div>
           <div>
-            <dt>Hours</dt>
-            <dd><span class="todo">Confirm hours</span></dd>
+            <dt>Calls</dt>
+            <dd>Leave a message and Bruce will call you back.</dd>
           </div>
           <div>
             <dt>Email</dt>
@@ -104,30 +113,31 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
           </div>
           <div>
             <dt>In-home visits</dt>
-            <dd>{practice.regionLong}</dd>
+            <dd>{practice.regionLong}, including care facilities</dd>
           </div>
           <div>
-            <dt>Virtual sessions</dt>
+            <dt>Virtual training</dt>
             <dd>Anywhere in the country</dd>
+          </div>
+          <div>
+            <dt>PT telehealth</dt>
+            <dd>Florida, case by case</dd>
           </div>
         </dl>
       </div>
       <div>
         <h2>Fees &amp; insurance</h2>
-        <dl class="facts">
+        <dl class="facts stack">
           <div>
-            <dt>Evaluation, 60 minutes</dt>
-            <dd><span class="todo">Confirm rate</span></dd>
+            <dt>Physical therapy</dt>
+            <dd>Billed to Medicare and most major plans. Call to verify your coverage.</dd>
           </div>
           <div>
-            <dt>Ongoing sessions</dt>
-            <dd><span class="todo">Confirm rate</span></dd>
-          </div>
-          <div>
-            <dt>Insurance</dt>
-            <dd><span class="todo">Confirm</span></dd>
+            <dt>Wellness and training</dt>
+            <dd>Self-pay, not billed to insurance. Card, cash, PayPal or Zelle.</dd>
           </div>
         </dl>
+        <p class="note">Rates for wellness services are shared once Bruce understands what you need.</p>
       </div>
     </div>
   </section>
@@ -136,11 +146,12 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     <div class="wrap narrow">
       <h2 id="booking-title">What you are booking</h2>
       <p class="lead">
-        A sixty-minute evaluation: history and goals, a movement and strength assessment,
-        the findings explained in plain language, and a written plan you keep.
+        A PT evaluation or a wellness screening: history and goals, a movement and
+        strength assessment, the findings explained in plain language, and a written plan
+        you keep.
       </p>
       <a class="more" href={withBase("/services/health-evaluation")}>
-        The evaluation in full <Icon name="arrow" size={16} />
+        Your first visit in full <Icon name="arrow" size={16} />
       </a>
     </div>
   </section>
@@ -149,9 +160,15 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 <script>
   import { practice } from "../data/site";
 
+  // The hero and closing buttons arrive as /book?for=pt or ?for=wellness:
+  // pick the matching option so nobody has to choose twice.
+  const form = document.querySelector<HTMLFormElement>("form[data-placeholder]")!;
+  const wanted = new URLSearchParams(location.search).get("for");
+  const booking = form.querySelector<HTMLSelectElement>('select[name="booking"]')!;
+  if (wanted && [...booking.options].some((o) => o.value === wanted)) booking.value = wanted;
+
   // Nothing is sent until the form is wired to Bruce's server; say so plainly
   // and hand over the phone number instead of failing silently.
-  const form = document.querySelector<HTMLFormElement>("form[data-placeholder]")!;
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     form.querySelector(".form-status")!.textContent =

@@ -2,7 +2,7 @@
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
 import Cta from "../components/Cta.astro";
-import { practice, credentials } from "../data/site";
+import { practice, credentials, credentialLine } from "../data/site";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -12,15 +12,15 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
 <Site
   title="About Dr. Bruce Valencia, DPT | Valencia Health & Wellness"
-  description="Doctor of Physical Therapy, Certified Lymph Therapist, ISSA-Certified Personal Trainer and U.S. Navy veteran, serving Broward and Palm Beach County and clients nationwide by video."
+  description="Dr. Bruce Valencia, DPT: Doctor of Physical Therapy, Certified Lymphedema Therapist, ISSA-certified trainer and U.S. Navy veteran with 30-plus years of coaching, serving Broward and Palm Beach County and clients nationwide by video."
   path="/about"
 >
   <!-- The headshot is cropped above the chest so the embroidered name never shows. -->
   <PageHead
     label="About"
-    title="Bruce Valencia, DPT"
-    lede="A doctor of physical therapy who never stopped being a coach, which is why the recovery and the training are the same conversation here instead of two."
-    creds="DPT · CLT · ISSA-CPT · U.S. Navy Veteran"
+    title="Dr. Bruce Valencia, DPT"
+    lede="A doctor of physical therapy who has coached for 30-plus years, so recovery, strength and weight loss are one conversation here."
+    creds={`${credentialLine} · U.S. Navy Veteran`}
     photo={{
       src: withBase("/assets/photos/bruce-headshot-bw.webp"),
       alt: practice.doctor,
@@ -98,16 +98,16 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         </p>
         <p>
           Bruce holds both halves. He can read the operative report and he can run the
-          session, so the plan carries straight through from getting you out of pain to
-          getting you strong, with nobody needing to be briefed in the middle.
+          session, so the plan carries straight through from recovery to getting you
+          strong, with nobody needing to be briefed in the middle.
         </p>
       </div>
     </div>
   </section>
 
   <Cta
-    title="Meet him for sixty minutes."
-    body="The evaluation is how everything here starts. In your home, or over video."
-    secondary={{ label: "See services", href: withBase("/services") }}
+    title="Meet Bruce first."
+    body="Every plan starts with a PT evaluation or a wellness screening, in your home or care facility."
+    third={{ label: "See services", href: "/services" }}
   />
 </Site>
