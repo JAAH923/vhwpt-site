@@ -1,156 +1,16 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta name="robots" content="noindex, nofollow" />
-<title>Motion A · Gait lab</title>
-<link rel="stylesheet" href="../assets/fonts/fonts.css" />
-<link rel="stylesheet" href="lib/base.css" />
-<style>
-  /*
-   * Motion A: the movement lab. A body drawn only as motion-capture markers
-   * leaves a chronophotograph trail behind it (Marey's plates). Three sets play
-   * in order, named for Bruce's services: recovery (standing windmills), balance
-   * and walking (a walk), then strength (kettlebell swings). The floor is the
-   * pulse line from his logo, beating once under every step and every rep; it is
-   * the only crimson here. One measurement is drawn live in ink.
-   */
-  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; }
-  canvas.lab { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .hero > :not(canvas) { position: relative; z-index: 1; }
-  /* Side by side, the copy is only as wide as its content (so the figure's
-     placement follows it) and the headline sets big, in three lines. */
-  .hero-copy { align-self: center; padding: 0 24px; width: fit-content; max-width: 800px; margin-left: max(24px, 5vw); }
-  h1 { font-size: clamp(37px, min(6.2vw, 10svh), 92px); line-height: 1.02; letter-spacing: -0.022em; margin: 16px 0 24px; max-width: 6.9em; }
-  /* Bruce's subtext, word for word, set in two weights: the promise (where the
-     care happens) as the sub, breaking only between its phrases, then the
-     case-by-case exception as quieter fine print. */
-  .hero-copy .sub { margin: 0; max-width: 34em; }
-  .hero-copy .nb { display: inline-block; }
-  .sub-note { font-size: 15px; line-height: 1.45; color: var(--grey); margin: 12px 0 32px; text-wrap: balance; }
-  /* One decision: a single booking button (the form's first question splits PT from wellness),
-     with Bruce beside it as who you book with, not as another link. */
-  .hero-copy .cta { gap: 16px 28px; }
-
-  /* The instrument: live readouts over three stage tracks. */
-  .instrument { width: min(560px, calc(100% - 48px)); margin: 0 max(24px, 5vw) 32px auto; }
-  .readouts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
-  .readouts div { border-top: 1px solid var(--hair); padding-top: 8px; }
-  .readouts b { display: block; font-family: var(--mono); font-weight: 400; font-size: 15px; line-height: 1.5; font-variant-numeric: tabular-nums; }
-  .stages { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  .stages button { all: unset; cursor: pointer; display: block; }
-  .stages button:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
-  .track { display: block; height: 2px; background: var(--hair); margin-top: 8px; overflow: hidden; }
-  .track i { display: block; height: 100%; width: 0; background: var(--ink); }
-  .stages button[aria-current="step"] .label { color: var(--ink); }
-
-  /* Below laptop width the figure gets its own band in the flow, so it can never sit on the copy. */
-  .figure-slot { display: none; }
-  /* Small laptops: the copy narrows so the figure keeps its room. */
-  @media (max-width: 1199px) { .hero-copy { max-width: 620px; } }
-  @media (max-width: 1023px) {
-    .hero { min-height: 100svh; grid-template-rows: auto auto minmax(clamp(260px, 60vw, 460px), 1fr) auto; }
-    .hero-copy { align-self: start; margin: 24px 0 0; width: auto; max-width: 640px; }
-    h1 { max-width: none; }
-    .figure-slot { display: block; }
-    .instrument { align-self: end; width: auto; max-width: 640px; margin: 0 24px 24px; }
-  }
-  @media (max-width: 760px) {
-    .readouts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  }
-</style>
-</head>
-<body>
-<section class="hero" aria-labelledby="hero-title">
-  <canvas class="lab" aria-hidden="true"></canvas>
-  <nav class="top" aria-label="Primary navigation">
-    <a class="brand" href="#"><img src="../assets/brand/valencia-health-wellness-icon.png" alt="" />Dr. Bruce Valencia</a>
-    <div class="links">
-      <a class="hide-sm" href="#">Services</a>
-      <a class="hide-sm" href="#">About</a>
-      <a class="hide-sm" href="tel:19542996536">1-954-299-6536</a>
-      <a class="btn btn-line" href="#">Book</a>
-    </div>
-  </nav>
-  <div class="hero-copy">
-    <p class="label">Doctor of Physical Therapy · <span class="nb">U.S. Navy Veteran</span></p>
-    <h1 id="hero-title">Care that comes to you. From recovery to strength.</h1>
-    <p class="sub">Physical therapy and wellness <span class="nb">in your home or care facility</span> <span class="nb">across Broward and Palm Beach County.</span></p>
-    <p class="sub-note">Clinic and telehealth visits available case by case.</p>
-    <div class="cta"><a class="btn btn-primary" href="#">Book your first visit</a><span class="with"><img src="../assets/photos/bruce-avatar-bw.webp" alt="" width="44" height="44" /><span><b>With Dr. Bruce Valencia</b><small>Your physical therapist and coach</small></span></span></div>
-  </div>
-  <div class="figure-slot" aria-hidden="true"></div>
-  <div class="instrument" aria-hidden="true">
-    <div class="readouts">
-      <div><span class="label" data-k="0">Exercise</span><b data-v="0">Windmill</b></div>
-      <div><span class="label" data-k="1">Reps</span><b data-v="1">–</b></div>
-      <div><span class="label" data-k="2">Turn</span><b data-v="2">–</b></div>
-      <div><span class="label" data-k="3">Hand to foot</span><b data-v="3">–</b></div>
-    </div>
-    <div class="stages">
-      <button type="button" tabindex="-1"><span class="label">01 Recovery</span><span class="track"><i></i></span></button>
-      <button type="button" tabindex="-1"><span class="label">02 Balance &amp; walking</span><span class="track"><i></i></span></button>
-      <button type="button" tabindex="-1"><span class="label">03 Strength</span><span class="track"><i></i></span></button>
-    </div>
-  </div>
-</section>
-
-<section class="intro" aria-labelledby="about-title">
-  <div class="wrap">
-    <figure style="margin:0"><img src="../assets/photos/bruce-in-session.webp" alt="Dr. Bruce Valencia working with a patient" /></figure>
-    <div>
-      <p class="label">Dr. Bruce Valencia · DPT · CLT · Dry Needling · ISSA-CPT · ISSA Strength and Conditioning</p>
-      <h2 id="about-title">One clinician, from recovery to strength and weight loss.</h2>
-      <p class="lead">Most trainers cannot read a post-operative report. Most clinics stop the moment insurance does.</p>
-      <p>Working with a doctor of physical therapy who also coaches means one person carries you from recovery through training and weight loss, without the handoff where progress usually stalls.</p>
-      <a class="more" href="#">Read his story →</a>
-    </div>
-  </div>
-</section>
-
-<!-- The rest of the home page, word for word from Bruce's locked copy (11/7), so every option reads as the full page. -->
-<section class="block" aria-labelledby="services-title">
-  <div class="wrap">
-    <div class="block-head">
-      <h2 id="services-title">Care built around your body, not a package.</h2>
-      <p>Rehabilitation, training and wellness under one practitioner, so nobody has to be caught up on your history.</p>
-    </div>
-    <ul class="rows">
-      <li><a href="#"><div><h3>Rehabilitation &amp; Recovery</h3><p>Getting back to normal after an injury or an operation, at the pace your body actually allows.</p></div><span aria-hidden="true">→</span></a></li>
-      <li><a href="#"><div><h3>Senior Fitness</h3><p>Staying steady on your feet, and keeping the strength that independence depends on.</p></div><span aria-hidden="true">→</span></a></li>
-      <li><a href="#"><div><h3>Personal Training</h3><p>One-to-one coaching, built on a wellness screening rather than a template.</p></div><span aria-hidden="true">→</span></a></li>
-      <li><a href="#"><div><h3>Virtual Training</h3><p class="label row-tag">Wellness only · Nationwide</p><p>The same coaching, from anywhere in the country.</p></div><span aria-hidden="true">→</span></a></li>
-    </ul>
-    <p class="rows-foot"><a class="more" href="#">All services, in detail →</a></p>
-  </div>
-</section>
-
-<section class="block" aria-label="Client result">
-  <div class="wrap proof">
-    <div>
-      <p class="label">A1C, before and after</p>
-      <p class="stat">8.2 → 5.8</p>
-      <p class="label">Weight Management</p>
-    </div>
-    <div>
-      <blockquote>“Thanks to you I am healthy, wealthy, and wise. My A1C dropped from 8.2 down to 5.8. My doctor confirmed my weight reduction, improved muscle tone, and I’m no longer at risk for diabetes.”</blockquote>
-      <p class="who"><strong>Olga Brannon</strong><span class="label">Long-term client</span></p>
-    </div>
-  </div>
-</section>
-
-<section class="closing" aria-labelledby="closing-title">
-  <div class="wrap">
-    <h2 id="closing-title">Start with your first visit.</h2>
-    <p>Book a PT evaluation or a wellness screening, in your home or care facility. You leave knowing what is going on and what the plan is, whether or not you continue with Bruce.</p>
-    <div class="actions"><a class="btn btn-primary" href="#">Book an evaluation</a><a class="btn btn-line" href="#">Book a wellness screening</a><a class="more" href="#">Ask a question →</a></div>
-  </div>
-</section>
-
-
-<script type="module">
-import { GAIT, walkPose, swingPose, windmillPose, blendPose, fk, contact, BONES, MARKERS, makeCamera, angleAt, ease, clamp } from "./lib/body.js";
+/**
+ * The home hero's movement lab (hero option A, chosen by Justin 2026-11-08). A body
+ * drawn only as motion-capture markers leaves a chronophotograph trail behind it
+ * (Marey's plates). Three sets play in order, named for Bruce's services: recovery
+ * (standing windmills), balance and walking (a walk), then strength (kettlebell
+ * swings). The floor is the pulse line from his logo, beating once under every step
+ * and every rep; it is the only crimson in the motion. One measurement is drawn live
+ * in ink, and the instrument under it reads the same numbers in plain words.
+ *
+ * Markup and styles: src/components/MotionHero.astro. The body itself: ./body.js.
+ * Plain JavaScript on purpose, so `astro check` leaves the canvas code alone.
+ */
+import { GAIT, walkPose, swingPose, windmillPose, blendPose, fk, contact, BONES, MARKERS, makeCamera, angleAt, ease, clamp } from "./body.js";
 
 // The current tokens (contrast pass, 11/7): grey #52525b, hairline #d4d4d8.
 const INK = "#18181b", GREY = "#52525b", CRIMSON = "#c41230", WHITE = "#ffffff";
@@ -158,16 +18,16 @@ const INK = "#18181b", GREY = "#52525b", CRIMSON = "#c41230", WHITE = "#ffffff";
 const BEAT = [[-150, 0], [-120, -14], [-106, 0], [-88, 0], [-72, 36], [-50, -54],
   [-28, 48], [-12, -20], [0, 0], [30, 0], [44, -9], [58, 0]];
 const BEAT_SPIKE = -40; // where the tall spike sits in BEAT, so it lands under the foot
-const hero = document.querySelector(".hero");
-const canvas = document.querySelector("canvas.lab");
+const hero = document.querySelector(".lab-hero");
+const canvas = hero.querySelector(".lab-canvas");
 const ctx = canvas.getContext("2d");
-const copy = document.querySelector(".hero-copy");
-const nav = document.querySelector("nav.top");
-const slot = document.querySelector(".figure-slot");
-const fills = [...document.querySelectorAll(".track i")];
-const stageBtns = [...document.querySelectorAll(".stages button")];
-const keys = [...document.querySelectorAll("[data-k]")];
-const vals = [...document.querySelectorAll("[data-v]")];
+const copy = hero.querySelector(".lab-copy");
+const nav = document.querySelector(".site-nav");
+const slot = hero.querySelector(".lab-slot");
+const fills = [...hero.querySelectorAll(".track i")];
+const stageBtns = [...hero.querySelectorAll(".stages button")];
+const keys = [...hero.querySelectorAll("[data-k]")];
+const vals = [...hero.querySelectorAll("[data-v]")];
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 let W = 0, H = 0, dpr = 1, layout = { cx: 0, floorY: 0, scale: 150, mobile: false, from: 0 };
@@ -554,6 +414,3 @@ document.fonts.ready.then(() => {
   for (let i = 0; i < 40; i++) step(1 / 60);
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? start() : stop(); }).observe(hero);
 });
-</script>
-</body>
-</html>

@@ -69,17 +69,7 @@ li, dd, blockquote { text-wrap: pretty; }
 .pulse path.draw-on { stroke-dasharray: 1; stroke-dashoffset: 1; animation: pulse-draw 2.4s cubic-bezier(0.65, 0, 0.35, 1) 0.6s forwards; }
 @keyframes pulse-draw { to { stroke-dashoffset: 0; } }
 
-/* ---------- Home hero: the room ---------- */
-.hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: 1fr auto; padding-top: 80px; overflow: hidden; background: var(--white); }
-.stage { position: absolute; inset: 0; overflow: hidden; }
-.room { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; object-position: 50% 60%; }
-/* The table never moves against the room: a fixed nudge on wide screens only. */
-.room-table { transform: translateX(var(--nudge, 0px)); }
-.hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to right, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.55) 30%, rgba(255, 255, 255, 0) 52%); }
-.hero > :not(.stage) { position: relative; z-index: 1; }
-.hero-copy { align-self: center; padding: 0 24px; max-width: 560px; margin-left: max(24px, 5vw); }
-.hero h1 { font-size: clamp(37px, 5.2vw, 66px); line-height: 1.04; letter-spacing: -0.022em; margin: 16px 0; }
-.hero-sub { font-size: 19px; line-height: 1.4; margin-bottom: 32px; max-width: 27ch; }
+/* The home hero (the movement lab) styles itself: src/components/MotionHero.astro. */
 
 /* ---------- Inner page head ---------- */
 .page-head { padding-top: 48px; }
@@ -257,10 +247,6 @@ html.asking { overflow: hidden; }
 .footer-bottom { display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; font-size: 15px; color: rgba(255, 255, 255, 0.72); }
 .footer-bottom nav { display: flex; gap: 24px; }
 
-@media (min-width: 761px) {
-  .hero { --nudge: 7vw; }
-}
-
 @media (max-width: 960px) {
   .cols.three { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 32px; }
   .cols.three > div { display: block; grid-row: auto; }
@@ -273,11 +259,6 @@ html.asking { overflow: hidden; }
   .nav-links a:not(.btn) { padding: 12px 0; border-bottom: 1px solid var(--hair); font-size: 17px; }
   .nav-links .btn { margin-top: 16px; }
   .nav-links.open { display: flex; }
-
-  .room { object-position: 50% 50%; }
-  /* Reaches lower than before so the third hero action (Ask a question) stays legible over the table. */
-  .hero::after { background: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.75) 58%, rgba(255, 255, 255, 0) 86%); }
-  .hero-copy { align-self: start; margin: 24px 0 0; }
 
   .page-head.with-photo .wrap, .section-head, .split, .proof, .cols, .footer-top { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .section { padding: 64px 0; }
