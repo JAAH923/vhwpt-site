@@ -1,0 +1,60 @@
+# vhwpt.com on Bruce's Lightsail server: the Astro build in /srv/sites/vhwpt/current plus the
+# booking form's PHP endpoint. Source: deploy/lightsail/sites/vhwpt.caddy in the vhwpt-site repo.
+
+(vhwpt_site) {
+	root * /srv/sites/vhwpt/current
+	encode zstd gzip
+
+	# The old WordPress URLs (same map as public/_redirects).
+	@contact path /contact /contact/
+	redir @contact /book 301
+	@online path /services/online-training /services/online-training/
+	redir @online /services/virtual-training 301
+	@evals path /services/health-evaluations /services/health-evaluations/
+	redir @evals /services/health-evaluation 301
+	@category path /category/services /category/services/
+	redir @category /services 301
+	@old path /author/* /concepts/* /wp-admin /wp-admin/* /wp-login.php
+	redir @old / 301
+	@shop path /shop /shop/* /cart /cart/* /checkout /checkout/* /my-account /my-account/*
+	respond @shop 410
+
+	# Only the booking form runs PHP. Any other .php path, and files that are not for the
+	# public, answer 404 rather than being sent as text.
+	@form path /api/inquiry.php
+	handle @form {
+		php_fastcgi unix//run/php/php8.3-fpm.sock {
+			env REMOTE_ADDR {client_ip}
+		}
+	}
+	@hidden {
+		path *.php /_redirects /.*
+		not path /.well-known/*
+	}
+	respond @hidden 404
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		X-Frame-Options SAMEORIGIN
+		-Server
+	}
+	@hashed path /_astro/*
+	header @hashed Cache-Control "public, max-age=31536000, immutable"
+
+	file_server
+}
+
+# Preview by IP until vhwpt.com's DNS points here. Kept out of search.
+http://3.226.58.165 {
+	header X-Robots-Tag "noindex, nofollow"
+	import vhwpt_site
+}
+
+# Cutover (see deploy/lightsail/README.md): uncomment, reload Caddy, then point the DNS here.
+# www.vhwpt.com {
+# 	import vhwpt_site
+# }
+# vhwpt.com {
+# 	redir https://www.vhwpt.com{uri} 308
+# }
