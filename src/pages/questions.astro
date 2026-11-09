@@ -46,8 +46,8 @@ const faq = {
   </PageHead>
 
   {
-    topics.map((t) => (
-      <section class="section qa" id={t.id} aria-labelledby={`${t.id}-title`}>
+    topics.map((t, i) => (
+      <section class:list={["section qa", { band: i % 2 === 0 }]} id={t.id} aria-labelledby={`${t.id}-title`}>
         <div class="wrap qa-group">
           <h2 id={`${t.id}-title`}>{t.title}</h2>
           <QaList questions={t.questions} />
@@ -91,14 +91,18 @@ const faq = {
 <style>
   /* Topic chips under the lede, then the open-all toggle as a text link. */
   .qa-topics { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 32px; }
-  .qa-topics a { font-size: 15px; line-height: 1.3; padding: 8px 14px; border: 1px solid var(--hair); border-radius: 9999px; }
+  .qa-topics a { font-size: 15px; line-height: 1.3; padding: 8px 14px; background: var(--whisper); border: 1px solid var(--whisper); border-radius: 9999px; }
   .qa-topics a:hover { border-color: var(--ink); }
   .qa-toggle { margin-top: 24px; background: none; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0; padding: 0 0 4px; font: inherit; font-weight: 700; color: var(--ink); cursor: pointer; }
   .qa-toggle:hover { color: var(--grey); }
   .qa-toggle[hidden] { display: none; }
 
-  /* One topic per section: its title holds the left column while its rows scroll. */
-  .section.qa { padding: 64px 0; }
+  /* One topic per section: its title holds the left column while its rows scroll.
+     Every other topic sits on a whisper band (Bruce asked for a little more contrast,
+     2026-11-09), so the bands separate the topics instead of hairlines. */
+  .section.qa { padding: 64px 0; border-top: 0; }
+  .section.qa.band { background: var(--whisper); }
+  :global(.section.qa.band + .cta) { border-top-color: transparent; }
   .qa-group { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 64px; }
   .qa-group h2 { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; align-self: start; position: sticky; top: 32px; }
   @media (max-width: 760px) {
