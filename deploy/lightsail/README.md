@@ -1,0 +1,81 @@
+# Bruce's Lightsail server
+
+One AWS Lightsail server ($24/month, Ubuntu 24.04, 2 vCPU, 4 GB, 80 GB) for vhwpt.com and
+whatever comes next: landing pages and small apps. Static IP **3.226.58.165**. Justin connects
+with `ssh bruce-lightsail` (user `ubuntu`, his own key). In the AWS console his IAM user
+`justin` can manage Lightsail and nothing else.
+
+Set up 2026-11-09 with [`setup.sh`](setup.sh), which can be run again safely:
+
+```sh
+scp -r deploy/lightsail bruce-lightsail:lightsail && ssh bruce-lightsail 'sudo bash lightsail/setup.sh'
+```
+
+| Piece | Where |
+|---|---|
+| Caddy 2 (web server, HTTPS) | `/etc/caddy/Caddyfile` imports `/etc/caddy/sites/*.caddy`, one file per site or app |
+| PHP 8.3-FPM | Runs only what a site file hands it (today: vhwpt's booking form) |
+| Node 22 + pnpm (corepack) | Builds sites from GitHub on the server |
+| Sites | `/srv/sites/<name>/`: `repo/`, `releases/`, `current` → the live release, `private/` (server-only) |
+| Apps | `/srv/apps/<name>/`, each listening on localhost behind `reverse_proxy` |
+| Firewall | ufw allows 22, 80, 443; fail2ban watches SSH; security updates install automatically |
+| Tailscale | `bruce-lightsail` on Justin's tailnet, tagged `tag:client` so it can't reach his other devices |
+| Monitoring | pho-status (status.freshphocus.com) "Bruce" tile: CPU, RAM, disk, load, Caddy/PHP/Tailscale/fail2ban/ssh, failed systemd units, pending reboot and updates, over Tailscale with pho-gate's key (accepted only from pho-gate's tailnet address). The site has its own uptime check there. |
+
+## vhwpt.com
+
+```sh
+ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh          # build main and put it live
+ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh develop  # or any branch
+```
+
+[`deploy-vhwpt.sh`](deploy-vhwpt.sh) builds from GitHub, checks the key pages exist, then
+switches `current`. It keeps five releases; its header shows how to roll back. Caddy's rules
+are in [`sites/vhwpt.caddy`](sites/vhwpt.caddy): the old WordPress URLs redirect (same map as
+`public/_redirects`), and only `/api/inquiry.php` runs as PHP.
+
+Until the DNS moves, the site is served only at **http://3.226.58.165/**, marked noindex.
+
+The booking form reads its settings from `/srv/sites/vhwpt/private/vhwpt-contact.php`
+(owner `www-data`, mode 600). Only Justin puts that file there; it is never in this repo.
+The form keeps its copy of every request in the same folder.
+
+## Adding another site or app
+
+1. A static or PHP site goes in `/srv/sites/<name>/`. An app goes in `/srv/apps/<name>/`, run by
+   systemd or Docker and listening on `127.0.0.1:<port>`.
+2. Add `deploy/lightsail/sites/<name>.caddy` with its hostname and either `root` + `file_server`
+   or `reverse_proxy 127.0.0.1:<port>`. Install it to `/etc/caddy/sites/`, then run
+   `sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy`.
+3. Point the domain's DNS at 3.226.58.165. Caddy gets the certificate by itself, unless the
+   domain is proxied by Cloudflare (see the certificate step below).
+
+## Moving vhwpt.com here (cutover)
+
+What is live today: the old WordPress site, behind Cloudflare (Bruce's DNS), on a cPanel
+host at 108.170.32.242. **That host also runs Bruce's email** (`MX mail.vhwpt.com`, info@vhwpt.com).
+Moving the website does not move email. Keep the mail records and the old hosting until
+email has a new home.
+
+1. **Lightsail firewall.** In the instance's Networking tab, allow HTTPS (443). HTTP (80) and
+   SSH are open by default. Turn on automatic snapshots too.
+2. **Booking form settings.** Copy `~/private/vhwpt-contact.php` from the old host to
+   `/srv/sites/vhwpt/private/` here, then run `sudo chown www-data: …` and `sudo chmod 600 …`.
+   The form's email also needs Resend's DNS records for the sending domain (T-900).
+3. **Decide what goes live.** `main` is behind `develop`. Merge `develop` into `main`, then
+   run `deploy.sh` with no branch.
+4. **Certificate behind Cloudflare.** In Cloudflare, create an Origin Certificate for
+   `vhwpt.com, *.vhwpt.com` and save the cert and key in `/etc/caddy/certs/` (readable only by
+   caddy). Add `tls /etc/caddy/certs/vhwpt.pem /etc/caddy/certs/vhwpt.key` to both blocks
+   below, and set Cloudflare SSL/TLS to **Full (strict)**.
+5. **Caddy.** Uncomment the `www.vhwpt.com` and `vhwpt.com` blocks in `sites/vhwpt.caddy`,
+   install the file, validate, then reload. Check with
+   `curl -k --resolve www.vhwpt.com:443:3.226.58.165 https://www.vhwpt.com/`.
+6. **DNS.** In Cloudflare, point the `vhwpt.com` and `www` A records at 3.226.58.165 (still
+   proxied) and remove their AAAA records. **Leave `mail`, MX, SPF, DMARC and the Google
+   verification record alone.** To roll back, point the A records back at 108.170.32.242.
+7. **After.** Check every page and the old URLs. Send a test booking. Add `/questions` and the
+   service pages to `public/sitemap.xml` if they aren't there yet. Watch Search Console.
+   Update `CLAUDE.md` ("Merges to `main` deploy by themselves") to the real deploy step.
+   Once the new site has run for a while, take a full cPanel backup (files and database)
+   before anyone cancels the old hosting.
