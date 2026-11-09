@@ -22,6 +22,8 @@ export interface Props {
 const { title, description, path, overlay = false, noindex = false } = Astro.props;
 const canonical = `https://www.vhwpt.com${path}`;
 const isActive = (href: string) => path === href || path.startsWith(`${href}/`);
+// The header name breaks after "Valencia" on a phone, the way the badge reads.
+const [nameFirst, ...nameRest] = practice.name.split(" ");
 // The GitHub Pages preview is public; keep it out of search so it never
 // competes with vhwpt.com.
 const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
@@ -66,12 +68,12 @@ const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
     <nav class:list={["site-nav", { over: overlay }]} aria-label="Primary navigation">
       <a class="brand" href={withBase()}>
         <img
-          src={withBase("/assets/brand/valencia-health-wellness-icon.png")}
+          src={withBase("/assets/brand/valencia-health-wellness-logo-header.png")}
           alt=""
-          width="40"
-          height="40"
+          width="72"
+          height="72"
         />
-        Dr. Bruce Valencia
+        <span class="brand-name"><span>{nameFirst}</span> <span>{nameRest.join(" ")}</span></span>
       </a>
 
       <button class="menu-button btn btn-line btn-sm" type="button" aria-expanded="false" aria-controls="nav-links">
