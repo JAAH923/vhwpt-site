@@ -259,17 +259,20 @@ html.asking { overflow: hidden; }
 @media (max-width: 960px) {
   .cols.three { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 32px; }
   .cols.three > div { display: block; grid-row: auto; }
+
+  /* The full nav (Home through Book) and the 72px badge with the practice name
+     need about 960px side by side; below that the links fold into the Menu. */
+  .menu-button { display: inline-flex; }
+  .nav-links { display: none; position: absolute; top: 100%; left: 16px; right: 16px; flex-direction: column; align-items: stretch; gap: 0; background: var(--white); border: 1px solid var(--hair); border-radius: 16px; padding: 8px 16px 16px; }
+  .nav-links a:not(.btn) { padding: 12px 0; border-bottom: 1px solid var(--hair); font-size: 17px; }
+  .nav-links .btn { margin-top: 16px; }
+  .nav-links.open { display: flex; }
 }
 
 @media (max-width: 760px) {
   .site-nav { padding: 16px 24px; }
   .site-nav .brand { gap: 12px; font-size: 15px; }
   .site-nav .brand img { width: 52px; height: 52px; }
-  .menu-button { display: inline-flex; }
-  .nav-links { display: none; position: absolute; top: 100%; left: 16px; right: 16px; flex-direction: column; align-items: stretch; gap: 0; background: var(--white); border: 1px solid var(--hair); border-radius: 16px; padding: 8px 16px 16px; }
-  .nav-links a:not(.btn) { padding: 12px 0; border-bottom: 1px solid var(--hair); font-size: 17px; }
-  .nav-links .btn { margin-top: 16px; }
-  .nav-links.open { display: flex; }
 
   .page-head.with-photo .wrap, .section-head, .split, .proof, .cols, .footer-top { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .section { padding: 64px 0; }

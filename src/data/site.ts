@@ -32,6 +32,7 @@ export const credentialLine =
   "DPT\u00a0· CLT\u00a0· Dry Needling\u00a0· ISSA-CPT\u00a0· ISSA Strength and Conditioning";
 
 export const nav = [
+  { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
   { label: "Questions", href: "/questions" },
