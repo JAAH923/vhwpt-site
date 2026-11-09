@@ -4,10 +4,10 @@
  * YouTube comments and 25 search "related questions"; no Reddit). The answers
  * are drafts written only from facts already on this site.
  *
- * DRAFT until Bruce approves them. `confirm` names the fact only Bruce can
- * settle (coverage, referral rules, certifications, visit lengths); the page
- * flags it. Once he has answered, fix the wording, delete `confirm`, and when
- * none are left drop `noindex` from src/pages/questions.astro.
+ * Bruce checked every answer (2026-11-08/09). A new answer that needs a fact
+ * only Bruce can settle gets a `confirm` note, which shows a "To confirm" pill;
+ * fix the wording and delete `confirm` once he answers. While any are left,
+ * put `noindex` and the draft note back on src/pages/questions.astro.
  *
  * Physical therapy and wellness stay clearly separate here as on every page:
  * every answer that touches cost says which one it means.
@@ -49,7 +49,6 @@ export const topics: Topic[] = [
         a: [
           `It can be. Medicare Advantage plans are run by private insurers, and each one sets its own network, copays and approval rules. Bruce is in network with ${practice.plans}. Call before your first visit to verify your specific plan.`,
         ],
-        confirm: "Whether his Aetna, UnitedHealthcare and Oscar contracts include their Medicare Advantage plans. Bruce is calling to confirm; until then the answer says call to verify.",
       },
       {
         id: "home-health",
