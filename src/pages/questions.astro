@@ -6,9 +6,9 @@
  * are components/QaList.astro; the questions and answers live in
  * src/data/questions.ts. Five of them also sit on the home page.
  *
- * DRAFT: the answers wait on Bruce. Rows with a fact for him carry a
- * "To confirm" pill, and the page stays out of search (`noindex`) until he
- * has approved them; then drop the pills' data, the draft note and `noindex`.
+ * Bruce approved every answer on 2026-11-09, so the page is indexed and has no
+ * draft note. A future answer with a `confirm` note shows a "To confirm" pill
+ * (see src/data/questions.ts).
  */
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
@@ -17,9 +17,7 @@ import QaList from "../components/QaList.astro";
 import { practice } from "../data/site";
 import { topics, allQuestions } from "../data/questions";
 
-const toConfirm = allQuestions.filter((q) => q.confirm).length;
-
-// FAQPage structured data, for search and AI answers once the page is indexed.
+// FAQPage structured data, for search and AI answers.
 const faq = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -35,7 +33,6 @@ const faq = {
   title="Questions, Answered | Dr. Bruce Valencia, DPT"
   description={`Plain answers about physical therapy at home, Medicare, referrals, knee and hip surgery recovery, balance, Parkinson’s, training, dry needling and lymphedema, from Dr. Bruce Valencia, DPT, across ${practice.regionLong}.`}
   path="/questions"
-  noindex
 >
   <PageHead
     label="Questions"
@@ -46,10 +43,6 @@ const faq = {
       {topics.map((t) => <a href={`#${t.id}`}>{t.title}</a>)}
     </nav>
     <button class="more qa-toggle" type="button" hidden>Open all answers</button>
-    <p class="form-note">
-      <span class="todo">Draft</span> These answers are for Bruce to check before launch.
-      {toConfirm} of {allQuestions.length} name a fact for him to confirm.
-    </p>
   </PageHead>
 
   {

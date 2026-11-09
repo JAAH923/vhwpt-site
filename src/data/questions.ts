@@ -4,10 +4,10 @@
  * YouTube comments and 25 search "related questions"; no Reddit). The answers
  * are drafts written only from facts already on this site.
  *
- * DRAFT until Bruce approves them. `confirm` names the fact only Bruce can
- * settle (coverage, referral rules, certifications, visit lengths); the page
- * flags it. Once he has answered, fix the wording, delete `confirm`, and when
- * none are left drop `noindex` from src/pages/questions.astro.
+ * Bruce checked every answer (2026-11-08/09). A new answer that needs a fact
+ * only Bruce can settle gets a `confirm` note, which shows a "To confirm" pill;
+ * fix the wording and delete `confirm` once he answers. While any are left,
+ * put `noindex` and the draft note back on src/pages/questions.astro.
  *
  * Physical therapy and wellness stay clearly separate here as on every page:
  * every answer that touches cost says which one it means.
@@ -49,15 +49,14 @@ export const topics: Topic[] = [
         a: [
           `It can be. Medicare Advantage plans are run by private insurers, and each one sets its own network, copays and approval rules. Bruce is in network with ${practice.plans}. Call before your first visit to verify your specific plan.`,
         ],
-        confirm: "Whether his Aetna, UnitedHealthcare and Oscar contracts include their Medicare Advantage plans (Bruce is checking). Until then the answer says call to verify.",
       },
       {
         id: "home-health",
         q: "Is this the same as home health?",
         a: [
-          "No. Home health is a Medicare benefit for people who are homebound, usually arranged through an agency after a hospital stay. Bruce is a doctor of physical therapy in private practice who comes to you, from the first evaluation through to getting you strong.",
+          "No. Home health is a Medicare benefit for people who are homebound, usually arranged through an agency after a hospital stay. Bruce is a doctor of physical therapy in private practice who comes to you, and you don’t need to be homebound to see him.",
+          "If you are getting home health now under Medicare, Bruce can start once the agency has discharged you and your physician has sent new orders.",
         ],
-        confirm: "That clients don’t need to be homebound, and what he does for someone already on home health.",
       },
       {
         id: "visit-limits",
@@ -70,10 +69,10 @@ export const topics: Topic[] = [
         id: "no-insurance",
         q: "What does it cost without insurance?",
         a: [
-          "Wellness and training are self-pay. Self-pay physical therapy is also available. Bruce shares rates once he understands what you need. Physical therapy for Medicare patients is billed through Medicare.",
+          "Wellness and training are self-pay. If you don’t have insurance, self-pay physical therapy is available too, and Bruce shares rates once he understands what you need.",
+          "If you have Medicare, physical therapy that Medicare covers is billed to Medicare, and Bruce can’t take cash in its place. Services Medicare doesn’t cover, such as wellness programs, can be self-pay, and Bruce will tell you before your visit if something isn’t covered.",
         ],
         more: fees,
-        confirm: "Check with the biller that self-pay physical therapy is offered only where Medicare rules allow; Medicare-enrolled providers generally must bill Medicare for covered services to Medicare patients.",
       },
     ],
   },
@@ -85,18 +84,16 @@ export const topics: Topic[] = [
         id: "referral",
         q: "Do I need a doctor’s referral?",
         a: [
-          "Not always. Florida lets you start physical therapy without a referral for a limited time, but Medicare and some other plans need your physician to sign off on the plan of care. Bruce will tell you what yours needs when you call.",
+          "For physical therapy, yes, though not on day one. Florida lets Bruce see you for up to 30 days without a referral, and after that your physician needs to send an order. The insurance plans Bruce works with generally need one too, so it helps to ask your physician early.",
           "Wellness and training don’t need a referral. If you have a health condition or a recent surgery, check with your physician first.",
         ],
-        confirm: "Florida’s direct-access rules as they apply to him, and which plans need a referral.",
       },
       {
         id: "plan-of-care",
         q: "What if my doctor won’t sign the plan of care?",
         a: [
-          "Call Bruce first. It is often paperwork that hasn’t reached the right person, and Bruce can send it again with a note on why therapy is needed. If your physician still has concerns, Bruce will talk it through with you and the office.",
+          "Call Bruce first. It is often paperwork that hasn’t reached the right person, and Bruce can request the orders again with a note on why therapy is needed. The decision is still your physician’s, and if they have concerns, Bruce will talk it through with you and the office.",
         ],
-        confirm: "How he handles this today.",
       },
       {
         id: "visit-length",
@@ -110,9 +107,8 @@ export const topics: Topic[] = [
         id: "equipment",
         q: "Do I need any equipment at home?",
         a: [
-          "Very little: a clear patch of floor, a sturdy chair and clothes you can move in. Bruce brings what the session needs.",
+          "Very little: a clear patch of floor, a sturdy chair and clothes you can move in. For physical therapy, Bruce brings what each visit needs. For wellness training, he can give you a short list of easy-to-find equipment if you want to train between sessions.",
         ],
-        confirm: "What he brings, and anything clients should have ready.",
       },
       {
         id: "care-facility",
@@ -139,18 +135,17 @@ export const topics: Topic[] = [
         id: "when-to-start",
         q: "When should therapy start after a knee or hip replacement?",
         a: [
-          "Usually soon, and your surgeon sets the timing. Many people start moving with a therapist within a day or two of a joint replacement. Bruce follows your surgeon’s protocol, so the plan matches what they ordered.",
+          "Usually soon, and your surgeon sets the timing. Many people start moving with a therapist within a day or two of a joint replacement. Bruce follows your surgeon’s protocol, and some surgeons leave the protocol to him.",
         ],
         more: { label: "Rehabilitation & Recovery", href: "/services/rehabilitation" },
-        confirm: "The timing wording, and when he usually first sees surgical patients at home.",
       },
       {
         id: "knee-bend",
         q: "How do I get my knee to bend again?",
         a: [
           "Steady, frequent work rather than one big push. Bruce gives you a short home program, such as heel slides, seated knee bends and gentle stretches with a strap, set to your surgeon’s limits, and measures the bend at each visit so you can see it improve.",
+          "Some people also go home from surgery with a continuous passive motion (CPM) machine, which slowly bends and straightens the knee for you.",
         ],
-        confirm: "The exercises named, and measuring the bend at each visit.",
       },
       {
         id: "pain",
@@ -158,16 +153,16 @@ export const topics: Topic[] = [
         a: [
           "Some pain and swelling is expected, especially in the first weeks and after exercise, and it should ease over time.",
           "Call your surgeon right away if the pain keeps getting worse, your calf is hot, red or very swollen, or you have a fever. Call 911 for chest pain or trouble breathing.",
+          `For questions between visits, email Bruce at ${practice.email} or call ${practice.phone}. In an emergency, always call 911.`,
         ],
-        confirm: "The warning signs, and how he wants clients to reach him between visits.",
       },
       {
         id: "outpatient",
         q: "When do I switch to outpatient therapy?",
         a: [
-          "You may not need to. Bruce can keep treating you at home while you need physical therapy. When PT ends, wellness training can carry on from the same plan, so nobody starts over.",
+          "Outpatient physical therapy is for when you need a therapist’s skilled care: for example, when you are at higher risk of a fall or injury, when your walking, balance or ability to bear weight has declined, or when a flare-up of a health condition could put you back in hospital. Bruce provides outpatient physical therapy in your home.",
+          "Therapy ends when you have reached the most it can do for your mobility and no longer need skilled care. From there, a wellness strength and conditioning program can carry on from the same plan. That part is training rather than physical therapy, and it is self-pay.",
         ],
-        confirm: "When he would send someone to an outpatient clinic instead.",
       },
     ],
   },
@@ -196,7 +191,6 @@ export const topics: Topic[] = [
         a: [
           "Bruce treats Parkinson’s and other neurological conditions that affect balance and walking. Call to talk through your situation. If another specialist would serve you better, Bruce will say so.",
         ],
-        confirm: "Whether he treats stroke, MS and vertigo.",
       },
       {
         id: "fall-risks",
@@ -217,22 +211,12 @@ export const topics: Topic[] = [
         a: [
           "Yes. Research consistently finds that regular exercise helps people with Parkinson’s move better, and some studies suggest it may slow how quickly symptoms progress. Bruce treats Parkinson’s at home, with work on walking, balance and strength.",
         ],
-        confirm: "The research wording.",
       },
       {
         id: "parkinsons-at-home",
         q: "Is there a physical therapist for Parkinson’s who comes to the house?",
         a: [
           `Yes. Bruce treats Parkinson’s and other neurological conditions in your home or care facility across ${practice.regionLong}, coordinated with your neurologist or physician.`,
-        ],
-        confirm: "Any Parkinson’s-specific training to name, such as PWR! (he is not LSVT BIG certified).",
-      },
-      {
-        id: "lsvt-big",
-        q: "What is LSVT BIG?",
-        a: [
-          "LSVT BIG is a structured exercise program for people with Parkinson’s. It focuses on large, deliberate movements for walking, balance and daily tasks, and it is delivered by clinicians certified in the program.",
-          "Bruce’s Parkinson’s care is his own physical therapy program. If you want LSVT BIG specifically, he can point you to a certified provider.",
         ],
       },
     ],
@@ -284,13 +268,12 @@ export const topics: Topic[] = [
         a: [
           "Most people feel a quick prick as the thin needle goes in, then a brief twitch or deep ache in the muscle. Some soreness afterward is common and usually fades within a day or two. Bruce is certified in dry needling through the Athletic Dry Needling Group.",
         ],
-        confirm: "That he offers dry needling in Florida, and the wording on how it feels.",
       },
       {
         id: "dry-needling-insurance",
         q: "Does insurance cover dry needling?",
         a: [
-          "It depends on your plan. Some insurers cover dry needling, while Original Medicare generally does not. When it isn’t covered, it’s self-pay, and Bruce shares rates once he understands what you need. Call to verify your coverage before your visit.",
+          "Usually not. Original Medicare and most plans don’t cover dry needling, so it is usually self-pay, and Bruce shares rates once he understands what you need. Call to check your plan before your visit.",
         ],
       },
       {
@@ -300,14 +283,13 @@ export const topics: Topic[] = [
           "Lymphedema is swelling, often in an arm or leg, when lymph fluid doesn’t drain well. It is common after cancer surgery, radiation or lymph node removal. The treatment, called complete decongestive therapy, combines gentle hands-on drainage, compression wrapping or garments, exercise and skin care.",
           "Bruce is a Certified Lymphedema Therapist (CLT), trained through ACOLS.",
         ],
-        confirm: "That he treats lymphedema at home, and who he takes on.",
       },
       {
         id: "lymphedema-sessions",
         q: "How many lymphedema sessions will I need?",
         a: [
           "It depends on how much swelling there is and how your body responds. Treatment often starts with several sessions a week for a few weeks, then moves to a home routine with compression. Bruce sets the number after the evaluation.",
-          "Lymphedema therapy is provided as physical therapy and billed to Medicare and the plans Bruce is in network with. Coverage depends on your plan, so call to verify before your first visit.",
+          "Lymphedema therapy is provided as physical therapy and billed to Medicare and the plans Bruce is in network with. If your plan doesn’t cover it, it can be self-pay where Medicare and your plan’s rules allow. Call to verify your coverage before your first visit.",
         ],
       },
     ],
