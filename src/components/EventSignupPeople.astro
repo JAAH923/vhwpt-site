@@ -1,0 +1,215 @@
+---
+/**
+ * Event sign-up, version 2 (/event2): for regular people, not for facility
+ * owners and therapists (that is /event, components/EventSignup.astro). One
+ * screen, built for an iPad handed from person to person: name, a phone or an
+ * email, what they are curious about (optional, PT and wellness kept apart as
+ * everywhere else) and an explicit OK to be contacted. There is no free-text
+ * box on purpose: it would invite medical details on a screen the next person
+ * can see (T-883).
+ *
+ * Shared-screen rules: nothing is stored in the browser; the form clears itself
+ * after each sign-up (8 seconds) and after two idle minutes; autofill is off so
+ * the iPad owner's own contact card is never offered.
+ *
+ * Sign-ups go to /api/event.php (public/api) with form "people", which keeps a
+ * private copy and emails Bruce. Off vhwpt.com (staging, local) nothing is sent,
+ * and a banner says so. The interest ids come from src/data/site.ts and are
+ * mirrored in public/api/event.php.
+ */
+import { practice, services, groups } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<div class="kwrap">
+  <p class="kpreview" id="p2preview" role="status" hidden>
+    Preview only: sign-ups on this copy of the site are not sent anywhere.
+  </p>
+
+  <form
+    class="kform"
+    id="p2form"
+    method="post"
+    action={withBase("/api/event.php")}
+    novalidate
+    data-failed="That didn’t go through. Please try once more, or ask Bruce to take your number."
+  >
+    <div class="kcol">
+      <div class="kbrand">
+        <img src={withBase("/assets/brand/valencia-health-wellness-icon.png")} alt="" width="64" height="64" />
+        <span class="label">{practice.name}</span>
+      </div>
+
+      <h1>Let’s stay in touch</h1>
+      <p class="askhelp">Leave your name and how to reach you. Dr. Bruce Valencia will get in touch.</p>
+
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      <div class="fields">
+        <label class="field"><span>Name</span><input name="name" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" enterkeyhint="next" maxlength="100" /></label>
+        <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="off" enterkeyhint="next" maxlength="30" /></label>
+        <label class="field"><span>Email</span><input name="email" type="email" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" maxlength="200" /></label>
+      </div>
+      <p class="askhelp">A phone number or an email, whichever you prefer.</p>
+    </div>
+
+    <div class="kcol">
+      <fieldset class="kinterest">
+        <legend class="askq">What are you curious about?</legend>
+        <p class="askhelp">Optional. Pick any.</p>
+        {
+          groups.map((g) => (
+            <div class="kgroup">
+              <p class="label">{g.label}</p>
+              <div class="chips">
+                {services
+                  .filter((s) => s.group === g.id)
+                  .map((s) => (
+                    <label class="chip">
+                      <input type="checkbox" name="interests" value={s.id} />
+                      <span>{s.title}</span>
+                    </label>
+                  ))}
+              </div>
+            </div>
+          ))
+        }
+      </fieldset>
+
+      <label class="kconsent">
+        <input type="checkbox" name="consent" />
+        <span>It’s OK for Bruce to contact me by phone, text or email about my sign-up.</span>
+      </label>
+      <p class="askprivacy">Your details go only to Bruce and are not shared.</p>
+
+      <p class="askerr" id="p2err" role="alert" hidden></p>
+      <button type="submit" class="btn btn-primary" id="p2submit" disabled>Sign me up</button>
+    </div>
+  </form>
+
+  <section class="kdone" id="p2done" tabindex="-1" hidden>
+    <h1>Thank you<span id="p2name"></span>.</h1>
+    <p class="askhelp">Bruce will be in touch.</p>
+  </section>
+</div>
+
+<script>
+  // Shared screen: nothing is kept in the browser, and the form clears itself.
+  const form = document.getElementById("p2form") as HTMLFormElement | null;
+  if (form) setup(form);
+
+  function setup(form: HTMLFormElement) {
+    const done = document.getElementById("p2done")!;
+    const submit = document.getElementById("p2submit") as HTMLButtonElement;
+    const err = document.getElementById("p2err")!;
+    const THANKS_MS = 8000; // how long the thank-you shows before the next person's blank form
+    const IDLE_MS = 120000; // a half-filled form clears after this long untouched
+    let sending = false;
+    let thanksTimer = 0;
+    let idleTimer = 0;
+
+    // Only vhwpt.com sends. Staging and local copies show a banner and stop at the thank-you.
+    const live = /(^|\.)vhwpt\.com$/.test(location.hostname);
+    document.getElementById("p2preview")!.hidden = live;
+
+    // /event2?e=heart-walk tags every sign-up with the event it came from.
+    const event = (new URLSearchParams(location.search).get("e") || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "")
+      .slice(0, 40);
+
+    const val = (n: string) => ((form.elements.namedItem(n) as HTMLInputElement | null)?.value || "").trim();
+    const checked = (n: string) => !!(form.elements.namedItem(n) as HTMLInputElement | null)?.checked;
+    const emailOk = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val("email"));
+    const phoneOk = () => val("phone").replace(/\D/g, "").length >= 10;
+    const valid = () => val("name").length > 0 && (emailOk() || phoneOk()) && checked("consent");
+    const dirty = () => !!form.querySelector("input:checked") || ["name", "phone", "email"].some((n) => val(n));
+
+    function touch() {
+      clearTimeout(idleTimer);
+      if (dirty()) idleTimer = window.setTimeout(reset, IDLE_MS);
+    }
+
+    // A blank form for the next person.
+    function reset() {
+      clearTimeout(thanksTimer);
+      clearTimeout(idleTimer);
+      form.reset();
+      err.hidden = true;
+      done.hidden = true;
+      form.hidden = false;
+      submit.textContent = "Sign me up";
+      submit.disabled = true;
+      sending = false;
+      window.scrollTo(0, 0);
+    }
+
+    function finished() {
+      const first = val("name").split(/\s+/)[0];
+      document.getElementById("p2name")!.textContent = first ? `, ${first}` : "";
+      form.hidden = true;
+      done.hidden = false;
+      done.focus({ preventScroll: true });
+      window.scrollTo(0, 0);
+      clearTimeout(idleTimer);
+      thanksTimer = window.setTimeout(reset, THANKS_MS);
+    }
+
+    function send() {
+      if (sending || !valid()) return;
+      if (!live) return finished();
+      sending = true;
+      submit.disabled = true;
+      submit.textContent = "Sending";
+      err.hidden = true;
+      const ctl = new AbortController();
+      const giveUp = window.setTimeout(() => ctl.abort(), 15000); // weak event wifi: don't hang forever
+      fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: ctl.signal,
+        body: JSON.stringify({
+          form: "people",
+          name: val("name"),
+          phone: val("phone"),
+          email: val("email"),
+          interests: [...form.querySelectorAll<HTMLInputElement>("input[name=interests]:checked")].map((c) => c.value),
+          consent: checked("consent"),
+          event,
+          website: val("website"),
+        }),
+      })
+        .then((r) => r.json().catch(() => ({ ok: false })))
+        .then((j: { ok?: boolean; error?: string }) => {
+          if (j && j.ok) return finished();
+          err.textContent = (j && j.error) || form.dataset.failed || "";
+          err.hidden = false;
+        })
+        .catch(() => {
+          err.textContent = form.dataset.failed || "";
+          err.hidden = false;
+        })
+        .then(() => {
+          clearTimeout(giveUp);
+          sending = false;
+          if (!done.hidden) return;
+          submit.textContent = "Sign me up";
+          submit.disabled = !valid(); // what was typed stays, so one more tap retries
+        });
+    }
+
+    form.addEventListener("input", () => {
+      submit.disabled = !valid();
+      touch();
+    });
+    form.addEventListener("pointerdown", touch);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      send();
+    });
+  }
+</script>
