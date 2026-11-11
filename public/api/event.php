@@ -12,10 +12,12 @@
 // worked, so a visitor is never shown an error for a problem only Bruce can fix; a line with
 // "emailed": false in vhwpt-event-signups.jsonl means the email did not go out.
 //
-// The role and topic ids below mirror src/components/EventSignup.astro; change them together.
-// The people at these events are facility owners and other therapists, so the form asks who they
-// are and what they would like to talk about, with no free-text box: a sign-up carries no patient
-// or resident details (T-883).
+// Two forms post here. /event (src/components/EventSignup.astro) is for facility owners and other
+// therapists: it sends a role and topics. /event2 (src/components/EventSignupPeople.astro) is for
+// regular people: it sends "form": "people" and the services they are curious about. The ids below
+// mirror those components and the service ids in src/data/site.ts and inquiry.php; change them
+// together. Neither form has a free-text box, so a sign-up carries no patient or resident details
+// (T-883).
 declare(strict_types=1);
 
 header('Cache-Control: no-store');
@@ -36,6 +38,18 @@ const TOPICS = [
   'work'              => 'Working with Bruce',
   'refer'             => 'Referring patients to Bruce',
   'connect'           => 'Just connecting',
+];
+
+const SERVICES = [
+  'rehab'    => 'Rehabilitation & Recovery',
+  'balance'  => 'Balance & Fall Prevention',
+  'senior'   => 'Senior Fitness',
+  'training' => 'Personal Training',
+  'weight'   => 'Weight Loss & Nutrition',
+  'youth'    => 'Youth Sports Conditioning',
+  'prenatal' => 'Pre & Postnatal Fitness',
+  'virtual'  => 'Virtual Training',
+  'holistic' => 'Holistic & Corporate Wellness',
 ];
 
 // The private folder sits beside the web root (~/private next to ~/public_html). Look two and
@@ -78,6 +92,7 @@ if (count($hits) >= PER_HOUR) finish(false, 'Too many sign-ups from here in the 
 $hits[] = $now;
 @file_put_contents($rlf, json_encode(array_values($hits)), LOCK_EX);
 
+$people = ($in['form'] ?? '') === 'people';   // /event2; otherwise the facility-owner and therapist form
 $role   = (is_string($in['role'] ?? null) && isset(ROLES[$in['role']])) ? ROLES[$in['role']] : '';
 $org    = oneLine(clean($in['org'] ?? '', 120));
 $name   = oneLine(clean($in['name'] ?? '', 100));
@@ -87,16 +102,26 @@ $phoneOk = strlen(preg_replace('/\D/', '', $phone) ?? '') >= 10;
 $consent = ($in['consent'] ?? false) === true;
 $event  = substr(preg_replace('/[^a-z0-9-]/', '', strtolower(is_string($in['event'] ?? null) ? $in['event'] : '')) ?? '', 0, 40);
 $chosen = [];
-foreach ((array) ($in['topics'] ?? []) as $t) {
-  $l = (is_string($t) && isset(TOPICS[$t])) ? TOPICS[$t] : '';
+foreach ((array) ($in[$people ? 'interests' : 'topics'] ?? []) as $t) {
+  $map = $people ? SERVICES : TOPICS;
+  $l = (is_string($t) && isset($map[$t])) ? $map[$t] : '';
   if ($l !== '' && !in_array($l, $chosen, true)) $chosen[] = $l;
 }
 
-if ($role === '' || $name === '' || ($email === '' && !$phoneOk) || !$consent) {
-  finish(false, 'A few answers are missing. Please check who you are, your name, a phone number or email, and the OK to be contacted.', 400);
+if ((!$people && $role === '') || $name === '' || ($email === '' && !$phoneOk) || !$consent) {
+  finish(false, $people
+    ? 'A few answers are missing. Please check your name, a phone number or email, and the OK to be contacted.'
+    : 'A few answers are missing. Please check who you are, your name, a phone number or email, and the OK to be contacted.', 400);
 }
 
-$rows = [
+$rows = $people ? [
+  'Name'          => $name,
+  'Phone'         => $phone !== '' ? $phone : '(not given)',
+  'Email'         => $email !== '' ? $email : '(not given)',
+  'Curious about' => $chosen ? implode(', ', $chosen) : '(not answered)',
+  'Event'         => $event !== '' ? $event : '(not tagged)',
+  'OK to contact' => 'Yes, by phone, text or email',
+] : [
   'Name'          => $name,
   'Facility or practice' => $org !== '' ? $org : '(not given)',
   'Is'            => $role,
@@ -112,7 +137,7 @@ if (!is_dir($private)) @mkdir($private, 0700, true);
 $log = $private . '/vhwpt-event-signups.jsonl';
 $entry = ['at' => gmdate('c'), 'answers' => $rows, 'emailed' => null];
 
-$subject = 'Event sign-up: ' . $name . ($org !== '' ? ', ' . $org : '') . ' (' . $role . ')' . ($event !== '' ? ' [' . $event . ']' : '');
+$subject = 'Event sign-up: ' . $name . ($people ? '' : ($org !== '' ? ', ' . $org : '') . ' (' . $role . ')') . ($event !== '' ? ' [' . $event . ']' : '');
 $replyHint = $email !== '' ? 'Reply to this email to answer ' . $name . ' directly.' : $name . ' left no email; call them back.';
 $text = "A new sign-up from the event page on vhwpt.com. $replyHint\n\n";
 $html = '<div style="font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#18181b;line-height:1.5;font-size:15px">'

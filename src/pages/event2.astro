@@ -1,0 +1,15 @@
+---
+/**
+ * Event sign-up, version 2: the same hand-around iPad screen, but for regular
+ * people (patients and families) instead of facility owners and therapists, and
+ * all on one screen instead of one question at a time. Unlisted and out of
+ * search, like /event. /event2?e=<short-name> tags each sign-up with its event.
+ * The form is components/EventSignupPeople.astro; sign-ups go to /api/event.php.
+ */
+import Kiosk from "../layouts/Kiosk.astro";
+import EventSignupPeople from "../components/EventSignupPeople.astro";
+---
+
+<Kiosk title="Event Sign-up | Valencia Health & Wellness">
+  <EventSignupPeople />
+</Kiosk>
