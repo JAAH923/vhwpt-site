@@ -239,6 +239,25 @@ html.asking { overflow: hidden; }
 @keyframes stepin { from { opacity: 0; transform: translateX(16px); } }
 @keyframes stepback { from { opacity: 0; transform: translateX(-16px); } }
 
+/* ---------- Event sign-up (/event): the booking pop-out's format, held open on an iPad handed around ---------- */
+.kiosk { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 16px; padding: 32px 24px; text-align: center; }
+.kiosk img { width: 96px; height: 96px; }
+.ask label, .ask button { touch-action: manipulation; }
+.askform.big .askq { font-size: clamp(30px, 3.6vw, 40px); }
+.askform.big .askhelp { font-size: 19px; }
+.askform.big .chip span { padding: 14px 22px; font-size: 19px; }
+.askform.big .field { padding: 10px 18px; }
+.askform.big .field span { font-size: 16px; }
+.askform.big .field input { padding-top: 4px; font-size: 22px; }
+.askform.big .asknav .btn { padding: 18px 32px; font-size: 20px; }
+.kpreview { margin-top: 16px; padding: 10px 14px; border-radius: 12px; background: var(--whisper); font-size: 15px; font-weight: 700; }
+.kconsent { display: flex; align-items: flex-start; gap: 14px; margin-top: 20px; cursor: pointer; }
+.kconsent input { flex: none; width: 28px; height: 28px; margin: 1px 0 0; accent-color: var(--ink); }
+.kconsent span { font-size: 19px; line-height: 1.4; }
+@media (min-width: 761px) {
+  .askform.big { width: min(760px, 100%); padding: 28px 40px 36px; }
+}
+
 /* Closing call to action: white, generous, one primary. */
 .cta { padding: 128px 0; border-top: 1px solid var(--hair); }
 .cta h2 { font-size: clamp(37px, 4.4vw, 56px); line-height: 1.05; letter-spacing: -0.022em; max-width: 16ch; }

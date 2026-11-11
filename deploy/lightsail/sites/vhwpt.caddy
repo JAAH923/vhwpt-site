@@ -19,9 +19,9 @@
 	@shop path /shop /shop/* /cart /cart/* /checkout /checkout/* /my-account /my-account/*
 	respond @shop 410
 
-	# Only the booking form runs PHP. Any other .php path, and files that are not for the
+	# Only the booking form and the event sign-up run PHP. Any other .php path, and files that are not for the
 	# public, answer 404 rather than being sent as text.
-	@form path /api/inquiry.php
+	@form path /api/inquiry.php /api/event.php
 	handle @form {
 		php_fastcgi unix//run/php/php8.3-fpm.sock {
 			env REMOTE_ADDR {client_ip}

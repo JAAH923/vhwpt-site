@@ -32,7 +32,7 @@ ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh develop  # or any branch
 [`deploy-vhwpt.sh`](deploy-vhwpt.sh) builds from GitHub, checks the key pages exist, then
 switches `current`. It keeps five releases; its header shows how to roll back. Caddy's rules
 are in [`sites/vhwpt.caddy`](sites/vhwpt.caddy): the old WordPress URLs redirect (same map as
-`public/_redirects`), and only `/api/inquiry.php` runs as PHP.
+`public/_redirects`), and only `/api/inquiry.php` and `/api/event.php` run as PHP.
 
 Until the DNS moves, the site is served only at **http://3.226.58.165/**, marked noindex.
 
