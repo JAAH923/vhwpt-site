@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Valencia Health &amp; Wellness · 33x81 retractable banner</title>
+<!--
+  The event banner, one artboard, three versions. Open this file with ?v=<version>:
+    ?v=a  White, headline "Keep them walking."
+    ?v=b  White, headline "Therapy that comes to you."
+    ?v=c  Dark,  headline "Keep them walking."
+  Add &nobleed=1 for the exact 33 x 81 trim (the default has 0.125" bleed, 33.25 x 81.25),
+  and &guides=1 to draw the trim, safe area and the zones the stand hides.
+  build.sh turns each version into the PDFs and preview the /banner page links to.
+  All sizes are inches. The words are Bruce's own, from the site (src/data/site.ts and the
+  home page), arranged around what Domatik's lead profile says the buyer cares about.
+-->
+<style>
+  @font-face{font-family:'Inter';font-weight:400;src:url('../../public/assets/fonts/inter-latin-400-normal.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:700;src:url('../../public/assets/fonts/inter-latin-700-normal.woff2') format('woff2');}
+  :root{
+    --ink:#18181b; --white:#ffffff; --crimson:#c41230;
+    --grey-d:#d4d4d8; --grey-l:#52525b; --whisper:#f4f4f5;
+    --W:33.25in; --H:81.25in;
+  }
+  html.nobleed{--W:33in;--H:81in}
+  body.t-dark{--page:var(--ink);--fg:#fff;--muted:var(--grey-d);--card:#fff}
+  body.t-white{--page:#fff;--fg:var(--ink);--muted:var(--grey-l);--card:var(--whisper)}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{width:var(--W);height:var(--H);background:var(--page,#fff)}
+  body{font-family:'Inter',system-ui,sans-serif;font-weight:700;color:var(--fg);
+       -webkit-font-smoothing:antialiased;overflow:hidden}
+  .art{position:relative;width:var(--W);height:var(--H);overflow:hidden;background:var(--page)}
+  .box{position:absolute;left:.125in;top:.125in;width:33in;height:81in}
+  html.nobleed .box{left:0;top:0}
+  .abs{position:absolute}
+  .c{left:0;width:33in;text-align:center}
+
+  /* dark version: white header over an ink body */
+  .white{left:-.125in;top:-.125in;width:33.25in;height:17.025in;background:#fff}
+  .ink{left:-.125in;top:16.9in;width:33.25in;height:65in;background:var(--ink)}
+  .t-white .white,.t-white .ink{display:none}
+
+  /* the logo file has a faint square behind the badge: crop it to the badge's own circle */
+  .logo{left:12in;top:2.9in;width:9in;height:9in;clip-path:circle(47.6% at 50% 50%)}
+  .name{top:12.8in;font-size:2.3in;line-height:1;letter-spacing:-.012em;color:var(--ink)}
+  .pulse{left:-.125in;top:13.9in;width:33.25in;height:6in;overflow:visible}
+
+  .h1{top:18.8in;font-size:4.4in;line-height:1.03;letter-spacing:-.024em}
+  .sub{top:28.6in;font-size:2in;line-height:1.2;font-weight:400;letter-spacing:-.006em;text-wrap:balance}
+
+  .card{left:2in;top:34.4in;width:29in;height:9.8in;background:var(--card);border-radius:.9in}
+  .tile{left:21.6in;top:35.1in;width:8.4in;height:8.4in;background:#fff;border-radius:.6in}
+  .qr{left:22.6in;top:36.1in;width:6.4in;height:6.4in}
+  .arrow{left:17.9in;top:38.65in;width:2.1in;height:1.3in;transform:scaleX(-1)}
+  .scan{left:3.6in;top:35.5in;text-align:left;color:var(--ink);font-size:2.45in;line-height:1.05;letter-spacing:-.018em}
+  .url{left:3.6in;top:41.05in;font-size:2in;line-height:1;color:var(--crimson);letter-spacing:-.012em}
+
+  .difflabel{left:2.4in;top:46.4in;font-size:2.25in;line-height:1;letter-spacing:-.015em;color:var(--fg)}
+  .bullets{left:2.4in;top:50in;width:28.2in;list-style:none}
+  .bullets li{position:relative;padding-left:2.1in;margin-bottom:.9in;font-weight:400;font-size:1.95in;line-height:1.2;letter-spacing:-.008em;text-wrap:balance;color:var(--fg)}
+  .bullets li::before{content:"";position:absolute;left:.1in;top:.77in;width:.8in;height:.8in;border-radius:50%;background:var(--crimson)}
+
+  .phone{top:68in;font-size:2.2in;line-height:1;letter-spacing:-.012em;color:var(--fg)}
+  .loc{top:70.4in;font-size:1.4in;line-height:1;font-weight:400;color:var(--muted)}
+
+  /* headline wording per version */
+  .h1b{display:none}
+  .v-b .h1a{display:none}
+  .v-b .h1b{display:block}
+
+  /* print guides: add &guides=1 */
+  .guides{display:none}
+  html.g .guides{display:block}
+  .guides div{position:absolute;pointer-events:none}
+  .gt{left:0;top:0;width:33in;height:81in;border:.03in solid #00b7ff}
+  .gs{left:.75in;top:.75in;width:31.5in;height:79.5in;border:.03in dashed #19c37d}
+  .gtop{left:0;top:0;width:33in;height:.5in;background:rgba(255,0,60,.35)}
+  .gbot{left:0;top:75in;width:33in;height:6in;background:rgba(255,0,60,.35)}
+  .gbot2{left:0;top:71in;width:33in;height:4in;background:rgba(255,170,0,.22)}
+  .gscan{left:0;top:33in;width:33in;height:.03in;background:#ff0}
+</style>
+</head>
+<body>
+<div class="art"><div class="box">
+
+  <div class="abs white"></div>
+  <div class="abs ink"></div>
+
+  <img class="abs logo" src="logo.jpg" alt="Valencia Health &amp; Wellness">
+  <div class="abs c name">Dr. Bruce Valencia, DPT</div>
+
+  <!-- the pulse line from the logo, running across the seam under the header -->
+  <svg class="abs pulse" viewBox="0 0 33.25 6" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 3 H11.9 L12.7 3 L13.5 2.45 L14.3 3 L15 3.5 L16 1.5 L17.1 4.9 L17.9 3 L19 2.4 L19.9 3 H33.25"
+          fill="none" stroke="#c41230" stroke-width=".34" stroke-linejoin="round" stroke-linecap="butt"/>
+  </svg>
+
+  <div class="abs c h1 h1a">Keep them<br>walking.</div>
+  <div class="abs c h1 h1b">Therapy that<br>comes to you.</div>
+  <div class="abs c sub">Physical therapy in your home<br>or care facility.</div>
+
+  <!-- scan block: the card, a white tile for the quiet zone, the QR (https://www.vhwpt.com), an arrow, the words -->
+  <div class="abs card"></div>
+  <div class="abs tile"></div>
+  <img class="abs qr" src="qr.svg" alt="QR code to vhwpt.com">
+  <svg class="abs arrow" viewBox="0 0 22 13" xmlns="http://www.w3.org/2000/svg">
+    <path d="M21 6.5 H2.2 M7.6 1.2 L2.2 6.5 L7.6 11.8" fill="none" stroke="#c41230" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <div class="abs scan">Scan to<br>meet Bruce</div>
+  <div class="abs url">vhwpt.com</div>
+
+  <div class="abs difflabel">The Valencia Difference:</div>
+  <ul class="abs bullets">
+    <li>One clinician, from recovery to strength</li>
+    <li>A written plan your family can follow</li>
+    <li>Coordinated with your physician</li>
+  </ul>
+
+  <div class="abs c phone">1-954-299-6536</div>
+  <div class="abs c loc">Broward &amp; Palm Beach County</div>
+
+  <div class="guides">
+    <div class="gt"></div><div class="gs"></div><div class="gtop"></div><div class="gbot2"></div><div class="gbot"></div><div class="gscan"></div>
+  </div>
+</div></div>
+<script>
+  var q = new URLSearchParams(location.search), v = (q.get('v') || 'a').toLowerCase();
+  var root = document.documentElement;
+  document.body.classList.add('v-' + v, v === 'c' ? 't-dark' : 't-white');
+  if (q.get('nobleed')) root.classList.add('nobleed');
+  if (q.get('guides')) root.classList.add('g');
+  var bleed = !q.get('nobleed');
+  var st = document.createElement('style');
+  st.textContent = '@page{size:' + (bleed ? '33.25in 81.25in' : '33in 81in') + ';margin:0}';
+  document.head.appendChild(st);
+</script>
+</body>
+</html>

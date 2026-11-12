@@ -1,0 +1,150 @@
+---
+/**
+ * The event banner, for Bruce and whoever is printing it. An unlisted page: it is not in the
+ * nav, the sitemap or search (Site's `noindex`). It lays the versions out side by side on a
+ * canvas, each with its print file. The files in public/banner/ are made by
+ * design/event-banner/build.sh from design/event-banner/banner.html; change a version there
+ * and run the script, then this page picks the new files up.
+ */
+import Site from "../layouts/Site.astro";
+import PageHead from "../components/PageHead.astro";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const versions = [
+  {
+    file: "white-walking",
+    letter: "A",
+    title: "White: “Keep them walking.”",
+    pick: true,
+    body: "Leads with what families and facilities want most: someone who stays on their feet.",
+    alt: "The banner on a white background: the logo, “Keep them walking.”, a QR code to scan, then three short bullets under “The Valencia Difference”.",
+  },
+  {
+    file: "white-comes-to-you",
+    letter: "B",
+    title: "White: “Therapy that comes to you.”",
+    body: "The same page with the first headline, about therapy that comes to the home or the facility.",
+    alt: "The banner on a white background: the logo, “Therapy that comes to you.”, a QR code to scan, then three short bullets under “The Valencia Difference”.",
+  },
+  {
+    file: "dark-walking",
+    letter: "C",
+    title: "Dark: “Keep them walking.”",
+    body: "Layout A on a dark background, with the logo on a white header.",
+    alt: "The banner with a white header and a dark body: the logo, “Keep them walking.”, a QR code to scan, then three short bullets under “The Valencia Difference”.",
+  },
+];
+---
+
+<Site
+  title="Event Banner | Valencia Health & Wellness"
+  description="The event banner versions and their print files."
+  path="/banner"
+  noindex
+>
+  <PageHead
+    label="For printing"
+    title="Event banner"
+    lede="Three versions of the 33″ × 81″ retractable banner. Pick one and download its print file. The QR code on each one opens vhwpt.com."
+  />
+
+  <section class="section canvas" aria-label="Banner versions">
+    <div class="wrap">
+      <ul class="boards">
+        {
+          versions.map((v) => (
+            <li class="board">
+              <a
+                class="art"
+                href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)}
+                target="_blank"
+                rel="noopener"
+                aria-label={`Open version ${v.letter} as a PDF`}
+              >
+                <img
+                  src={withBase(`/banner/valencia-banner-${v.file}-preview.png`)}
+                  alt={v.alt}
+                  width="800"
+                  height="1963"
+                  loading="lazy"
+                />
+              </a>
+              <p class="label">
+                Version {v.letter}
+                {v.pick && <span class="pill">Recommended</span>}
+              </p>
+              <h2>{v.title}</h2>
+              <p class="desc">{v.body}</p>
+              <div class="dl">
+                <a
+                  class="btn btn-primary btn-sm"
+                  href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)}
+                  download
+                >
+                  Download print PDF
+                </a>
+                <a
+                  class="btn btn-line btn-sm"
+                  href={withBase(`/banner/valencia-banner-${v.file}-33x81-exact.pdf`)}
+                  download
+                >
+                  Exact 33″ × 81″ PDF
+                </a>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="print-title">
+    <div class="wrap narrow">
+      <p class="label">How to print it</p>
+      <h2 id="print-title">Four steps</h2>
+      <ol class="howto">
+        <li>Pick a version above and download its <strong>print PDF</strong>.</li>
+        <li>
+          On Vistaprint, choose a retractable banner, size 33″ × 81″, and upload that PDF. The print
+          PDF is an eighth of an inch larger on every side, so no white edge shows after
+          trimming. If the upload asks for exactly 33″ × 81″, use the exact-size PDF instead.
+        </li>
+        <li>
+          Look at Vistaprint’s preview. Nothing should be cut off. The stand hides the bottom few
+          inches, and the words stay above that.
+        </li>
+        <li>
+          Before you pay, scan the QR code on your screen with a phone. It should open vhwpt.com.
+        </li>
+      </ol>
+      <p class="note">
+        The fonts and the QR code are built into each PDF, so it prints the same everywhere. Want
+        a different line, size or color? Tell Justin and he will make a new version.
+      </p>
+    </div>
+  </section>
+</Site>
+
+<style>
+  .canvas { background: var(--whisper); }
+  .boards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: start; }
+  .board { display: flex; flex-direction: column; }
+  .art { display: block; background: var(--white); border: 1px solid var(--hair); margin-bottom: 24px; }
+  .art img { display: block; width: 100%; height: auto; }
+  .board .label { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .pill { display: inline-block; background: var(--white); color: var(--ink); border: 1px solid var(--hair); border-radius: 9999px; padding: 4px 12px; font-size: 12px; line-height: 1.5; }
+  .board h2 { font-size: 26px; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 12px; }
+  .desc { font-size: 17px; line-height: 1.45; max-width: 34ch; margin-bottom: 24px; }
+  .dl { display: flex; flex-wrap: wrap; gap: 12px; }
+  .howto { margin: 24px 0 0; padding-left: 24px; font-size: 19px; line-height: 1.45; }
+  .howto li + li { margin-top: 16px; }
+  .note { margin-top: 32px; font-size: 17px; line-height: 1.45; color: var(--grey); }
+  @media (max-width: 900px) {
+    .boards { grid-template-columns: minmax(0, 1fr); gap: 64px; }
+    .board { max-width: 380px; margin: 0 auto; width: 100%; }
+  }
+</style>
