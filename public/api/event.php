@@ -250,5 +250,9 @@ $new = !is_file($log);
 $filed = @file_put_contents($log, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX) !== false;
 if ($new && $filed) @chmod($log, 0600);
 
-if ($dbId === null && !$filed && !$sent) finish(false, 'That didn’t go through. Please ask Bruce to take your details, or ' . CONTACT . '.', 502);
+if ($dbId === null && !$filed && !$sent) {
+  error_log('vhwpt event signups: nothing could be saved. private=' . $private . ' db=' . ($db ? 'open' : 'unavailable')
+          . ' file=' . (error_get_last()['message'] ?? 'no error recorded'));
+  finish(false, 'That didn’t go through. Please ask Bruce to take your details, or ' . CONTACT . '.', 502);
+}
 finish(true, '', 200);
