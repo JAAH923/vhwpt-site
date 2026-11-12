@@ -4,15 +4,18 @@
 <meta charset="utf-8">
 <title>Valencia Health &amp; Wellness · 33x81 retractable banner</title>
 <!--
-  The event banner, one artboard, three versions. Open this file with ?v=<version>:
-    ?v=a  White, headline "Keep them walking."
-    ?v=b  White, headline "Care that comes to you." (the site's own hero line)
-    ?v=c  Dark,  headline "Keep them walking."
+  The event banner: one artboard, six versions, worded for three audiences. Open this file with
+  ?v=<version> (the words for each are in COPY, at the bottom of this file):
+    patients-steady, patients-care               Patients
+    therapists-together, therapists-next-step    Other PTs
+    facilities-walking, facilities-on-site       Facilities
   Add &nobleed=1 for the exact 33 x 81 trim (the default has 0.125" bleed, 33.25 x 81.25),
-  and &guides=1 to draw the trim, safe area and the zones the stand hides.
-  build.sh turns each version into the PDFs and preview the /banner page links to.
-  All sizes are inches. The words are Bruce's own, from the site (src/data/site.ts and the
-  home page), arranged around what Domatik's lead profile says the buyer cares about.
+  &guides=1 to draw the trim, safe area and the zones the stand hides, and &dark=1 for a dark
+  body (not built by default). build.sh turns each version into the files the /banner page
+  links to, and checks that every line of text fits.
+  All sizes are inches. The words come from Bruce's site (src/data/site.ts, questions.ts and the
+  home page). The QR code is https://www.vhwpt.com/qr, a redirect set in
+  deploy/lightsail/sites/vhwpt.caddy.
 -->
 <style>
   @font-face{font-family:'Inter';font-weight:400;src:url('../../public/assets/fonts/inter-latin-400-normal.woff2') format('woff2');}
@@ -34,8 +37,9 @@
   html.nobleed .box{left:0;top:0}
   .abs{position:absolute}
   .c{left:0;width:33in;text-align:center}
+  .l{display:inline-block;white-space:nowrap}
 
-  /* dark version: white header over an ink body */
+  /* dark option: white header over an ink body */
   .white{left:-.125in;top:-.125in;width:33.25in;height:17.025in;background:#fff}
   .ink{left:-.125in;top:16.9in;width:33.25in;height:65in;background:var(--ink)}
   .t-white .white,.t-white .ink{display:none}
@@ -45,8 +49,10 @@
   .name{top:12.8in;font-size:2.3in;line-height:1;letter-spacing:-.012em;color:var(--ink)}
   .pulse{left:-.125in;top:13.9in;width:33.25in;height:6in;overflow:visible}
 
-  .h1{top:18.8in;font-size:4.4in;line-height:1.03;letter-spacing:-.024em}
-  .sub{top:28.6in;font-size:2in;line-height:1.2;font-weight:400;letter-spacing:-.006em;text-wrap:balance}
+  /* headline and the line under it share a zone, centered, so a shorter headline stays balanced */
+  .top{left:0;top:17.6in;width:33in;height:16.4in;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+  .h1{line-height:1.03;letter-spacing:-.024em}
+  .sub{margin-top:1.1in;font-size:2in;line-height:1.2;font-weight:400;letter-spacing:-.006em}
 
   .card{left:2in;top:34.4in;width:29in;height:9.8in;background:var(--card);border-radius:.9in}
   .tile{left:21.6in;top:35.1in;width:8.4in;height:8.4in;background:#fff;border-radius:.6in}
@@ -57,16 +63,11 @@
 
   .difflabel{left:2.4in;top:47.2in;font-size:2.25in;line-height:1;letter-spacing:-.015em;color:var(--fg)}
   .bullets{left:2.4in;top:51in;width:28.2in;list-style:none}
-  .bullets li{position:relative;padding-left:2.1in;margin-bottom:1.15in;font-weight:400;font-size:1.95in;line-height:1.2;letter-spacing:-.008em;text-wrap:balance;color:var(--fg)}
-  .bullets li::before{content:"";position:absolute;left:.1in;top:.77in;width:.8in;height:.8in;border-radius:50%;background:var(--crimson)}
+  .bullets li{position:relative;padding-left:2.1in;margin-bottom:var(--bgap,1.15in);font-weight:400;font-size:var(--bs,1.95in);line-height:1.2;letter-spacing:-.008em;white-space:nowrap;color:var(--fg)}
+  .bullets li::before{content:"";position:absolute;left:.1in;top:calc(var(--bs,1.95in) * .6 - .4in);width:.8in;height:.8in;border-radius:50%;background:var(--crimson)}
 
   .phone{top:67.6in;font-size:2.2in;line-height:1;letter-spacing:-.012em;color:var(--fg)}
   .loc{top:70.6in;font-size:1.4in;line-height:1;font-weight:400;color:var(--muted)}
-
-  /* headline wording per version */
-  .h1b{display:none}
-  .v-b .h1a{display:none}
-  .v-b .h1b{display:block}
 
   /* print guides: add &guides=1 */
   .guides{display:none}
@@ -95,27 +96,20 @@
           fill="none" stroke="#c41230" stroke-width=".34" stroke-linejoin="round" stroke-linecap="butt"/>
   </svg>
 
-  <div class="abs c h1 h1a">Keep them<br>walking.</div>
-  <div class="abs c h1 h1b">Care that<br>comes to you.</div>
-  <div class="abs c sub">Physical therapy in your home<br>or care facility.</div>
+  <div class="abs top"><div class="h1" id="h1"></div><div class="sub" id="sub"></div></div>
 
-  <!-- scan block: the card, a white tile for the quiet zone, the QR (https://www.vhwpt.com/qr, a redirect set in deploy/lightsail/sites/vhwpt.caddy), an arrow, the words -->
+  <!-- scan block: the card, a white tile for the quiet zone, the QR (https://www.vhwpt.com/qr), an arrow, the words -->
   <div class="abs card"></div>
   <div class="abs tile"></div>
   <img class="abs qr" src="qr.svg" alt="QR code to vhwpt.com">
   <svg class="abs arrow" viewBox="0 0 22 13" xmlns="http://www.w3.org/2000/svg">
     <path d="M21 6.5 H2.2 M7.6 1.2 L2.2 6.5 L7.6 11.8" fill="none" stroke="#c41230" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
-  <div class="abs scan">Scan to<br>meet Bruce</div>
+  <div class="abs scan" id="scan"></div>
   <div class="abs url">vhwpt.com</div>
 
-  <div class="abs difflabel">What you get:</div>
-  <ul class="abs bullets">
-    <li>Walking and balance care</li>
-    <li>From recovery to strength</li>
-    <li>A written plan to follow</li>
-    <li>Your physician in the loop</li>
-  </ul>
+  <div class="abs difflabel" id="label"></div>
+  <ul class="abs bullets" id="bullets"></ul>
 
   <div class="abs c phone">1-954-299-6536</div>
   <div class="abs c loc">Broward &amp; Palm Beach County</div>
@@ -125,15 +119,93 @@
   </div>
 </div></div>
 <script>
-  var q = new URLSearchParams(location.search), v = (q.get('v') || 'a').toLowerCase();
+  /* The words. Each line is set on its own so it breaks where it should. `size` is the headline
+     size in inches (a longer headline gets a smaller size so it fits). Keep each bullet to one
+     line; build.sh fails if any line is too wide. */
+  var COPY = {
+    'patients-care': {
+      h1: ['Care that', 'comes to you.'], size: 4.4,
+      sub: ['Physical therapy in your home', 'or care facility.'],
+      scan: ['Scan to', 'meet Bruce'], label: 'What you get:',
+      bullets: ['Findings in plain words', 'A written plan to follow', 'From recovery to strength', 'Your physician in the loop']
+    },
+    /* For the senior mobility class: the Senior Fitness page's own words ("Staying steady on your
+       feet", and its list of what it covers). Bigger bullets, since there are only three. */
+    'patients-steady': {
+      h1: ['Stay steady', 'on your feet.'], size: 4.4,
+      sub: ['Mobility and strength with', 'a Doctor of Physical Therapy.'],
+      scan: ['Scan to', 'learn more'], label: 'What you build:', bsize: 2.25, bgap: 1.5,
+      bullets: ['Balance and steadiness', 'Mobility and walking', 'Strength for daily tasks']
+    },
+    'therapists-together': {
+      h1: ['Let’s work', 'together.'], size: 4.8,
+      sub: ['Refer a patient,', 'or work with Bruce.'],
+      scan: ['Scan to', 'connect'], label: 'Working with Bruce:',
+      bullets: ['Doctor of Physical Therapy', 'CLT, dry needling, ISSA-CPT', 'Home and facility visits', 'Referrals welcome']
+    },
+    'therapists-next-step': {
+      h1: ['A next step', 'for your patients.'], size: 3.4,
+      sub: ['Therapy at home or', 'in a care facility.'],
+      scan: ['Scan to', 'connect'], label: 'Working with Bruce:',
+      bullets: ['Physician coordination', 'Home and facility visits', 'CLT, dry needling, ISSA-CPT', 'Referrals welcome']
+    },
+    'facilities-walking': {
+      h1: ['Keep residents', 'walking.'], size: 4.0,
+      sub: ['Physical therapy in', 'your care facility.'],
+      scan: ['Scan to', 'meet Bruce'], label: 'What you get:',
+      bullets: ['Fall-risk assessments', 'Balance and gait training', 'A written plan per resident', 'Their physician in the loop']
+    },
+    'facilities-on-site': {
+      h1: ['Care that comes', 'to residents.'], size: 3.8,
+      sub: ['In your care facility,', 'including memory care.'],
+      scan: ['Scan to', 'meet Bruce'], label: 'What you get:',
+      bullets: ['Fall-risk assessments', 'Neurological care', 'A written plan per resident', 'Their physician in the loop']
+    }
+  };
+
+  var q = new URLSearchParams(location.search);
+  var id = q.get('v') || 'patients-care', c = COPY[id] || COPY['patients-care'];
   var root = document.documentElement;
-  document.body.classList.add('v-' + v, v === 'c' ? 't-dark' : 't-white');
+  document.body.classList.add(q.get('dark') ? 't-dark' : 't-white');
   if (q.get('nobleed')) root.classList.add('nobleed');
   if (q.get('guides')) root.classList.add('g');
-  var bleed = !q.get('nobleed');
+
+  function lines(el, arr) {
+    el.textContent = '';
+    arr.forEach(function (t, i) {
+      if (i) el.appendChild(document.createElement('br'));
+      var s = document.createElement('span'); s.className = 'l'; s.textContent = t; el.appendChild(s);
+    });
+  }
+  lines(document.getElementById('h1'), c.h1);
+  document.getElementById('h1').style.fontSize = c.size + 'in';
+  lines(document.getElementById('sub'), c.sub);
+  lines(document.getElementById('scan'), c.scan);
+  document.getElementById('label').textContent = c.label;
+  if (c.bsize) document.getElementById('bullets').style.setProperty('--bs', c.bsize + 'in');
+  if (c.bgap) document.getElementById('bullets').style.setProperty('--bgap', c.bgap + 'in');
+  c.bullets.forEach(function (t) {
+    var li = document.createElement('li'); li.textContent = t; document.getElementById('bullets').appendChild(li);
+  });
+
   var st = document.createElement('style');
-  st.textContent = '@page{size:' + (bleed ? '33.25in 81.25in' : '33in 81in') + ';margin:0}';
+  st.textContent = '@page{size:' + (q.get('nobleed') ? '33in 81in' : '33.25in 81.25in') + ';margin:0}';
   document.head.appendChild(st);
+
+  /* Fit check, read by build.sh: every headline and sub line must sit inside the 2in side
+     margins, the scan words inside the card, and every bullet inside the safe width. */
+  document.fonts.ready.then(function () {
+    var bad = [], IN = 96;
+    function width(el) { return el.getBoundingClientRect().width / IN; }
+    document.querySelectorAll('#h1 .l, #sub .l').forEach(function (e) { if (width(e) > 29.0) bad.push('"' + e.textContent + '" is ' + width(e).toFixed(1) + 'in wide'); });
+    document.querySelectorAll('#scan .l').forEach(function (e) { if (width(e) > 13.6) bad.push('"' + e.textContent + '" is ' + width(e).toFixed(1) + 'in wide'); });
+    document.querySelectorAll('#bullets li').forEach(function (e) {
+      var r = document.createRange(); r.selectNodeContents(e);
+      var w = r.getBoundingClientRect().width / IN;
+      if (w > 26.1) bad.push('bullet "' + e.textContent + '" is ' + w.toFixed(1) + 'in wide');
+    });
+    document.body.setAttribute('data-fit', bad.length ? 'FAIL: ' + bad.join('; ') : 'ok');
+  });
 </script>
 </body>
 </html>

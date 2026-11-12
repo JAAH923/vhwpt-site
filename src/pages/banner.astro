@@ -1,10 +1,11 @@
 ---
 /**
  * The event banner, for Bruce and whoever is printing it. An unlisted page: it is not in the
- * nav, the sitemap or search (Site's `noindex`). It lays the versions out side by side on a
- * canvas, each with its print file. The files in public/banner/ are made by
- * design/event-banner/build.sh from design/event-banner/banner.html; change a version there
- * and run the script, then this page picks the new files up.
+ * nav, the sitemap or search (Site's `noindex`). The banner is worded for three audiences,
+ * one tab each: Patients, Other PTs and Facilities, with two versions apiece. The files in
+ * public/banner/ are made by design/event-banner/build.sh from design/event-banner/banner.html,
+ * where the words for every version are in one table; change a version there and run the
+ * script, then this page picks the new files up. A tab can be linked directly: /banner/#facilities.
  */
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
@@ -14,98 +15,148 @@ const basePath = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
-const versions = [
+const audiences = [
   {
-    file: "white-walking",
-    letter: "A",
-    title: "White: “Keep them walking.”",
-    pick: true,
-    body: "Leads with what families and facilities want most: someone who stays on their feet.",
-    alt: "The banner on a white background: the logo, “Keep them walking.”, a QR code to scan, then four one-line bullets under “What you get”.",
+    id: "patients",
+    tab: "Patients",
+    title: "Patients",
+    who: "People who may want care or training for themselves or someone they love, such as the seniors at a community mobility class. The words are from the Senior Fitness and home pages.",
+    versions: [
+      {
+        file: "patients-steady",
+        title: "“Stay steady on your feet.”",
+        body: "Built for a mobility class. It lists what the class works on, in Bruce’s own words, and the bullets are bigger because there are only three.",
+        alt: "The banner: the logo, “Stay steady on your feet.”, a QR code to scan, then three large bullets under “What you build”: balance and steadiness, mobility and walking, and strength for daily tasks.",
+      },
+      {
+        file: "patients-care",
+        title: "“Care that comes to you.”",
+        body: "The headline from the home page, with what a first visit gives you: plain words, a written plan, and your physician in the loop.",
+        alt: "The banner: the logo, “Care that comes to you.”, a QR code to scan, then four bullets under “What you get”.",
+      },
+    ],
   },
   {
-    file: "white-comes-to-you",
-    letter: "B",
-    title: "White: “Care that comes to you.”",
-    body: "The same layout with the headline from the home page of the website.",
-    alt: "The banner on a white background: the logo, “Care that comes to you.”, a QR code to scan, then four one-line bullets under “What you get”.",
+    id: "other-pts",
+    tab: "Other PTs",
+    title: "Other PTs",
+    who: "Therapists and therapy assistants who are deciding whether to refer a patient or work with Bruce. These lead with his credentials and what he does.",
+    versions: [
+      {
+        file: "therapists-together",
+        title: "“Let’s work together.”",
+        body: "Friendly and plain, and open to both referrals and working together.",
+        alt: "The banner: the logo, “Let’s work together.”, a QR code to scan, then four bullets under “Working with Bruce”: Doctor of Physical Therapy; CLT, dry needling, ISSA-CPT; home and facility visits; referrals welcome.",
+      },
+      {
+        file: "therapists-next-step",
+        title: "“A next step for your patients.”",
+        body: "For a therapist thinking about where a patient goes next.",
+        alt: "The banner: the logo, “A next step for your patients.”, a QR code to scan, then four bullets under “Working with Bruce”.",
+      },
+    ],
   },
   {
-    file: "dark-walking",
-    letter: "C",
-    title: "Dark: “Keep them walking.”",
-    body: "Version A on a dark background, with the logo on a white header.",
-    alt: "The banner with a white header and a dark body: the logo, “Keep them walking.”, a QR code to scan, then four one-line bullets under “What you get”.",
+    id: "facilities",
+    tab: "Facilities",
+    title: "Facilities",
+    who: "Owners and administrators of assisted living, memory care and senior communities. These are about residents staying steady, and Bruce working with their physician.",
+    versions: [
+      {
+        file: "facilities-walking",
+        title: "“Keep residents walking.”",
+        body: "Speaks to what families notice most: whether a resident stays on their feet.",
+        alt: "The banner: the logo, “Keep residents walking.”, a QR code to scan, then four bullets under “What you get”: fall-risk assessments, balance and gait training, a written plan per resident, their physician in the loop.",
+      },
+      {
+        file: "facilities-on-site",
+        title: "“Care that comes to residents.”",
+        body: "The home page headline, fitted to a facility, and it names memory care.",
+        alt: "The banner: the logo, “Care that comes to residents.”, a QR code to scan, then four bullets under “What you get”.",
+      },
+    ],
   },
 ];
 ---
 
 <Site
   title="Event Banner | Valencia Health & Wellness"
-  description="The event banner versions and their print files."
+  description="The event banner, worded for patients, other therapists and facilities, with its print files."
   path="/banner"
   noindex
 >
   <PageHead
     label="For printing"
     title="Event banner"
-    lede="Three versions of the 33″ × 81″ retractable banner. Pick one and download its print file. The QR code on each one opens vhwpt.com."
+    lede="The same banner, worded for three audiences. Pick the tab for who the event is for, choose a version, and download it. The QR code on each one opens vhwpt.com."
   />
 
-  <section class="section canvas" aria-label="Banner versions">
+  <section class="section canvas" aria-label="Banner versions by audience">
     <div class="wrap">
-      <ul class="boards">
-        {
-          versions.map((v) => (
-            <li class="board">
-              <a
-                class="art"
-                href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)}
-                target="_blank"
-                rel="noopener"
-                aria-label={`Open version ${v.letter} as a PDF`}
-              >
-                <img
-                  src={withBase(`/banner/valencia-banner-${v.file}-preview.png`)}
-                  alt={v.alt}
-                  width="800"
-                  height="1963"
-                  loading="lazy"
-                />
-              </a>
-              <p class="label">
-                Version {v.letter}
-                {v.pick && <span class="pill">Recommended</span>}
-              </p>
-              <h2>{v.title}</h2>
-              <p class="desc">{v.body}</p>
-              <details class="dlmenu">
-                <summary class="btn btn-primary btn-sm">Download</summary>
-                <ul class="dlopts">
-                  <li>
-                    <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)} download>
-                      <strong>Print PDF</strong>
-                      <span>33¼″ × 81¼″, with a little extra edge. Use this one for Vistaprint.</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-exact.pdf`)} download>
-                      <strong>Exact-size PDF</strong>
-                      <span>33″ × 81″, with no extra edge.</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a href={withBase(`/banner/valencia-banner-${v.file}-33x81.png`)} download>
-                      <strong>Image (PNG)</strong>
-                      <span>A 33″ × 81″ picture, for email or other programs.</span>
-                    </a>
-                  </li>
-                </ul>
-              </details>
-            </li>
-          ))
-        }
-      </ul>
+      <nav class="tabs" aria-label="Audience">
+        {audiences.map((a) => <a class="tab" href={`#${a.id}`}>{a.tab}</a>)}
+      </nav>
+
+      {
+        audiences.map((a) => (
+          <div class="panel" id={a.id} aria-labelledby={`${a.id}-title`}>
+            <div class="who">
+              <h2 id={`${a.id}-title`}>{a.title}</h2>
+              <p>{a.who}</p>
+            </div>
+            <ul class="boards">
+              {a.versions.map((v, i) => (
+                <li class="board">
+                  <a
+                    class="art"
+                    href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)}
+                    target="_blank"
+                    rel="noopener"
+                    aria-label={`Open ${a.title}, version ${i + 1} as a PDF`}
+                  >
+                    <img
+                      src={withBase(`/banner/valencia-banner-${v.file}-preview.png`)}
+                      alt={v.alt}
+                      width="800"
+                      height="1963"
+                      loading="lazy"
+                    />
+                  </a>
+                  <p class="label">
+                    Version {i + 1}
+                    {i === 0 && <span class="pill">Recommended</span>}
+                  </p>
+                  <h3>{v.title}</h3>
+                  <p class="desc">{v.body}</p>
+                  <details class="dlmenu">
+                    <summary class="btn btn-primary btn-sm">Download</summary>
+                    <ul class="dlopts">
+                      <li>
+                        <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)} download>
+                          <strong>Print PDF</strong>
+                          <span>33¼″ × 81¼″, with a little extra edge. Use this one for Vistaprint.</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-exact.pdf`)} download>
+                          <strong>Exact-size PDF</strong>
+                          <span>33″ × 81″, with no extra edge.</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a href={withBase(`/banner/valencia-banner-${v.file}-33x81.png`)} download>
+                          <strong>Image (PNG)</strong>
+                          <span>A 33″ × 81″ picture, for email or other programs.</span>
+                        </a>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
     </div>
   </section>
 
@@ -139,14 +190,27 @@ const versions = [
 
 <style>
   .canvas { background: var(--whisper); }
-  .boards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: start; }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 48px; }
+  .tab { display: inline-flex; align-items: center; border: 1px solid var(--hair); border-radius: 9999px; background: var(--white); color: var(--ink); font-size: 17px; font-weight: 700; line-height: 1.2; padding: 15px 22px; }
+  .tab:hover { border-color: var(--ink); }
+  .tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+  .panel { scroll-margin-top: 96px; }
+  .panel + .panel { margin-top: 96px; }
+  .who { margin-bottom: 40px; }
+  .who h2 { font-size: 30px; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 12px; }
+  .who p { font-size: 19px; line-height: 1.45; max-width: 62ch; }
+
+  .boards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; max-width: 840px; align-items: start; }
   .board { display: flex; flex-direction: column; }
   .art { display: block; background: var(--white); border: 1px solid var(--hair); margin-bottom: 24px; }
   .art img { display: block; width: 100%; height: auto; }
   .board .label { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
   .pill { display: inline-block; background: var(--white); color: var(--ink); border: 1px solid var(--hair); border-radius: 9999px; padding: 4px 12px; font-size: 12px; line-height: 1.5; }
-  .board h2 { font-size: 26px; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 12px; }
+  .board h3 { font-size: 26px; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 12px; }
   .desc { font-size: 17px; line-height: 1.45; max-width: 34ch; margin-bottom: 24px; }
+
   .dlmenu { position: relative; align-self: flex-start; }
   .dlmenu summary { list-style: none; }
   .dlmenu summary::-webkit-details-marker { display: none; }
@@ -157,19 +221,66 @@ const versions = [
   .dlopts a:hover, .dlopts a:focus-visible { background: var(--whisper); }
   .dlopts strong { display: block; font-size: 15px; line-height: 1.3; }
   .dlopts span { display: block; margin-top: 4px; font-size: 13px; line-height: 1.4; color: var(--grey); }
+
   .howto { margin: 24px 0 0; padding-left: 24px; font-size: 19px; line-height: 1.45; }
   .howto li + li { margin-top: 16px; }
   .note { margin-top: 32px; font-size: 17px; line-height: 1.45; color: var(--grey); }
+
   @media (max-width: 900px) {
     .boards { grid-template-columns: minmax(0, 1fr); gap: 64px; }
     .board { max-width: 380px; margin: 0 auto; width: 100%; }
+    .panel + .panel { margin-top: 64px; }
   }
 </style>
 
 <script>
+  // Without this, every audience shows one after another and the tabs are links down the page.
+  // With it, the tabs switch between them, and /banner/#facilities opens that tab.
+  const tabs = [...document.querySelectorAll<HTMLAnchorElement>(".tab")];
+  const panels = tabs.map((t) => document.getElementById(t.hash.slice(1))!);
+  const menus = [...document.querySelectorAll<HTMLDetailsElement>(".dlmenu")];
+
+  document.querySelector(".tabs")?.setAttribute("role", "tablist");
+  tabs.forEach((t, i) => {
+    t.setAttribute("role", "tab");
+    t.id = `tab-${i}`;
+    t.setAttribute("aria-controls", panels[i].id);
+    panels[i].setAttribute("role", "tabpanel");
+    panels[i].setAttribute("aria-labelledby", t.id);
+  });
+
+  function select(i: number, focus = false) {
+    tabs.forEach((t, j) => {
+      const on = i === j;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      panels[j].hidden = !on;
+    });
+    for (const m of menus) m.open = false;
+    if (focus) tabs[i].focus();
+  }
+  const fromHash = () => Math.max(0, tabs.findIndex((t) => t.hash === location.hash));
+
+  select(fromHash());
+  window.addEventListener("hashchange", () => select(fromHash()));
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", (e) => {
+      e.preventDefault();
+      history.replaceState(null, "", t.hash);
+      select(i);
+    });
+    t.addEventListener("keydown", (e) => {
+      const last = tabs.length - 1;
+      const to = e.key === "ArrowRight" ? (i === last ? 0 : i + 1) : e.key === "ArrowLeft" ? (i === 0 ? last : i - 1) : e.key === "Home" ? 0 : e.key === "End" ? last : -1;
+      if (to < 0) return;
+      e.preventDefault();
+      history.replaceState(null, "", tabs[to].hash);
+      select(to, true);
+    });
+  });
+
   // The Download menus are <details>, so they work without this. This only tidies them:
   // one open at a time, and closed again by a click elsewhere, Escape, or choosing a file.
-  const menus = [...document.querySelectorAll<HTMLDetailsElement>(".dlmenu")];
   for (const m of menus) {
     m.addEventListener("toggle", () => {
       if (m.open) for (const o of menus) if (o !== m) o.open = false;
