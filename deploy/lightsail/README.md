@@ -14,7 +14,7 @@ scp -r deploy/lightsail bruce-lightsail:lightsail && ssh bruce-lightsail 'sudo b
 | Piece | Where |
 |---|---|
 | Caddy 2 (web server, HTTPS) | `/etc/caddy/Caddyfile` imports `/etc/caddy/sites/*.caddy`, one file per site or app |
-| PHP 8.3-FPM | Runs only what a site file hands it (today: vhwpt's booking form) |
+| PHP 8.3-FPM | Runs only what a site file hands it (today: vhwpt's booking form and event sign-up) |
 | Node 22 + pnpm (corepack) | Builds sites from GitHub on the server |
 | Sites | `/srv/sites/<name>/`: `repo/`, `releases/`, `current` → the live release, `private/` (server-only) |
 | Apps | `/srv/apps/<name>/`, each listening on localhost behind `reverse_proxy` |
@@ -35,7 +35,7 @@ files). It keeps five releases; its header shows how to roll back. Caddy's rules
 are in [`sites/vhwpt.caddy`](sites/vhwpt.caddy): the old WordPress URLs redirect (same map as
 `public/_redirects`), and only `/api/inquiry.php` and `/api/event.php` run as PHP.
 
-Until the DNS moves, the site is served only at **http://3.226.58.165/**, marked noindex.
+vhwpt.com has been live on this server since 2026-11-12. **http://3.226.58.165/** stays up as a test address, marked noindex.
 
 The booking form reads its settings from `/srv/sites/vhwpt/private/vhwpt-contact.php`
 (owner `www-data`, mode 600). Only Justin puts that file there; it is never in this repo.
@@ -83,10 +83,12 @@ wording; `consent_text` keeps what each person actually ticked.
 
 ## Moving vhwpt.com here (cutover)
 
-What is live today: the old WordPress site, behind Cloudflare (Bruce's DNS), on a cPanel
-host at 108.170.32.242. **That host also runs Bruce's email** (`MX mail.vhwpt.com`, info@vhwpt.com).
+**Done 2026-11-12:** vhwpt.com and www now point here (proxied by Cloudflare, SSL mode Full
+(strict)) and Caddy serves them with the Origin Certificate. The steps below are kept as the
+record and for the next server. The old WordPress site is still on a cPanel host at
+108.170.32.242. **That host also runs Bruce's email** (`MX mail.vhwpt.com`, info@vhwpt.com).
 Moving the website does not move email. Keep the mail records and the old hosting until
-email has a new home.
+email has a new home. To roll back the website, point the A records back at 108.170.32.242.
 
 1. **Lightsail firewall.** In the instance's Networking tab, allow HTTPS (443). HTTP (80) and
    SSH are open by default. Turn on automatic snapshots too.
@@ -95,18 +97,21 @@ email has a new home.
    The form's email also needs Resend's DNS records for the sending domain (T-900).
 3. **Decide what goes live.** `main` is behind `develop`. Merge `develop` into `main`, then
    run `deploy.sh` with no branch.
-4. **Certificate behind Cloudflare.** In Cloudflare, create an Origin Certificate for
-   `vhwpt.com, *.vhwpt.com` and save the cert and key in `/etc/caddy/certs/` (readable only by
-   caddy). Add `tls /etc/caddy/certs/vhwpt.pem /etc/caddy/certs/vhwpt.key` to both blocks
-   below, and set Cloudflare SSL/TLS to **Full (strict)**.
-5. **Caddy.** Uncomment the `www.vhwpt.com` and `vhwpt.com` blocks in `sites/vhwpt.caddy`,
-   install the file, validate, then reload. Check with
+4. **Certificate behind Cloudflare.** Make the key and a CSR on the server, so the key never
+   leaves it, in `/etc/caddy/certs/` (folder `750 root:caddy`, key `640`). In Cloudflare, create an
+   Origin Certificate for `vhwpt.com, *.vhwpt.com` from that CSR ("Use my private key and CSR"),
+   and save it as `/etc/caddy/certs/vhwpt.crt` (`644`). Check that the certificate, key and CSR
+   give the same `openssl ... -pubkey | md5sum`. The two Caddy blocks use
+   `tls /etc/caddy/certs/vhwpt.crt /etc/caddy/certs/vhwpt.key`. Set Cloudflare SSL/TLS to
+   **Full (strict)**.
+5. **Caddy.** The `www.vhwpt.com` and `vhwpt.com` blocks in `sites/vhwpt.caddy` are on. Install
+   the file, validate, then reload. Check with
    `curl -k --resolve www.vhwpt.com:443:3.226.58.165 https://www.vhwpt.com/`.
 6. **DNS.** In Cloudflare, point the `vhwpt.com` and `www` A records at 3.226.58.165 (still
    proxied) and remove their AAAA records. **Leave `mail`, MX, SPF, DMARC and the Google
    verification record alone.** To roll back, point the A records back at 108.170.32.242.
-7. **After.** Check every page and the old URLs. Send a test booking. Add `/questions` and the
-   service pages to `public/sitemap.xml` if they aren't there yet. Watch Search Console.
+7. **After.** Check every page and the old URLs. Send a test booking. Check
+   `public/sitemap.xml` lists every page. Watch Search Console.
    Update `CLAUDE.md` ("Merges to `main` deploy by themselves") to the real deploy step.
    Once the new site has run for a while, take a full cPanel backup (files and database)
    before anyone cancels the old hosting.

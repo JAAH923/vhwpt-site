@@ -51,10 +51,14 @@ http://3.226.58.165 {
 	import vhwpt_site
 }
 
-# Cutover (see deploy/lightsail/README.md): uncomment, reload Caddy, then point the DNS here.
-# www.vhwpt.com {
-# 	import vhwpt_site
-# }
-# vhwpt.com {
-# 	redir https://www.vhwpt.com{uri} 308
-# }
+# vhwpt.com is live here behind Cloudflare (SSL mode Full (strict)). The Origin Certificate for
+# vhwpt.com and *.vhwpt.com is in /etc/caddy/certs; the private key never leaves this server.
+# Installing this file on a new server needs those two files there first (see README.md).
+www.vhwpt.com {
+	tls /etc/caddy/certs/vhwpt.crt /etc/caddy/certs/vhwpt.key
+	import vhwpt_site
+}
+vhwpt.com {
+	tls /etc/caddy/certs/vhwpt.crt /etc/caddy/certs/vhwpt.key
+	redir https://www.vhwpt.com{uri} 308
+}
