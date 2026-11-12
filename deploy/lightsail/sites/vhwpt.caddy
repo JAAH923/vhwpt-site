@@ -5,6 +5,15 @@
 	root * /srv/sites/vhwpt/current
 	encode zstd gzip
 
+	# The QR code on the event banner points at /qr, not at a page, so where it lands can change
+	# after the banner is printed. 302 (temporary), never 301: browsers keep a 301 for good.
+	# To send people somewhere else, change the one address below, then validate and reload Caddy.
+	@qr path /qr /qr/
+	redir @qr /?src=banner 302
+	# /b is a short link to the banner page for Bruce and whoever prints it.
+	@b path /b /b/
+	redir @b /banner/ 302
+
 	# The old WordPress URLs (same map as public/_redirects).
 	@contact path /contact /contact/
 	redir @contact /book 301
