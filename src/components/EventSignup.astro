@@ -16,10 +16,12 @@
  * is never offered. There is no free-text box, so nobody types patient or
  * resident details on a screen others can see (T-883).
  *
- * Sign-ups go to /api/event.php (public/api), which keeps a private copy and
- * emails Bruce. Off vhwpt.com (staging, local) nothing is sent, and a note on
- * the form says so, so the wrong address is noticed before an event. The role
- * and topic ids here are mirrored in public/api/event.php; change both together.
+ * Sign-ups go to /api/event.php (public/api), which saves them in a small
+ * database on the server and emails Bruce. Only vhwpt.com sends, plus the test
+ * address on Bruce's server (3.226.58.165), where sign-ups are saved and marked
+ * as tests. Anywhere else (staging, local) nothing is sent and a note on the
+ * form says so, so the wrong address is noticed before an event. The role and
+ * topic ids here are mirrored in public/api/event.php; change both together.
  */
 import { practice } from "../data/site";
 
@@ -145,8 +147,13 @@ const topics = [
     let idleTimer = 0;
 
     // Only vhwpt.com sends. Staging and local copies show a note and stop at the thank-you.
-    const live = /(^|\.)vhwpt\.com$/.test(location.hostname);
-    document.getElementById("evpreview")!.hidden = live;
+    // The test address on Bruce's server sends too: its sign-ups are saved and marked as tests.
+    const home = /(^|\.)vhwpt\.com$/.test(location.hostname);
+    const test = location.hostname === "3.226.58.165";
+    const live = home || test;
+    const note = document.getElementById("evpreview")!;
+    note.hidden = home;
+    if (test) note.textContent = "Test copy: sign-ups here are saved on the server and marked as tests.";
 
     // /event?e=heart-walk tags every sign-up with the event it came from.
     const event = (new URLSearchParams(location.search).get("e") || "")

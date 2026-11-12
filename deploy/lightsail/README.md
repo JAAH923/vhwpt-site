@@ -30,7 +30,8 @@ ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh develop  # or any branch
 ```
 
 [`deploy-vhwpt.sh`](deploy-vhwpt.sh) builds from GitHub, checks the key pages exist, then
-switches `current`. It keeps five releases; its header shows how to roll back. Caddy's rules
+switches `current` and reloads PHP-FPM (which otherwise keeps running the previous release's PHP
+files). It keeps five releases; its header shows how to roll back. Caddy's rules
 are in [`sites/vhwpt.caddy`](sites/vhwpt.caddy): the old WordPress URLs redirect (same map as
 `public/_redirects`), and only `/api/inquiry.php` and `/api/event.php` run as PHP.
 
@@ -39,6 +40,36 @@ Until the DNS moves, the site is served only at **http://3.226.58.165/**, marked
 The booking form reads its settings from `/srv/sites/vhwpt/private/vhwpt-contact.php`
 (owner `www-data`, mode 600). Only Justin puts that file there; it is never in this repo.
 The form keeps its copy of every request in the same folder.
+
+## Event sign-ups database
+
+The event pages (`/event` for facility owners and therapists, `/event2` for regular people)
+post to `/api/event.php`, which saves each sign-up in a SQLite database,
+`/srv/sites/vhwpt/private/vhwpt-signups.sqlite` (owner `www-data`, mode 600), table `signups`.
+It also appends a backup line to `private/vhwpt-event-signups.jsonl` and emails Bruce when
+`vhwpt-contact.php` is there. Needs `php8.3-sqlite3` (installed by `setup.sh`).
+
+If a sign-up fails, PHP writes the reason to `/var/log/php8.3-fpm.log`.
+
+Only vhwpt.com sends. This test address (3.226.58.165) sends too: its rows are `test = 1`
+and its emails say `[TEST]`, so they never mix with real sign-ups. Filter with `test = 0`.
+
+```sh
+# the latest sign-ups
+ssh bruce-lightsail "sudo -u www-data sqlite3 -header -column /srv/sites/vhwpt/private/vhwpt-signups.sqlite \
+  'select id, created_at, form, event, test, name, organization, role, phone, email, emailed from signups order by id desc limit 20'"
+
+# everything real, as a CSV
+ssh bruce-lightsail "sudo -u www-data sqlite3 -header -csv /srv/sites/vhwpt/private/vhwpt-signups.sqlite \
+  'select * from signups where test = 0'" > signups.csv
+```
+
+The columns `resend_contact_id`, `resend_pushed_at` and `resend_error` are for a later step:
+pushing sign-ups to Resend as contacts. That step would take rows with `test = 0`, an email and
+`resend_pushed_at is null`, add each to a Resend audience, and fill those columns in. Two things
+to settle first. People who left only a phone number can't be added. And the tick box today only
+covers Bruce contacting them (about their sign-up, on `/event2`), so a mailing list needs new
+wording; `consent_text` keeps what each person actually ticked.
 
 ## Adding another site or app
 

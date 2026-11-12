@@ -48,7 +48,7 @@ if [[ ! -f /etc/apt/sources.list.d/tailscale.list ]]; then
     > /etc/apt/sources.list.d/tailscale.list
 fi
 apt-get update -q
-apt-get "${apt_opts[@]}" install caddy nodejs php8.3-fpm php8.3-curl php8.3-mbstring tailscale
+apt-get "${apt_opts[@]}" install caddy nodejs php8.3-fpm php8.3-curl php8.3-mbstring php8.3-sqlite3 sqlite3 tailscale
 systemctl enable --now tailscaled   # join once by hand: sudo tailscale up --hostname=bruce-lightsail
 
 echo "== php"
@@ -57,6 +57,7 @@ expose_php = Off
 display_errors = Off
 log_errors = On
 INI
+sed -i 's/^;catch_workers_output = yes/catch_workers_output = yes/' /etc/php/8.3/fpm/pool.d/www.conf   # PHP's error_log lines reach /var/log/php8.3-fpm.log
 usermod -aG www-data caddy          # Caddy talks to the PHP-FPM socket (owned by www-data)
 systemctl enable --now php8.3-fpm
 systemctl restart php8.3-fpm
@@ -82,7 +83,7 @@ install -d -m 0755 -o "$owner" -g "$owner" /srv/sites /srv/apps
 echo "== vhwpt.com"
 site=/srv/sites/vhwpt
 install -d -m 0755 -o "$owner" -g "$owner" "$site" "$site/releases"
-install -d -m 0700 -o www-data -g www-data "$site/private"   # booking form settings + inquiry log
+install -d -m 0700 -o www-data -g www-data "$site/private"   # form settings, inquiry log, sign-ups database
 [[ -d "$site/repo/.git" ]] || sudo -u "$owner" git clone -q https://github.com/JAAH923/vhwpt-site.git "$site/repo"
 install -m 0755 -o "$owner" -g "$owner" "$here/deploy-vhwpt.sh" "$site/deploy.sh"
 

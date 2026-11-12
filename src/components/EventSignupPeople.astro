@@ -12,10 +12,12 @@
  * after each sign-up (8 seconds) and after two idle minutes; autofill is off so
  * the iPad owner's own contact card is never offered.
  *
- * Sign-ups go to /api/event.php (public/api) with form "people", which keeps a
- * private copy and emails Bruce. Off vhwpt.com (staging, local) nothing is sent,
- * and a banner says so. The interest ids come from src/data/site.ts and are
- * mirrored in public/api/event.php.
+ * Sign-ups go to /api/event.php (public/api) with form "people", which saves
+ * them in a small database on the server and emails Bruce. Only vhwpt.com
+ * sends, plus the test address on Bruce's server (3.226.58.165), where sign-ups
+ * are saved and marked as tests. Anywhere else nothing is sent and a banner
+ * says so. The interest ids come from src/data/site.ts and are mirrored in
+ * public/api/event.php.
  */
 import { practice, services, groups } from "../data/site";
 
@@ -113,8 +115,13 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     let idleTimer = 0;
 
     // Only vhwpt.com sends. Staging and local copies show a banner and stop at the thank-you.
-    const live = /(^|\.)vhwpt\.com$/.test(location.hostname);
-    document.getElementById("p2preview")!.hidden = live;
+    // The test address on Bruce's server sends too: its sign-ups are saved and marked as tests.
+    const home = /(^|\.)vhwpt\.com$/.test(location.hostname);
+    const test = location.hostname === "3.226.58.165";
+    const live = home || test;
+    const note = document.getElementById("p2preview")!;
+    note.hidden = home;
+    if (test) note.textContent = "Test copy: sign-ups here are saved on the server and marked as tests.";
 
     // /event2?e=heart-walk tags every sign-up with the event it came from.
     const event = (new URLSearchParams(location.search).get("e") || "")
