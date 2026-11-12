@@ -79,22 +79,29 @@ const versions = [
               </p>
               <h2>{v.title}</h2>
               <p class="desc">{v.body}</p>
-              <div class="dl">
-                <a
-                  class="btn btn-primary btn-sm"
-                  href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)}
-                  download
-                >
-                  Download print PDF
-                </a>
-                <a
-                  class="btn btn-line btn-sm"
-                  href={withBase(`/banner/valencia-banner-${v.file}-33x81-exact.pdf`)}
-                  download
-                >
-                  Exact 33″ × 81″ PDF
-                </a>
-              </div>
+              <details class="dlmenu">
+                <summary class="btn btn-primary btn-sm">Download</summary>
+                <ul class="dlopts">
+                  <li>
+                    <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)} download>
+                      <strong>Print PDF</strong>
+                      <span>33¼″ × 81¼″, with a little extra edge. Use this one for Vistaprint.</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-exact.pdf`)} download>
+                      <strong>Exact-size PDF</strong>
+                      <span>33″ × 81″, with no extra edge.</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a href={withBase(`/banner/valencia-banner-${v.file}-33x81.png`)} download>
+                      <strong>Image (PNG)</strong>
+                      <span>A 33″ × 81″ picture, for email or other programs.</span>
+                    </a>
+                  </li>
+                </ul>
+              </details>
             </li>
           ))
         }
@@ -107,11 +114,11 @@ const versions = [
       <p class="label">How to print it</p>
       <h2 id="print-title">Four steps</h2>
       <ol class="howto">
-        <li>Pick a version above and download its <strong>print PDF</strong>.</li>
+        <li>Pick a version above, choose <strong>Download</strong>, and pick <strong>Print PDF</strong>.</li>
         <li>
           On Vistaprint, choose a retractable banner, size 33″ × 81″, and upload that PDF. The print
           PDF is an eighth of an inch larger on every side, so no white edge shows after
-          trimming. If the upload asks for exactly 33″ × 81″, use the exact-size PDF instead.
+          trimming. If the upload asks for exactly 33″ × 81″, use the Exact-size PDF instead.
         </li>
         <li>
           Look at Vistaprint’s preview. Nothing should be cut off. The stand hides the bottom few
@@ -122,8 +129,9 @@ const versions = [
         </li>
       </ol>
       <p class="note">
-        The fonts and the QR code are built into each PDF, so it prints the same everywhere. Want
-        a different line, size or color? Tell Justin and a new version is quick to make.
+        The fonts and the QR code are built into each PDF, so it prints the same everywhere. The
+        image is a picture of the banner for email or other programs, and the PDF is the one to
+        print. Want a different line, size or color? Tell Justin and a new version is quick to make.
       </p>
     </div>
   </section>
@@ -139,7 +147,16 @@ const versions = [
   .pill { display: inline-block; background: var(--white); color: var(--ink); border: 1px solid var(--hair); border-radius: 9999px; padding: 4px 12px; font-size: 12px; line-height: 1.5; }
   .board h2 { font-size: 26px; line-height: 1.1; letter-spacing: -0.015em; margin-bottom: 12px; }
   .desc { font-size: 17px; line-height: 1.45; max-width: 34ch; margin-bottom: 24px; }
-  .dl { display: flex; flex-wrap: wrap; gap: 12px; }
+  .dlmenu { position: relative; align-self: flex-start; }
+  .dlmenu summary { list-style: none; }
+  .dlmenu summary::-webkit-details-marker { display: none; }
+  .dlmenu summary::after { content: ""; width: 7px; height: 7px; margin: -3px 0 0 12px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); }
+  .dlmenu[open] summary::after { margin-top: 3px; transform: rotate(-135deg); }
+  .dlopts { list-style: none; margin: 0; padding: 8px; position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; width: min(340px, calc(100vw - 48px)); background: var(--white); border: 1px solid var(--hair); border-radius: 12px; }
+  .dlopts a { display: block; padding: 12px; border-radius: 5px; }
+  .dlopts a:hover, .dlopts a:focus-visible { background: var(--whisper); }
+  .dlopts strong { display: block; font-size: 15px; line-height: 1.3; }
+  .dlopts span { display: block; margin-top: 4px; font-size: 13px; line-height: 1.4; color: var(--grey); }
   .howto { margin: 24px 0 0; padding-left: 24px; font-size: 19px; line-height: 1.45; }
   .howto li + li { margin-top: 16px; }
   .note { margin-top: 32px; font-size: 17px; line-height: 1.45; color: var(--grey); }
@@ -148,3 +165,22 @@ const versions = [
     .board { max-width: 380px; margin: 0 auto; width: 100%; }
   }
 </style>
+
+<script>
+  // The Download menus are <details>, so they work without this. This only tidies them:
+  // one open at a time, and closed again by a click elsewhere, Escape, or choosing a file.
+  const menus = [...document.querySelectorAll<HTMLDetailsElement>(".dlmenu")];
+  for (const m of menus) {
+    m.addEventListener("toggle", () => {
+      if (m.open) for (const o of menus) if (o !== m) o.open = false;
+    });
+    for (const a of m.querySelectorAll("a")) a.addEventListener("click", () => setTimeout(() => (m.open = false), 150));
+  }
+  document.addEventListener("click", (e) => {
+    for (const m of menus) if (m.open && !m.contains(e.target as Node)) m.open = false;
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    for (const m of menus) if (m.open) { m.open = false; m.querySelector("summary")?.focus(); }
+  });
+</script>
