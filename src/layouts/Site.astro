@@ -27,6 +27,10 @@ const [nameFirst, ...nameRest] = practice.name.split(" ");
 // The GitHub Pages preview is public; keep it out of search so it never
 // competes with vhwpt.com.
 const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
+// Browsers keep a site's icon for a long time, and the old WordPress site's icon is still in many
+// of them. The icon links end in ?v=<this>; change the number to make every browser fetch them
+// again. The files themselves are served the same whatever follows the ?.
+const iconVersion = "2";
 ---
 
 <!doctype html>
@@ -57,12 +61,12 @@ const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
     <link
       rel="icon"
       type="image/png"
-      href={withBase("/assets/brand/valencia-health-wellness-icon.png")}
+      href={withBase(`/assets/brand/valencia-health-wellness-icon.png?v=${iconVersion}`)}
     />
     <!-- The .ico is for anything that asks for /favicon.ico by itself (PDF tabs, error pages,
          older browsers); the touch icon is for iPhone and iPad home screens. -->
-    <link rel="icon" href={withBase("/favicon.ico")} sizes="any" />
-    <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
+    <link rel="icon" href={withBase(`/favicon.ico?v=${iconVersion}`)} sizes="any" />
+    <link rel="apple-touch-icon" href={withBase(`/apple-touch-icon.png?v=${iconVersion}`)} />
     <title>{title}</title>
   </head>
 
