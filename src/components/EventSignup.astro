@@ -1,0 +1,331 @@
+---
+/**
+ * The event sign-up: the booking form's pop-out (components/BookingForm.astro),
+ * held open on an iPad that is handed from person to person. Bruce goes to
+ * events to meet facility owners and other therapists, not patients, so the
+ * questions are about who they are and what they would like to talk about:
+ * who you are, what to talk about (only the topics for that answer), then name,
+ * facility or practice, a phone or an email, and an explicit OK to be contacted.
+ * Same look, same one-question flow, progress bar, Enter and Back. This is a
+ * copy of that script adapted for a kiosk, so the booking form is untouched;
+ * a shared engine would be a later cleanup.
+ *
+ * Shared-screen rules: it cannot be closed (no X, Escape or outside click);
+ * nothing is stored in the browser; it clears itself after each sign-up and
+ * after two idle minutes; autofill is off so the iPad owner's own contact card
+ * is never offered. There is no free-text box, so nobody types patient or
+ * resident details on a screen others can see (T-883).
+ *
+ * Sign-ups go to /api/event.php (public/api), which keeps a private copy and
+ * emails Bruce. Off vhwpt.com (staging, local) nothing is sent, and a note on
+ * the form says so, so the wrong address is noticed before an event. The role
+ * and topic ids here are mirrored in public/api/event.php; change both together.
+ */
+import { practice } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const roles = [
+  { id: "facility", label: "I own or run a facility" },
+  { id: "therapist", label: "I’m a therapist or therapy assistant" },
+  { id: "other", label: "Something else" },
+];
+// What to talk about: each topic shows only for the roles listed ("Something else" sees all).
+// Physical therapy and wellness stay separate here too, as everywhere on the site.
+const topics = [
+  { id: "facility-pt", label: "Physical therapy for our residents or patients", roles: ["facility"] },
+  { id: "facility-wellness", label: "Wellness and fitness for our residents", roles: ["facility"] },
+  { id: "work", label: "Working with Bruce", roles: ["therapist"] },
+  { id: "refer", label: "Referring patients to Bruce", roles: ["therapist"] },
+  { id: "connect", label: "Just connecting", roles: ["facility", "therapist"] },
+];
+---
+
+<div class="kiosk">
+  <img src={withBase("/assets/brand/valencia-health-wellness-icon.png")} alt="" width="96" height="96" />
+  <p class="label">{practice.name}</p>
+  <noscript>
+    <p>This sign-up needs JavaScript. Please ask Bruce to take your details.</p>
+  </noscript>
+</div>
+
+<dialog class="ask" id="evdlg" aria-labelledby="evq1">
+  <form
+    class="askform big"
+    id="evform"
+    method="post"
+    action={withBase("/api/event.php")}
+    novalidate
+    data-failed="That didn’t go through. Please try once more, or ask Bruce to take your details."
+  >
+    <div class="askbar" aria-hidden="true"><i id="evprogress"></i></div>
+    <div class="asktop">
+      <span class="label" id="evcount">1 of 3</span>
+    </div>
+    <p class="kpreview" id="evpreview" role="status" hidden>
+      Preview only: sign-ups on this copy of the site are not sent anywhere.
+    </p>
+    <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <div class="step" data-need="one" role="group" aria-labelledby="evq1">
+      <h2 class="askq" id="evq1">Which best describes you?</h2>
+      <div class="chips">
+        {roles.map((o) => <label class="chip"><input type="radio" name="role" value={o.id} /><span>{o.label}</span></label>)}
+      </div>
+    </div>
+
+    <div class="step" data-need="any" role="group" aria-labelledby="evq2">
+      <h2 class="askq" id="evq2">What would you like to talk about?</h2>
+      <p class="askhelp">Pick any that fit.</p>
+      <div class="chips">
+        {
+          topics.map((o) => (
+            <label class="chip" data-roles={o.roles.join(" ")}>
+              <input type="checkbox" name="topics" value={o.id} />
+              <span>{o.label}</span>
+            </label>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="step" data-need="contact" role="group" aria-labelledby="evq3">
+      <h2 class="askq" id="evq3">Where should Bruce reach you?</h2>
+      <p class="askhelp">A phone number or an email, whichever you prefer.</p>
+      <div class="fields">
+        <label class="field"><span>Name</span><input name="name" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" maxlength="100" /></label>
+        <label class="field"><span>Facility or practice (optional)</span><input name="org" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" maxlength="120" /></label>
+        <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="off" maxlength="30" /></label>
+        <label class="field"><span>Email</span><input name="email" type="email" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="200" /></label>
+      </div>
+      <label class="kconsent">
+        <input type="checkbox" name="consent" />
+        <span>It’s OK for Bruce to contact me by phone, text or email.</span>
+      </label>
+      <p class="askprivacy">Your details go only to Bruce and are not shared.</p>
+    </div>
+
+    <div class="step askdone" id="evdone" tabindex="-1">
+      <h2 class="askq" id="evqdone">Thank you<span id="evname"></span>.</h2>
+      <p class="askhelp">Bruce will be in touch.</p>
+    </div>
+
+    <p class="askerr" id="everr" role="alert" hidden></p>
+    <div class="asknav" id="evnav">
+      <button type="button" class="askback" data-back>Back</button>
+      <button type="submit" class="btn btn-primary" data-next>Continue</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  // One question at a time, as on the booking form, held open on a shared screen.
+  const dlgEl = document.getElementById("evdlg") as HTMLDialogElement | null;
+  const formEl = document.getElementById("evform") as HTMLFormElement | null;
+  if (dlgEl && formEl) setup(dlgEl, formEl);
+
+  function setup(dlg: HTMLDialogElement, form: HTMLFormElement) {
+    const steps = [...form.querySelectorAll<HTMLElement>(".step")].filter((s) => s.id !== "evdone");
+    const done = document.getElementById("evdone")!;
+    const nav = document.getElementById("evnav")!;
+    const err = document.getElementById("everr")!;
+    const back = form.querySelector<HTMLButtonElement>("[data-back]")!;
+    const next = form.querySelector<HTMLButtonElement>("[data-next]")!;
+    const bar = document.getElementById("evprogress")!;
+    const count = document.getElementById("evcount")!;
+    const THANKS_MS = 8000; // how long the thank-you shows before the next person's blank form
+    const IDLE_MS = 120000; // a half-filled form clears after this long untouched
+    let i = 0;
+    let sending = false;
+    let auto = 0;
+    let thanksTimer = 0;
+    let idleTimer = 0;
+
+    // Only vhwpt.com sends. Staging and local copies show a note and stop at the thank-you.
+    const live = /(^|\.)vhwpt\.com$/.test(location.hostname);
+    document.getElementById("evpreview")!.hidden = live;
+
+    // /event?e=heart-walk tags every sign-up with the event it came from.
+    const event = (new URLSearchParams(location.search).get("e") || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "")
+      .slice(0, 40);
+
+    const val = (n: string) => ((form.elements.namedItem(n) as HTMLInputElement | null)?.value || "").trim();
+    const checked = (n: string) => !!(form.elements.namedItem(n) as HTMLInputElement | null)?.checked;
+    const picked = (n: string) => form.querySelector<HTMLInputElement>(`input[name="${n}"]:checked`)?.value || "";
+    const emailOk = () => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val("email"));
+    const phoneOk = () => val("phone").replace(/\D/g, "").length >= 10;
+    const dirty = () => !!form.querySelector("input:checked") || ["name", "org", "phone", "email"].some((n) => val(n));
+
+    function valid(s: HTMLElement) {
+      switch (s.dataset.need) {
+        case "one":
+        case "any":
+          return !!s.querySelector("input:checked:not(:disabled)");
+        case "contact":
+          return val("name").length > 0 && (emailOk() || phoneOk()) && checked("consent");
+        default:
+          return true;
+      }
+    }
+
+    // The topics question shows only the topics for the role that was picked.
+    // "Something else" shows them all.
+    function filterTopics() {
+      const role = picked("role");
+      form.querySelectorAll<HTMLElement>(".chip[data-roles]").forEach((chip) => {
+        const hide = (role === "facility" || role === "therapist") && !(chip.dataset.roles || "").split(" ").includes(role);
+        const input = chip.querySelector("input")!;
+        chip.hidden = hide;
+        input.disabled = hide;
+        if (hide) input.checked = false;
+      });
+    }
+
+    function show(n: number, backward = false) {
+      steps.forEach((s) => s.classList.remove("on", "backward"));
+      done.classList.remove("on");
+      i = n;
+      const s = steps[i];
+      s.classList.add("on");
+      if (backward) s.classList.add("backward");
+      dlg.setAttribute("aria-labelledby", s.querySelector(".askq")?.id || "evq1");
+      bar.style.width = `${(i / steps.length) * 100}%`;
+      count.textContent = `${i + 1} of ${steps.length}`;
+      back.style.visibility = i ? "visible" : "hidden";
+      next.textContent = i === steps.length - 1 ? "Send" : "Continue";
+      next.disabled = !valid(s);
+      err.hidden = true;
+      const focus = s.querySelector<HTMLElement>("input:not([type=radio]):not([type=checkbox])");
+      setTimeout(() => {
+        if (focus) focus.focus({ preventScroll: true });
+        else {
+          const q = s.querySelector<HTMLElement>(".askq")!;
+          q.setAttribute("tabindex", "-1");
+          q.focus({ preventScroll: true });
+        }
+      }, 60);
+    }
+
+    // A blank form for the next person.
+    function reset() {
+      clearTimeout(thanksTimer);
+      clearTimeout(idleTimer);
+      clearTimeout(auto);
+      form.reset();
+      sending = false;
+      filterTopics();
+      nav.hidden = false;
+      count.hidden = false;
+      show(0);
+    }
+
+    function touch() {
+      clearTimeout(idleTimer);
+      if (dirty()) idleTimer = window.setTimeout(reset, IDLE_MS);
+    }
+
+    function finished() {
+      steps.forEach((s) => s.classList.remove("on"));
+      const first = val("name").split(/\s+/)[0];
+      document.getElementById("evname")!.textContent = first ? `, ${first}` : "";
+      nav.hidden = true;
+      count.hidden = true;
+      bar.style.width = "100%";
+      done.classList.add("on");
+      dlg.setAttribute("aria-labelledby", "evqdone");
+      done.focus({ preventScroll: true });
+      clearTimeout(idleTimer);
+      thanksTimer = window.setTimeout(reset, THANKS_MS);
+    }
+
+    const failed = form.dataset.failed || "That didn’t go through. Please ask Bruce to take your details.";
+    function send() {
+      if (sending) return;
+      if (!live) return finished();
+      sending = true;
+      next.disabled = true;
+      next.textContent = "Sending";
+      const ctl = new AbortController();
+      const giveUp = window.setTimeout(() => ctl.abort(), 15000); // weak event wifi: don't hang forever
+      fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: ctl.signal,
+        body: JSON.stringify({
+          role: picked("role"),
+          topics: [...form.querySelectorAll<HTMLInputElement>('input[name="topics"]:checked')].map((c) => c.value),
+          org: val("org"),
+          name: val("name"),
+          phone: val("phone"),
+          email: val("email"),
+          consent: checked("consent"),
+          event,
+          website: val("website"),
+        }),
+      })
+        .then((r) => r.json().catch(() => ({ ok: false })))
+        .then((j: { ok?: boolean; error?: string }) => {
+          if (j && j.ok) return finished();
+          err.textContent = (j && j.error) || failed;
+          err.hidden = false;
+        })
+        .catch(() => {
+          err.textContent = failed;
+          err.hidden = false;
+        })
+        .then(() => {
+          clearTimeout(giveUp);
+          sending = false;
+          if (done.classList.contains("on")) return;
+          next.textContent = "Send";
+          next.disabled = !valid(steps[i]); // what was typed stays, so one more tap retries
+        });
+    }
+
+    function advance() {
+      clearTimeout(auto);
+      if (!valid(steps[i])) return;
+      if (i < steps.length - 1) show(i + 1);
+      else send();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      advance();
+    });
+    back.addEventListener("click", () => {
+      if (i > 0) show(i - 1, true);
+    });
+    form.addEventListener("input", (e) => {
+      const t = e.target as HTMLInputElement;
+      if (t.name === "role") filterTopics();
+      next.disabled = !valid(steps[i]);
+      touch();
+      if (t.type === "radio") {
+        clearTimeout(auto);
+        auto = window.setTimeout(advance, 320);
+      }
+    });
+    form.addEventListener("pointerdown", touch);
+    form.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter" || e.isComposing) return;
+      e.preventDefault();
+      advance();
+    });
+    // Held open: Escape and outside clicks do nothing, and if it ever closes it opens again.
+    dlg.addEventListener("cancel", (e) => e.preventDefault());
+    dlg.addEventListener("close", () => {
+      if (!dlg.open && typeof dlg.showModal === "function") dlg.showModal();
+    });
+    if (typeof dlg.showModal === "function") dlg.showModal();
+    else dlg.setAttribute("open", "");
+    document.documentElement.classList.add("asking");
+    filterTopics();
+    show(0);
+  }
+</script>

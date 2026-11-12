@@ -1,0 +1,15 @@
+---
+/**
+ * Event sign-up: the screen Bruce hands to people at an event, on an iPad. It
+ * is not in the nav, the sitemap or search. Open it at /event, or at
+ * /event?e=<short-name> to tag every sign-up with the event it came from
+ * (letters, numbers and hyphens, e.g. /event?e=heart-walk). The form and its
+ * rules are in components/EventSignup.astro; sign-ups go to /api/event.php.
+ */
+import Kiosk from "../layouts/Kiosk.astro";
+import EventSignup from "../components/EventSignup.astro";
+---
+
+<Kiosk title="Event Sign-up | Valencia Health & Wellness">
+  <EventSignup />
+</Kiosk>
