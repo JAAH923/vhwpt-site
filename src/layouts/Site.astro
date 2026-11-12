@@ -59,6 +59,10 @@ const isPreview = Astro.site?.hostname !== "www.vhwpt.com";
       type="image/png"
       href={withBase("/assets/brand/valencia-health-wellness-icon.png")}
     />
+    <!-- The .ico is for anything that asks for /favicon.ico by itself (PDF tabs, error pages,
+         older browsers); the touch icon is for iPhone and iPad home screens. -->
+    <link rel="icon" href={withBase("/favicon.ico")} sizes="any" />
+    <link rel="apple-touch-icon" href={withBase("/apple-touch-icon.png")} />
     <title>{title}</title>
   </head>
 
