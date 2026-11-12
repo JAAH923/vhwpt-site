@@ -57,6 +57,7 @@ expose_php = Off
 display_errors = Off
 log_errors = On
 INI
+sed -i 's/^;catch_workers_output = yes/catch_workers_output = yes/' /etc/php/8.3/fpm/pool.d/www.conf   # PHP's error_log lines reach /var/log/php8.3-fpm.log
 usermod -aG www-data caddy          # Caddy talks to the PHP-FPM socket (owned by www-data)
 systemctl enable --now php8.3-fpm
 systemctl restart php8.3-fpm

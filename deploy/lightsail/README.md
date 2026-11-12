@@ -30,7 +30,8 @@ ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh develop  # or any branch
 ```
 
 [`deploy-vhwpt.sh`](deploy-vhwpt.sh) builds from GitHub, checks the key pages exist, then
-switches `current`. It keeps five releases; its header shows how to roll back. Caddy's rules
+switches `current` and reloads PHP-FPM (which otherwise keeps running the previous release's PHP
+files). It keeps five releases; its header shows how to roll back. Caddy's rules
 are in [`sites/vhwpt.caddy`](sites/vhwpt.caddy): the old WordPress URLs redirect (same map as
 `public/_redirects`), and only `/api/inquiry.php` and `/api/event.php` run as PHP.
 
@@ -47,6 +48,8 @@ post to `/api/event.php`, which saves each sign-up in a SQLite database,
 `/srv/sites/vhwpt/private/vhwpt-signups.sqlite` (owner `www-data`, mode 600), table `signups`.
 It also appends a backup line to `private/vhwpt-event-signups.jsonl` and emails Bruce when
 `vhwpt-contact.php` is there. Needs `php8.3-sqlite3` (installed by `setup.sh`).
+
+If a sign-up fails, PHP writes the reason to `/var/log/php8.3-fpm.log`.
 
 Only vhwpt.com sends. This test address (3.226.58.165) sends too: its rows are `test = 1`
 and its emails say `[TEST]`, so they never mix with real sign-ups. Filter with `test = 0`.
