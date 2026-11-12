@@ -74,6 +74,73 @@ to settle first. People who left only a phone number can't be added. And the tic
 covers Bruce contacting them (about their sign-up, on `/event2`), so a mailing list needs new
 wording; `consent_text` keeps what each person actually ticked.
 
+## Traffic: how people arrive
+
+Caddy keeps a **visit log** for vhwpt.com, and [`traffic-report.py`](traffic-report.py) turns it into
+a summary of how people arrive (a QR code, a search, typing the address, another site) and which page
+they land on. It needs no script on the pages, no cookies and no third-party service.
+
+**What is recorded.** For each page load: the time, the page, the site they came from (the host only,
+never the full address) and the browser name. **Not** recorded: IP addresses, cookies, form contents.
+Images, styles, the API and the banner page are left out. Files are in `/var/log/caddy/vhwpt-visits.log`,
+rotated at 20 MiB, with 90 days kept and older files deleted. The log shows page loads, not people: a
+reload counts twice.
+
+**Install** (once; the log folder already exists and belongs to Caddy):
+
+```
+ssh bruce-lightsail
+cd /srv/sites/vhwpt/repo && git fetch origin
+git show origin/<branch>:deploy/lightsail/sites/vhwpt.caddy | sudo tee /etc/caddy/sites/vhwpt.caddy >/dev/null
+git show origin/<branch>:deploy/lightsail/traffic-report.py | sudo tee /srv/sites/vhwpt/traffic-report.py >/dev/null
+sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy
+```
+
+**Read it** (it needs `sudo`, because the log is readable only by Caddy and root):
+
+```
+ssh bruce-lightsail 'sudo python3 /srv/sites/vhwpt/traffic-report.py --days 7'
+ssh bruce-lightsail 'sudo python3 /srv/sites/vhwpt/traffic-report.py --since 2026-11-20 --until 2026-11-22'
+ssh bruce-lightsail 'sudo python3 /srv/sites/vhwpt/traffic-report.py --days 30 --json'   # for another program
+```
+
+An **entry** is the first page of a visit: a page load whose referring site is empty or not ours.
+Clicks between our own pages are not entries. Each entry is counted one way:
+
+| Arrived by | How it is told |
+|---|---|
+| **qr / tagged** | The address has `?src=<tag>`. Every QR code we make has its own tag, and the tag is shown in the report. The banner's `/qr` is `src=banner`. |
+| **organic** | The referrer is a search engine (Google, Bing, DuckDuckGo, Yahoo, Ecosia, Brave, ...). |
+| **ai** | The referrer is an AI assistant (ChatGPT, Perplexity, Claude, Gemini, Copilot, ...). |
+| **social**, **email** | Facebook, Instagram, X, LinkedIn, YouTube and so on; Gmail and other webmail. |
+| **referral** | Any other site, with its host shown. |
+| **direct** | No referrer and no tag: typed the address, a bookmark, or an app that hides where the visit came from. |
+
+The report also counts **scans**: requests for `/qr` and `/qr/<name>`, which is the QR code itself before
+it redirects. And it shows, for each landing page, how people got there, so a QR code that points at the
+event form (`/event/`) appears there separately from the home page.
+
+**Adding a QR code** (for example one for the event sign-up):
+
+1. Pick a short name, say `heart-walk`, and a tag, `qr-heart-walk`. Keep the tag unique to that code.
+2. In `sites/vhwpt.caddy`, next to the `/qr` lines, add:
+   ```
+   @qr_heart_walk path /qr/heart-walk /qr/heart-walk/
+   redir @qr_heart_walk /event/?e=heart-walk&src=qr-heart-walk 302
+   ```
+   (`e=` also tags the sign-ups with the event; leave it off for a plain landing page.) Install the file
+   and reload Caddy as above.
+3. Make the QR code for `https://www.vhwpt.com/qr/heart-walk`. It stays small, and where it lands can be
+   changed later without reprinting.
+4. In the report, `qr-heart-walk` shows under **qr / tagged**, `/qr/heart-walk` under scans, and `/event/`
+   under entry pages.
+
+Without a Caddy change, any address with `?src=qr-<name>` on the end is counted the same way, but a
+longer address makes a denser QR code.
+
+What it cannot tell you: who a person is, whether two visits are the same person, or what someone
+searched for (search engines do not pass it on).
+
 ## Adding another site or app
 
 1. A static or PHP site goes in `/srv/sites/<name>/`. An app goes in `/srv/apps/<name>/`, run by
