@@ -9,11 +9,21 @@
  */
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
+import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+// Cloudflare and browsers keep files like these for hours, so a rebuilt PDF or image can look
+// unchanged to people who fetched it before. Every banner address ends in a short fingerprint of
+// the file (?v=...), which changes only when the file does, so a new file is always fetched fresh.
+const bannerFile = (name: string) => {
+  const fingerprint = createHash("md5").update(readFileSync(`public/banner/${name}`)).digest("hex").slice(0, 8);
+  return withBase(`/banner/${name}?v=${fingerprint}`);
+};
 
 const audiences = [
   {
@@ -109,13 +119,13 @@ const audiences = [
                 <li class="board">
                   <a
                     class="art"
-                    href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)}
+                    href={bannerFile(`valencia-banner-${v.file}-33x81-bleed.pdf`)}
                     target="_blank"
                     rel="noopener"
                     aria-label={`Open ${a.title}, version ${i + 1} as a PDF`}
                   >
                     <img
-                      src={withBase(`/banner/valencia-banner-${v.file}-preview.png`)}
+                      src={bannerFile(`valencia-banner-${v.file}-preview.png`)}
                       alt={v.alt}
                       width="800"
                       height="1963"
@@ -132,19 +142,19 @@ const audiences = [
                     <summary class="btn btn-primary btn-sm">Download</summary>
                     <ul class="dlopts">
                       <li>
-                        <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-bleed.pdf`)} download>
+                        <a href={bannerFile(`valencia-banner-${v.file}-33x81-bleed.pdf`)} download>
                           <strong>Print PDF</strong>
                           <span>33¼″ × 81¼″, with a little extra edge. Use this one for Vistaprint.</span>
                         </a>
                       </li>
                       <li>
-                        <a href={withBase(`/banner/valencia-banner-${v.file}-33x81-exact.pdf`)} download>
+                        <a href={bannerFile(`valencia-banner-${v.file}-33x81-exact.pdf`)} download>
                           <strong>Exact-size PDF</strong>
                           <span>33″ × 81″, with no extra edge.</span>
                         </a>
                       </li>
                       <li>
-                        <a href={withBase(`/banner/valencia-banner-${v.file}-33x81.png`)} download>
+                        <a href={bannerFile(`valencia-banner-${v.file}-33x81.png`)} download>
                           <strong>Image (PNG)</strong>
                           <span>A 33″ × 81″ picture, for email or other programs.</span>
                         </a>
