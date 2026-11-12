@@ -85,11 +85,13 @@ const DB_SCHEMA = 'CREATE TABLE IF NOT EXISTS signups (
   resend_error      TEXT
 )';
 
-// The private folder sits beside the web root (~/private next to ~/public_html). Look two and
-// three levels up, so the site can live in public_html or in a folder inside it.
+// The private folder sits beside the web root (~/private next to ~/public_html), or beside the
+// releases on Bruce's server (/srv/sites/vhwpt/private, with this file in releases/<id>/api). Look
+// two and three levels up for a folder that exists. The settings file does not have to be in it
+// yet, so sign-ups are saved even before the email is set up.
 $private = dirname(__DIR__, 2) . '/private';
 foreach ([2, 3] as $up) {
-  if (is_file(dirname(__DIR__, $up) . '/private/vhwpt-contact.php')) { $private = dirname(__DIR__, $up) . '/private'; break; }
+  if (is_dir(dirname(__DIR__, $up) . '/private')) { $private = dirname(__DIR__, $up) . '/private'; break; }
 }
 
 function finish(bool $ok, string $msg, int $code): void {
