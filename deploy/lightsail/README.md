@@ -33,7 +33,9 @@ ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh develop  # or any branch
 switches `current` and reloads PHP-FPM (which otherwise keeps running the previous release's PHP
 files). It keeps five releases; its header shows how to roll back. Caddy's rules
 are in [`sites/vhwpt.caddy`](sites/vhwpt.caddy): the old WordPress URLs redirect (same map as
-`public/_redirects`), and only `/api/inquiry.php` and `/api/event.php` run as PHP.
+`public/_redirects`), `/qr` (the event banner's QR code) redirects to the home page with a
+temporary 302 so the printed code can be pointed somewhere else later by changing that one
+line, and only `/api/inquiry.php` and `/api/event.php` run as PHP.
 
 vhwpt.com has been live on this server since 2026-11-12. **http://3.226.58.165/** stays up as a test address, marked noindex.
 
