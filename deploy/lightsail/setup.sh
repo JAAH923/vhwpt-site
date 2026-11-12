@@ -48,7 +48,7 @@ if [[ ! -f /etc/apt/sources.list.d/tailscale.list ]]; then
     > /etc/apt/sources.list.d/tailscale.list
 fi
 apt-get update -q
-apt-get "${apt_opts[@]}" install caddy nodejs php8.3-fpm php8.3-curl php8.3-mbstring tailscale
+apt-get "${apt_opts[@]}" install caddy nodejs php8.3-fpm php8.3-curl php8.3-mbstring php8.3-sqlite3 sqlite3 tailscale
 systemctl enable --now tailscaled   # join once by hand: sudo tailscale up --hostname=bruce-lightsail
 
 echo "== php"
@@ -82,7 +82,7 @@ install -d -m 0755 -o "$owner" -g "$owner" /srv/sites /srv/apps
 echo "== vhwpt.com"
 site=/srv/sites/vhwpt
 install -d -m 0755 -o "$owner" -g "$owner" "$site" "$site/releases"
-install -d -m 0700 -o www-data -g www-data "$site/private"   # booking form settings + inquiry log
+install -d -m 0700 -o www-data -g www-data "$site/private"   # form settings, inquiry log, sign-ups database
 [[ -d "$site/repo/.git" ]] || sudo -u "$owner" git clone -q https://github.com/JAAH923/vhwpt-site.git "$site/repo"
 install -m 0755 -o "$owner" -g "$owner" "$here/deploy-vhwpt.sh" "$site/deploy.sh"
 

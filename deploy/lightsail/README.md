@@ -40,6 +40,34 @@ The booking form reads its settings from `/srv/sites/vhwpt/private/vhwpt-contact
 (owner `www-data`, mode 600). Only Justin puts that file there; it is never in this repo.
 The form keeps its copy of every request in the same folder.
 
+## Event sign-ups database
+
+The event pages (`/event` for facility owners and therapists, `/event2` for regular people)
+post to `/api/event.php`, which saves each sign-up in a SQLite database,
+`/srv/sites/vhwpt/private/vhwpt-signups.sqlite` (owner `www-data`, mode 600), table `signups`.
+It also appends a backup line to `private/vhwpt-event-signups.jsonl` and emails Bruce when
+`vhwpt-contact.php` is there. Needs `php8.3-sqlite3` (installed by `setup.sh`).
+
+Only vhwpt.com sends. This test address (3.226.58.165) sends too: its rows are `test = 1`
+and its emails say `[TEST]`, so they never mix with real sign-ups. Filter with `test = 0`.
+
+```sh
+# the latest sign-ups
+ssh bruce-lightsail "sudo -u www-data sqlite3 -header -column /srv/sites/vhwpt/private/vhwpt-signups.sqlite \
+  'select id, created_at, form, event, test, name, organization, role, phone, email, emailed from signups order by id desc limit 20'"
+
+# everything real, as a CSV
+ssh bruce-lightsail "sudo -u www-data sqlite3 -header -csv /srv/sites/vhwpt/private/vhwpt-signups.sqlite \
+  'select * from signups where test = 0'" > signups.csv
+```
+
+The columns `resend_contact_id`, `resend_pushed_at` and `resend_error` are for a later step:
+pushing sign-ups to Resend as contacts. That step would take rows with `test = 0`, an email and
+`resend_pushed_at is null`, add each to a Resend audience, and fill those columns in. Two things
+to settle first. People who left only a phone number can't be added. And the tick box today only
+covers Bruce contacting them (about their sign-up, on `/event2`), so a mailing list needs new
+wording; `consent_text` keeps what each person actually ticked.
+
 ## Adding another site or app
 
 1. A static or PHP site goes in `/srv/sites/<name>/`. An app goes in `/srv/apps/<name>/`, run by

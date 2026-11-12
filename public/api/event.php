@@ -1,23 +1,31 @@
 <?php
-// vhwpt.com: the event sign-up's endpoint (/api/event.php), for the iPad page at /event.
+// vhwpt.com: the event sign-up's endpoint (/api/event.php), for the iPad pages /event and /event2.
 // Written beside inquiry.php on purpose, not folded into it: a screen handed around a booth
 // shares one network address and fills the form quickly, which inquiry.php's "5 an hour" limit
 // and "filled too fast" check would silently throw away.
 //
-// Validates the sign-up, keeps a private copy outside the web root FIRST (so nothing is lost if
-// the email fails), then emails Bruce through Resend. It uses the same settings file as the
-// booking form, ~/private/vhwpt-contact.php (resend_key, from, to). No CAPTCHA on purpose: it would
-// slow the hand-off, and the page is unlisted. The guards are a hidden field bots fill in, and
-// a generous per-address limit. The sign-up counts as saved if the private copy or the email
-// worked, so a visitor is never shown an error for a problem only Bruce can fix; a line with
-// "emailed": false in vhwpt-event-signups.jsonl means the email did not go out.
+// Validates the sign-up, saves it in a small SQLite database outside the web root
+// (private/vhwpt-signups.sqlite), emails Bruce through Resend, and appends a backup line to
+// private/vhwpt-event-signups.jsonl. The email uses the same settings file as the booking form,
+// private/vhwpt-contact.php (resend_key, from, to). The database needs PHP's pdo_sqlite; without
+// it the backup file is still written. The sign-up counts as saved if the database, the backup
+// file or the email worked, so a visitor is never shown an error for a problem only Bruce can
+// fix; a row with emailed = 0 means the email did not go out. No CAPTCHA on purpose: it would
+// slow the hand-off, and the pages are unlisted. The guards are a hidden field bots fill in, and
+// a generous per-address limit.
+//
+// Sign-ups from any address other than vhwpt.com (today the test address on Bruce's server) are
+// marked test = 1 and get "[TEST]" on the email subject, so they never mix with real ones.
+//
+// The database is where the sign-ups live. The resend_* columns stay empty until the sign-ups are
+// pushed to Resend as contacts (a later step; see deploy/lightsail/README.md).
 //
 // Two forms post here. /event (src/components/EventSignup.astro) is for facility owners and other
 // therapists: it sends a role and topics. /event2 (src/components/EventSignupPeople.astro) is for
-// regular people: it sends "form": "people" and the services they are curious about. The ids below
-// mirror those components and the service ids in src/data/site.ts and inquiry.php; change them
-// together. Neither form has a free-text box, so a sign-up carries no patient or resident details
-// (T-883).
+// regular people: it sends "form": "people" and the services they are curious about. The ids and
+// the consent wording below mirror those components, and the ids mirror the service ids in
+// src/data/site.ts and inquiry.php; change them together. Neither form has a free-text box, so a
+// sign-up carries no patient or resident details (T-883).
 declare(strict_types=1);
 
 header('Cache-Control: no-store');
@@ -39,7 +47,6 @@ const TOPICS = [
   'refer'             => 'Referring patients to Bruce',
   'connect'           => 'Just connecting',
 ];
-
 const SERVICES = [
   'rehab'    => 'Rehabilitation & Recovery',
   'balance'  => 'Balance & Fall Prevention',
@@ -51,6 +58,32 @@ const SERVICES = [
   'virtual'  => 'Virtual Training',
   'holistic' => 'Holistic & Corporate Wellness',
 ];
+// The wording of the tick box, kept with each row so we know what each person agreed to.
+const CONSENT = [
+  'pros'   => 'It’s OK for Bruce to contact me by phone, text or email.',
+  'people' => 'It’s OK for Bruce to contact me by phone, text or email about my sign-up.',
+];
+
+// One row per sign-up. Times are UTC, ISO 8601.
+const DB_SCHEMA = 'CREATE TABLE IF NOT EXISTS signups (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at        TEXT    NOT NULL,
+  form              TEXT    NOT NULL,            -- "pros" (/event) or "people" (/event2)
+  event             TEXT,                        -- the ?e= tag on the page address
+  host              TEXT,                        -- the address it was filled in on
+  test              INTEGER NOT NULL DEFAULT 0,  -- 1 when it was not filled in on vhwpt.com
+  name              TEXT    NOT NULL,
+  organization      TEXT,                        -- facility or practice (/event only)
+  role              TEXT,                        -- who they are (/event only)
+  topics            TEXT,                        -- JSON list: topics (/event) or services (/event2)
+  phone             TEXT,
+  email             TEXT,
+  consent_text      TEXT    NOT NULL,            -- the wording they ticked
+  emailed           INTEGER NOT NULL DEFAULT 0,  -- 1 when the email to Bruce went out
+  resend_contact_id TEXT,                        -- set when pushed to Resend
+  resend_pushed_at  TEXT,
+  resend_error      TEXT
+)';
 
 // The private folder sits beside the web root (~/private next to ~/public_html). Look two and
 // three levels up, so the site can live in public_html or in a folder inside it.
@@ -70,6 +103,25 @@ function clean($v, int $max): string {
   return trim(mb_substr($v, 0, $max));
 }
 function oneLine(string $v): string { return trim(preg_replace('/\s+/u', ' ', $v) ?? ''); }
+function orNull(string $v): ?string { return $v !== '' ? $v : null; }
+
+// Opens the database, creating it and its table on first use. null when SQLite is not there or
+// the file cannot be opened; the caller carries on with the backup file.
+function db_open(string $dir): ?PDO {
+  if (!extension_loaded('pdo_sqlite')) return null;
+  $file = $dir . '/vhwpt-signups.sqlite';
+  try {
+    $new = !is_file($file);
+    $db = new PDO('sqlite:' . $file, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $db->exec('PRAGMA busy_timeout = 5000');
+    $db->exec(DB_SCHEMA);
+    if ($new) @chmod($file, 0600);
+    return $db;
+  } catch (Throwable $e) {
+    error_log('vhwpt event signups db: ' . $e->getMessage());
+    return null;
+  }
+}
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   header('Allow: POST');
@@ -114,6 +166,10 @@ if ((!$people && $role === '') || $name === '' || ($email === '' && !$phoneOk) |
     : 'A few answers are missing. Please check who you are, your name, a phone number or email, and the OK to be contacted.', 400);
 }
 
+// Real sign-ups come from vhwpt.com; anything else (the test address on Bruce's server) is a test.
+$host = strtolower(preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? '')) ?? '');
+$test = !preg_match('/(^|\.)vhwpt\.com$/', $host);
+
 $rows = $people ? [
   'Name'          => $name,
   'Phone'         => $phone !== '' ? $phone : '(not given)',
@@ -131,13 +187,28 @@ $rows = $people ? [
   'Event'         => $event !== '' ? $event : '(not tagged)',
   'OK to contact' => 'Yes, by phone, text or email',
 ];
+if ($test) $rows['Test'] = 'Filled in on ' . ($host !== '' ? $host : 'an unknown address') . ', not vhwpt.com';
 
-// Keep a private copy first.
+// Save first, so the sign-up survives even if the email does not go out.
 if (!is_dir($private)) @mkdir($private, 0700, true);
-$log = $private . '/vhwpt-event-signups.jsonl';
-$entry = ['at' => gmdate('c'), 'answers' => $rows, 'emailed' => null];
+$db = db_open($private);
+$dbId = null;
+if ($db) {
+  try {
+    $st = $db->prepare('INSERT INTO signups (created_at, form, event, host, test, name, organization, role, topics, phone, email, consent_text)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $st->execute([
+      gmdate('c'), $people ? 'people' : 'pros', orNull($event), orNull($host), $test ? 1 : 0, $name,
+      $people ? null : orNull($org), $people ? null : $role,
+      json_encode($chosen, JSON_UNESCAPED_UNICODE), orNull($phone), orNull($email), CONSENT[$people ? 'people' : 'pros'],
+    ]);
+    $dbId = (int) $db->lastInsertId();
+  } catch (Throwable $e) {
+    error_log('vhwpt event signups insert: ' . $e->getMessage());
+  }
+}
 
-$subject = 'Event sign-up: ' . $name . ($people ? '' : ($org !== '' ? ', ' . $org : '') . ' (' . $role . ')') . ($event !== '' ? ' [' . $event . ']' : '');
+$subject = ($test ? '[TEST] ' : '') . 'Event sign-up: ' . $name . ($people ? '' : ($org !== '' ? ', ' . $org : '') . ' (' . $role . ')') . ($event !== '' ? ' [' . $event . ']' : '');
 $replyHint = $email !== '' ? 'Reply to this email to answer ' . $name . ' directly.' : $name . ' left no email; call them back.';
 $text = "A new sign-up from the event page on vhwpt.com. $replyHint\n\n";
 $html = '<div style="font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#18181b;line-height:1.5;font-size:15px">'
@@ -165,10 +236,17 @@ if (is_array($cfg) && !empty($cfg['resend_key']) && !empty($cfg['from']) && !emp
   $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
   $sent = $code >= 200 && $code < 300;
 }
-$entry['emailed'] = $sent;
-$new = !is_file($log);
-$saved = @file_put_contents($log, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX) !== false;
-if ($new && $saved) @chmod($log, 0600);
+if ($sent && $db && $dbId !== null) {
+  try { $db->prepare('UPDATE signups SET emailed = 1 WHERE id = ?')->execute([$dbId]); }
+  catch (Throwable $e) { error_log('vhwpt event signups update: ' . $e->getMessage()); }
+}
 
-if (!$saved && !$sent) finish(false, 'That didn’t go through. Please ask Bruce to take your details, or ' . CONTACT . '.', 502);
+// The backup file: one line per sign-up, always written, in case the database is unavailable.
+$log = $private . '/vhwpt-event-signups.jsonl';
+$entry = ['at' => gmdate('c'), 'form' => $people ? 'people' : 'pros', 'host' => $host, 'test' => $test, 'answers' => $rows, 'emailed' => $sent, 'db_id' => $dbId];
+$new = !is_file($log);
+$filed = @file_put_contents($log, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX) !== false;
+if ($new && $filed) @chmod($log, 0600);
+
+if ($dbId === null && !$filed && !$sent) finish(false, 'That didn’t go through. Please ask Bruce to take your details, or ' . CONTACT . '.', 502);
 finish(true, '', 200);
