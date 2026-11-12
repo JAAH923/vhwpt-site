@@ -33,8 +33,8 @@ export const credentialLine =
 
 export const nav = [
   { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
   { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
   { label: "Questions", href: "/questions" },
   { label: "Book", href: "/book" },
 ];

@@ -46,8 +46,8 @@ const faq = {
   </PageHead>
 
   {
-    topics.map((t, i) => (
-      <section class:list={["section qa", { band: i % 2 === 0 }]} id={t.id} aria-labelledby={`${t.id}-title`}>
+    topics.map((t) => (
+      <section class="section qa" id={t.id} aria-labelledby={`${t.id}-title`}>
         <div class="wrap qa-group">
           <h2 id={`${t.id}-title`}>{t.title}</h2>
           <QaList questions={t.questions} />
@@ -98,11 +98,9 @@ const faq = {
   .qa-toggle[hidden] { display: none; }
 
   /* One topic per section: its title holds the left column while its rows scroll.
-     Every other topic sits on a whisper band (Bruce asked for a little more contrast,
-     2026-11-09), so the bands separate the topics instead of hairlines. */
-  .section.qa { padding: 64px 0; border-top: 0; }
-  .section.qa.band { background: var(--whisper); }
-  :global(.section.qa.band + .cta) { border-top-color: transparent; }
+     Topics are separated by the same hairlines as every other page; full-width grey
+     bands appear nowhere else on the site (Justin, 2026-11-12). */
+  .section.qa { padding: 64px 0; }
   .qa-group { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 64px; }
   .qa-group h2 { font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; align-self: start; position: sticky; top: 32px; }
   @media (max-width: 760px) {
