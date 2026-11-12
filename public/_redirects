@@ -3,6 +3,7 @@
 #
 # The event banner's QR code points here, so where it lands can change after printing.
 /qr                             /?src=banner                     302
+/b                              /banner/                         302
 
 # The old WordPress URLs. /about and /contact were live pages with inbound
 # links and rankings; they are currently returning 404 on vhwpt.com.
