@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Valencia Health &amp; Wellness · table sign</title>
+<!--
+  The table sign for Bruce's events: letter size (8.5 x 11 in), white, made to print at home or
+  at any copy shop and stand in a tabletop sign holder. build.sh turns it into the files the
+  /banner page links to. The QR code (qr-signup.svg, made with
+    qrencode -t SVG -l M -m 0 -o qr-signup.svg 'https://www.vhwpt.com/qr/signup'
+  then shape-rendering="crispEdges" added to its <svg> so no seams show between the squares) opens https://www.vhwpt.com/qr/signup, a redirect in deploy/lightsail/sites/vhwpt.caddy that
+  lands on the sign-up page for residents and families, so where it goes can change after printing.
+  The logo is the banner's (../event-banner/logo.jpg).
+-->
+<style>
+  @font-face{font-family:'Inter';font-weight:400;src:url('../../public/assets/fonts/inter-latin-400-normal.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:700;src:url('../../public/assets/fonts/inter-latin-700-normal.woff2') format('woff2');}
+  @page{size:8.5in 11in;margin:0}
+  :root{--ink:#18181b;--crimson:#c41230;--grey:#52525b;--hair:#d4d4d8;--whisper:#f4f4f5}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{width:8.5in;height:11in;background:#fff}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;overflow:hidden}
+  .page{position:relative;width:8.5in;height:11in;display:flex;flex-direction:column;align-items:center;text-align:center;padding:.5in .6in .55in}
+
+  /* the logo file has a faint square behind the badge: crop it to the badge's own circle */
+  .logo{width:1.75in;height:1.75in;clip-path:circle(47.6% at 50% 50%)}
+  .name{margin-top:.14in;font-weight:700;font-size:.3in;letter-spacing:-.01em}
+  .pulse{display:block;width:8.5in;height:.6in;margin:.08in -.6in 0}
+
+  h1{margin-top:.22in;font-size:.8in;line-height:1.02;letter-spacing:-.03em;font-weight:700}
+  .sub{margin-top:.2in;font-size:.27in;line-height:1.3;color:var(--grey);max-width:6in}
+
+  .scan{margin-top:.36in;display:flex;align-items:center;gap:.3in;background:var(--whisper);border-radius:.3in;padding:.3in .36in .3in .44in}
+  .scan .words{text-align:left}
+  .scan .big{white-space:nowrap;font-weight:700;font-size:.42in;line-height:1.05;letter-spacing:-.02em}
+  .scan .small{white-space:nowrap;margin-top:.12in;font-size:.2in;line-height:1.3;color:var(--grey)}
+  .arrow{width:.62in;height:.38in;flex:none}
+  .tile{background:#fff;border-radius:.16in;padding:.3in;flex:none}
+  .qr{display:block;width:2.4in;height:2.4in}
+
+  .foot{margin-top:auto;display:grid;gap:.06in}
+  .phone{font-weight:700;font-size:.3in;letter-spacing:-.01em}
+  .web{font-weight:700;font-size:.24in;color:var(--crimson)}
+  .area{font-size:.17in;color:var(--grey)}
+</style>
+</head>
+<body>
+<div class="page">
+  <img class="logo" src="../event-banner/logo.jpg" alt="Valencia Health &amp; Wellness">
+  <div class="name">Dr. Bruce Valencia, DPT</div>
+
+  <!-- the pulse line from the logo, the same shape as the banner's -->
+  <svg class="pulse" viewBox="0 0 33.25 2.4" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 1.2 H11.9 L12.7 1.2 L13.5 .85 L14.3 1.2 L15 1.5 L16 .25 L17.1 2.15 L17.9 1.2 L19 .82 L19.9 1.2 H33.25"
+          fill="none" stroke="#c41230" stroke-width=".16" stroke-linejoin="round"/>
+  </svg>
+
+  <h1>Let’s stay in touch.</h1>
+  <p class="sub">Leave your name and email, and Bruce will follow up with class updates and wellness tips.</p>
+
+  <div class="scan">
+    <div class="words">
+      <div class="big">Scan with<br>your phone</div>
+      <div class="small">Open the camera and<br>point it at the code.</div>
+    </div>
+    <svg class="arrow" viewBox="0 0 22 13" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 6.5 H19.8 M14.4 1.2 L19.8 6.5 L14.4 11.8" fill="none" stroke="#c41230" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div class="tile"><img class="qr" src="qr-signup.svg" alt="QR code to the sign-up page"></div>
+  </div>
+
+  <div class="foot">
+    <div class="phone">1-954-299-6536</div>
+    <div class="web">vhwpt.com</div>
+    <div class="area">Broward &amp; Palm Beach County</div>
+  </div>
+</div>
+</body>
+</html>
