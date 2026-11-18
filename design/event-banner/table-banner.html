@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Valencia Health &amp; Wellness · table-front banner</title>
+<!--
+  Horizontal banner for the front edge of a 6 ft event table (Bruce's table is 72 x 30).
+  ?v=logo | care | recovery   which version (see COPY)
+  &h=24 | 30                  height in inches (width is always 72), default 24
+  &bleed=1                    bleed in inches on every side (Vistaprint 2.5' x 6' vinyl wants 1in: 74 x 32 file, 70 x 28 safe)
+  Same palette, Inter and logo as banner.html (the 33x81 retractable).
+-->
+<style>
+  @font-face{font-family:'Inter';font-weight:400;src:url('../../public/assets/fonts/inter-latin-400-normal.woff2') format('woff2');}
+  @font-face{font-family:'Inter';font-weight:700;src:url('../../public/assets/fonts/inter-latin-700-normal.woff2') format('woff2');}
+  :root{--ink:#18181b;--crimson:#c41230;--grey:#52525b}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{background:#fff;overflow:hidden}
+  body{font-family:'Inter',system-ui,sans-serif;font-weight:700;color:var(--ink);-webkit-font-smoothing:antialiased}
+  .art{position:relative;background:#fff;overflow:hidden}
+  .box{position:absolute}
+  .abs{position:absolute}
+  .logo{clip-path:circle(46.5% at 50% 50%)}
+  .txt{display:flex;flex-direction:column;justify-content:center}
+  .txt{align-items:flex-start}
+  .l{display:inline-block;white-space:nowrap;line-height:1.04;letter-spacing:-.024em}
+  .l.red{color:var(--crimson)}
+  .l.small{font-weight:400;letter-spacing:-.01em;color:var(--grey)}
+  svg{overflow:visible}
+</style>
+</head>
+<body>
+<div class="art" id="art"><div class="box" id="box"></div></div>
+<script>
+  var COPY = {
+    logo:     { lines: [] },
+    care:     { lines: [{t:'Care that'}, {t:'comes to you.'}] },
+    recovery: { lines: [{t:'Care that comes to you.'}, {t:'From recovery to strength.', cls:'red'}] }
+  };
+  var q = new URLSearchParams(location.search);
+  var v = q.get('v') || 'care', c = COPY[v];
+  var W = 72, H = +(q.get('h') || 24), B = q.get('bleed') ? (+q.get('bleed') || 0) : 0;
+  var IN = 96, box = document.getElementById('box'), art = document.getElementById('art');
+  function px(n){ return n + 'in'; }
+  [document.documentElement, document.body, art].forEach(function(e){ e.style.width = px(W+2*B); e.style.height = px(H+2*B); });
+  box.style.left = box.style.top = px(B); box.style.width = px(W); box.style.height = px(H);
+  var st = document.createElement('style');
+  st.textContent = '@page{size:' + (W+2*B) + 'in ' + (H+2*B) + 'in;margin:0}';
+  document.head.appendChild(st);
+
+  var SAFE = 1.5;                 // grommets and hems: keep everything 1.5in in from the edge
+  var D = Math.min(H - 2*SAFE + 1.6, 24);   // logo diameter (the image's own white ring gives it air)
+  var cy = H > 24 ? 13.5 : H/2;   // on a 30in drop, sit a little high: the bottom of a table front is behind legs and chairs
+
+  function el(tag, cls, css){ var e = document.createElement(tag); if (cls) e.className = cls; Object.assign(e.style, css || {}); box.appendChild(e); return e; }
+  function pulse(x1, x2, y, beat, amp){
+    // the logo's heartbeat line: flat, one beat, flat. Beat drawn at x = beat.
+    var s = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('class','abs'); s.style.left = '0'; s.style.top = '0'; s.style.width = px(W); s.style.height = px(H);
+    s.setAttribute('viewBox','0 0 '+W+' '+H);
+    var a = amp, b = beat, d;
+    if (beat == null) d = 'M'+x1+' '+y+' H'+x2;
+    else d = 'M'+x1+' '+y+' H'+(b-3.2)+' L'+(b-2.4)+' '+(y-.25*a)+' L'+(b-1.7)+' '+y+' L'+(b-1)+' '+(y+.2*a)+' L'+b+' '+(y-a)+' L'+(b+1.2)+' '+(y+.9*a)+' L'+(b+2)+' '+y+' L'+(b+3)+' '+(y-.3*a)+' L'+(b+3.8)+' '+y+' H'+x2;
+    var p = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d', d); p.setAttribute('fill','none'); p.setAttribute('stroke','#c41230');
+    p.setAttribute('stroke-width', H >= 30 ? .5 : .42); p.setAttribute('stroke-linejoin','round');
+    s.appendChild(p); box.appendChild(s); return s;
+  }
+
+  if (v === 'logo') {
+    // logo centered, the heartbeat running out of both sides like the dumbbell bar
+    var L = (W - D)/2;
+    pulse(SAFE+1, L+.6, cy, (SAFE+1+L)/2, 2.4);
+    pulse(L+D-.6, W-SAFE-1, cy, (L+D+W-SAFE-1)/2, 2.4);
+    var img = el('img','abs logo',{left:px(L),top:px(cy-D/2),width:px(D),height:px(D)}); img.src='logo-print.jpg';
+  } else {
+    var LX = SAFE + 1.2;
+    var img = el('img','abs logo',{left:px(LX),top:px(cy-D/2),width:px(D),height:px(D)}); img.src='logo-print.jpg';
+    var tx = LX + D + 3, tw = W - SAFE - 1 - tx;
+    var txt = el('div','abs txt',{left:px(tx),top:px(SAFE),width:px(tw),height:px(H-2*SAFE-3.2)});
+    var spans = c.lines.map(function(o){ var s = document.createElement('span'); s.className = 'l ' + (o.cls||''); s.textContent = o.t; txt.appendChild(s); return s; });
+    var line = pulse(tx, W-SAFE-1, 0, null, 0);
+    document.fonts.ready.then(function(){
+      // largest size where every line fits the text column, and the stack fits the height
+      var maxH = H - 2*SAFE - 3.2, size = 12;
+      for (; size > 1; size -= .05) {
+        spans.forEach(function(s){ s.style.fontSize = px(size); });
+        var ok = spans.every(function(s){ return s.getBoundingClientRect().width/IN <= tw; }) && spans.reduce(function(a,s){ return a + s.getBoundingClientRect().height/IN; }, 0) <= maxH;
+        if (ok) break;
+      }
+      // pull the text block to the vertical center with the rule under it
+      var th = spans.reduce(function(a,s){ return a + s.getBoundingClientRect().height/IN; }, 0);
+      var top = cy - (th + 1.6)/2;
+      txt.style.top = px(top); txt.style.height = px(th);
+      var ly = top + th + 1.4;
+      line.querySelector('path').setAttribute('d','M'+tx+' '+ly+' H'+(tx + Math.max.apply(null, spans.map(function(s){return s.getBoundingClientRect().width/IN;}))));
+      document.body.setAttribute('data-fit', size >= 2.5 ? 'ok' : 'small:'+size.toFixed(2));
+      document.body.setAttribute('data-size', size.toFixed(2));
+    });
+  }
+  if (v === 'logo') document.body.setAttribute('data-fit','ok');
+</script>
+</body>
+</html>
