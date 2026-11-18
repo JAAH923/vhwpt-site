@@ -4,3 +4,16 @@ dist/
 node_modules/
 references.txt
 ~archive/
+
+# Claude Code: settings.json and hooks/ are shared rules (see CLAUDE.md); everything else in
+# .claude/ is per machine (launch.json, settings.local.json).
+.claude/*
+!.claude/settings.json
+!.claude/hooks/
+
+# Design process evidence: screenshot folders and screen recordings are large and
+# regenerate with the premium-site scripts. The markdown trail in design/ is tracked.
+design/**/shots/
+design/directions/*.mp4
+# Side-by-sides hold third-party reference screenshots; the repo is public, so they stay local.
+design/qa/compare/

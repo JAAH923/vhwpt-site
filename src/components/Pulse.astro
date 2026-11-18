@@ -1,0 +1,66 @@
+---
+/**
+ * The signature moment: the heartbeat from Bruce's logo, drawn once. On the
+ * home hero it also flattens to a steady line as the hero scrolls away. The
+ * beat keeps a fixed pixel shape at every width; only the flat runs stretch.
+ */
+export interface Props {
+  /** Where the beat sits along the line, 0 to 1. */
+  at?: number;
+  size?: "lg" | "sm";
+  /** Flatten the beat as its section scrolls away. */
+  flatten?: boolean;
+}
+const { at = 0.5, size = "lg", flatten = false } = Astro.props;
+---
+
+<svg
+  class:list={["pulse", { sm: size === "sm" }]}
+  data-at={at}
+  data-flatten={flatten ? "true" : undefined}
+  aria-hidden="true"
+><path pathLength="1"></path></svg>
+
+<script>
+  // [x offset from the beat's centre, y offset from the baseline], in px at the
+  // 120px line height; the small line scales the heights down with it.
+  const BEAT = [[-150, 0], [-120, -14], [-106, 0], [-88, 0], [-72, 36], [-50, -54],
+    [-28, 48], [-12, -20], [0, 0], [30, 0], [44, -9], [58, 0]];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelectorAll<SVGSVGElement>("svg.pulse").forEach((svg) => {
+    const path = svg.querySelector("path")!;
+    let k = 1;
+
+    const render = () => {
+      const w = svg.clientWidth || 1200;
+      const h = svg.clientHeight || 120;
+      const mid = h / 2;
+      const cx = Math.round(w * (parseFloat(svg.dataset.at ?? "") || 0.5));
+      const ax = w < 600 ? 0.8 : 1;
+      const ay = ax * (h / 120);
+      const pts = [[0, mid], ...BEAT.map(([dx, dy]) => [cx + dx * ax, mid + dy * ay * k]), [w, mid]];
+      svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+      path.setAttribute("d", pts.map(([x, y], i) => `${i ? "L" : "M"}${x.toFixed(1)},${y.toFixed(1)}`).join(" "));
+    };
+
+    render();
+    addEventListener("resize", render);
+    if (reduce) return;
+    path.classList.add("draw-on");
+    if (!svg.dataset.flatten) return;
+
+    const scope = svg.parentElement!;
+    let queued = false;
+    addEventListener("scroll", () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => {
+        const p = Math.min(1, Math.max(0, scrollY / (scope.offsetHeight * 0.8)));
+        k = 1 - p * p * (3 - 2 * p);
+        render();
+        queued = false;
+      });
+    }, { passive: true });
+  });
+</script>

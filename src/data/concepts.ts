@@ -37,7 +37,7 @@ export const concepts: Concept[] = [
     heroMode: "headshot-led",
     servicesIntro: "Quiet confidence, clear structure, and Bruce in the first position.",
     doctorLine: "A premium health plan should feel personal before it feels technical.",
-    summary: "Clean white clinical premium with Bruce's headshot leading the first viewport.",
+    summary: "Clean white clinical premium with Bruce’s headshot leading the first viewport.",
   },
   {
     id: "3",
@@ -75,7 +75,7 @@ export const concepts: Concept[] = [
     bodyClass: "v5",
     heroMode: "editorial",
     servicesIntro: "A magazine-like page with bold type, less UI, and more point of view.",
-    doctorLine: "Bruce's role is not just to train. It is to interpret what movement is saying.",
+    doctorLine: "Bruce’s role is not just to train. It is to interpret what movement is saying.",
     summary: "Magazine-like brand story with large typography, minimal UI, and focused authority.",
   },
 ];

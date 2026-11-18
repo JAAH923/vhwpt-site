@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Direction C · Studio dark</title>
+<link rel="stylesheet" href="../../public/assets/fonts/fonts.css" />
+<style>
+  :root {
+    --canvas: #181a1d; --white: #ffffff; --stone: #a8acb1; --cool: #65666a; --crimson: #c41230;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--canvas); color: var(--white); font-family: var(--sans); font-size: 17px; line-height: 1.5; }
+  a { color: inherit; text-decoration: none; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; max-width: 1280px; margin: 0 auto; font-size: 15px; font-weight: 500; }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; }
+  .brand img { width: 36px; height: 36px; }
+  .links { display: flex; gap: 32px; align-items: center; color: var(--stone); }
+  .btn { display: inline-flex; align-items: center; height: 48px; padding: 0 22px; border-radius: 28px; font-weight: 600; font-size: 16px; }
+  .btn-red { background: var(--crimson); color: var(--white); }
+  .btn-quiet { color: var(--white); border: 1px solid var(--cool); }
+
+  .hero { text-align: center; padding: 96px 24px 0; max-width: 960px; margin: 0 auto; }
+  .eyebrow { color: var(--stone); font-size: 15px; letter-spacing: 0.025em; margin: 0 0 16px; }
+  h1 { font-size: clamp(40px, 5.6vw, 64px); line-height: 1.05; letter-spacing: -0.02em; font-weight: 700; margin: 0 0 20px; }
+  .hero p.sub { color: var(--stone); font-size: 19px; max-width: 40ch; margin: 0 auto 32px; }
+  .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  .pulse { display: block; width: 100%; height: 120px; margin: 48px 0 0; }
+  .pulse path { fill: none; stroke: var(--crimson); stroke-width: 2; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .pulse path.draw-on { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 2.2s cubic-bezier(0.65, 0, 0.35, 1) 0.4s forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .photo { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .photo img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; object-position: 50% 35%; border-radius: 6px; display: block; }
+
+  .lineup { max-width: 1280px; margin: 0 auto; padding: 80px 24px; }
+  .lineup h2 { font-size: 32px; letter-spacing: -0.01em; margin: 0 0 32px; font-weight: 700; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .tile figure { margin: 0 0 16px; position: relative; }
+  .tile img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 6px; display: block; }
+  .tag { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: var(--white); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; }
+  .tile h3 { font-size: 20px; margin: 0 0 4px; font-weight: 600; }
+  .tile p { color: var(--stone); font-size: 15px; margin: 0; }
+
+  @media (max-width: 760px) {
+    .links a:not(.btn) { display: none; }
+    .grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .photo img { aspect-ratio: 4 / 3; }
+  }
+</style>
+</head>
+<body>
+  <div data-pulse-scope>
+    <nav aria-label="Primary">
+      <a class="brand" href="#"><img src="../../public/assets/brand/valencia-health-wellness-icon.png" alt="" />Dr. Bruce Valencia, DPT</a>
+      <div class="links">
+        <a href="#">Services</a>
+        <a href="#">About</a>
+        <a class="btn btn-red" href="#">Book</a>
+      </div>
+    </nav>
+    <header class="hero">
+      <p class="eyebrow">Physical therapy · Training · Wellness</p>
+      <h1>Training that starts where you are.</h1>
+      <p class="sub">In your home across Broward and Palm Beach, or by video from anywhere. Every client starts with a full evaluation.</p>
+      <div class="actions">
+        <a class="btn btn-red" href="#">Book an evaluation</a>
+        <a class="btn btn-quiet" href="tel:19542996536">1-954-299-6536</a>
+      </div>
+    </header>
+    <svg class="pulse" data-at="0.5" aria-hidden="true"><path pathLength="1" /></svg>
+  </div>
+  <div class="photo"><img src="../../public/assets/photos/bruce-in-session.webp" alt="Dr. Bruce Valencia working with a patient" /></div>
+
+  <section class="lineup">
+    <h2>Care built around your body.</h2>
+    <div class="grid">
+      <a class="tile" href="#"><figure><img src="../../public/assets/photos/ai/knee-hands.webp" alt="" /><span class="tag">AI photo</span></figure><h3>Rehabilitation</h3><p>After an injury or an operation.</p></a>
+      <a class="tile" href="#"><figure><img src="../../public/assets/photos/ai/hallway-walk.webp" alt="" /><span class="tag">AI photo</span></figure><h3>Senior Fitness</h3><p>Steady on your feet.</p></a>
+      <a class="tile" href="#"><figure><img src="../../public/assets/photos/ai/kettlebell-light.webp" alt="" /><span class="tag">AI photo</span></figure><h3>Personal Training</h3><p>Built on an evaluation.</p></a>
+      <a class="tile" href="#"><figure><img src="../../public/assets/photos/ai/virtual-session.webp" alt="" /><span class="tag">AI photo</span></figure><h3>Virtual Training</h3><p>From anywhere in the country.</p></a>
+    </div>
+  </section>
+  <script src="pulse.js"></script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+---
+/**
+ * Book. The booking form pops out (components/BookingForm.astro, in the
+ * layout), so this page is the page head with the two booking buttons, then
+ * the phone, email and fees. Arriving with ?for=pt or ?for=wellness opens the
+ * form with that answer picked. Fees and insurance live here only.
+ */
+import Site from "../layouts/Site.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import { practice, actions } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<Site
+  title="Book Your First Visit | Dr. Bruce Valencia, DPT"
+  description="Book a PT evaluation or a wellness screening with Dr. Bruce Valencia, DPT, in your home or care facility across Broward and Palm Beach County. Virtual training anywhere in the country."
+  path="/book"
+>
+  <PageHead
+    label="Book"
+    title="Book your first visit"
+    lede="Tell Bruce what you need and where you are. He answers his own messages within one business day."
+    photo={{
+      src: withBase("/assets/photos/ai/room-open.webp"),
+      alt: "A sunlit living room with a sofa, a chair and a foam roller, ready for a home session",
+      position: "62% 50%",
+    }}
+  >
+    <div class="actions">
+      <a class="btn btn-primary" href={withBase(actions.pt.href)} data-book="pt">{actions.pt.label}</a>
+      <a class="btn btn-line" href={withBase(actions.wellness.href)} data-book="wellness">{actions.wellness.label}</a>
+      <a class="more" href={withBase("/services/health-evaluation")}>What happens at the first visit <Icon name="arrow" size={16} /></a>
+    </div>
+    <p class="form-note">
+      If it is urgent, call <a href={practice.phoneHref}>{practice.phone}</a>. If it is a
+      medical emergency, call 911.
+    </p>
+    <noscript>
+      <p class="form-note">Booking online needs JavaScript. Call or email Bruce instead; both are below.</p>
+    </noscript>
+  </PageHead>
+
+  <section class="section" id="call" aria-labelledby="call-title">
+    <div class="wrap cols">
+      <div>
+        <h2 id="call-title">Or just call</h2>
+        <dl class="facts">
+          <div>
+            <dt>Phone</dt>
+            <dd><a href={practice.phoneHref}>{practice.phone}</a></dd>
+          </div>
+          <div>
+            <dt>Calls</dt>
+            <dd>Leave a message and Bruce will call you back.</dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd><a href={`mailto:${practice.email}`}>{practice.email}</a></dd>
+          </div>
+          <div>
+            <dt>In-home visits</dt>
+            <dd>{practice.regionLong}, including care facilities</dd>
+          </div>
+          <div>
+            <dt>Virtual training</dt>
+            <dd>Anywhere in the country</dd>
+          </div>
+          <div>
+            <dt>PT telehealth</dt>
+            <dd>Florida, case by case</dd>
+          </div>
+        </dl>
+      </div>
+      <div>
+        <h2 id="fees-title">Fees &amp; insurance</h2>
+        <dl class="facts" aria-labelledby="fees-title">
+          <div>
+            <dt>Physical therapy</dt>
+            <dd>{practice.insurance}</dd>
+          </div>
+          <div>
+            <dt>Wellness and training</dt>
+            <dd>Self-pay, not billed to insurance. Card, cash, PayPal or Zelle.</dd>
+          </div>
+          <div>
+            <dt>Travel</dt>
+            <dd>Included across {practice.regionLong}</dd>
+          </div>
+        </dl>
+        <p class="note">Rates for wellness services are shared once Bruce understands what you need.</p>
+        <a class="more" href={withBase("/questions#cost")}>Questions about cost and coverage <Icon name="arrow" size={16} /></a>
+      </div>
+    </div>
+  </section>
+</Site>

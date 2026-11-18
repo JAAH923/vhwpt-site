@@ -1,0 +1,113 @@
+---
+import Site from "../layouts/Site.astro";
+import PageHead from "../components/PageHead.astro";
+import Cta from "../components/Cta.astro";
+import { practice, credentials, credentialLine } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<Site
+  title="About Dr. Bruce Valencia, DPT | Valencia Health & Wellness"
+  description="Dr. Bruce Valencia, DPT: Doctor of Physical Therapy, Certified Lymphedema Therapist, ISSA-certified trainer and U.S. Navy veteran with 30-plus years of coaching, serving Broward and Palm Beach County and clients nationwide by video."
+  path="/about"
+>
+  <!-- The headshot is cropped above the chest so the embroidered name never shows. -->
+  <PageHead
+    label="About"
+    title="Dr. Bruce Valencia, DPT"
+    lede="A doctor of physical therapy who has coached for 30-plus years, so recovery, strength and weight loss are one conversation here."
+    creds={`${credentialLine}\u00a0· U.S. Navy Veteran`}
+    photo={{
+      src: withBase("/assets/photos/bruce-headshot-bw.webp"),
+      alt: practice.doctor,
+      position: "50% 30%",
+    }}
+  />
+
+  <section class="section" id="story" aria-labelledby="story-title">
+    <div class="wrap narrow">
+      <p class="label">His story</p>
+      <h2 id="story-title">From Brooklyn to a doctorate</h2>
+      <p class="lead">
+        Bruce grew up in Brooklyn and found coaching at 17, going on to train clients
+        across Manhattan’s most demanding training rooms. He chose to serve instead of
+        going straight on with it, and spent five years in the United States Navy.
+      </p>
+      <p>
+        An injury during that service turned out to be the turning point. Being on the
+        receiving end of a recovery (the slow weeks, the uncertainty, the difference a
+        good clinician makes) sent him to the University of North Florida for a doctorate
+        in physical therapy.
+      </p>
+      <blockquote class="pull">
+        “If you want something bad enough, you can achieve it, but you can’t do it alone.
+        Asking for help is a strength, not a weakness.”
+      </blockquote>
+      <p>
+        That belief is the whole practice: collaborative, non-judgmental, and built on the
+        idea that nobody should have to arrive already fit enough to be helped.
+      </p>
+      <dl class="facts three">
+        <div>
+          <dt class="label">Doctorate</dt>
+          <dd>University of North Florida</dd>
+        </div>
+        <div>
+          <dt class="label">Service</dt>
+          <dd>U.S. Navy, five years</dd>
+        </div>
+        <div>
+          <dt class="label">Practice</dt>
+          <dd>{practice.region} · Virtual</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" id="credentials" aria-labelledby="credentials-title">
+    <div class="wrap cols">
+      <h2 id="credentials-title">Credentials</h2>
+      <ul class="lines">
+        {credentials.map((c) => <li>{c}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="why-both" aria-labelledby="why-title">
+    <div class="wrap split">
+      <figure>
+        <img
+          src={withBase("/assets/photos/bruce-in-session.webp")}
+          alt={`${practice.doctor} working with a patient`}
+          width="1402"
+          height="1122"
+          loading="lazy"
+        />
+      </figure>
+      <div>
+        <h2 id="why-title">Why the two halves matter together</h2>
+        <p class="lead">
+          Most people recovering from something get handed between two worlds. A clinic
+          treats them until the insurance authorization runs out, then a trainer picks them
+          up without the clinical history and starts from a questionnaire. The gap between
+          those two is where most people quietly stop making progress.
+        </p>
+        <p>
+          Bruce holds both halves. He can read the operative report and he can run the
+          session, so the plan carries straight through from recovery to getting you
+          strong, with nobody needing to be briefed in the middle.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Cta
+    title="Meet Bruce first."
+    body="Every plan starts with a PT evaluation or a wellness screening, in your home or care facility."
+    third={{ label: "See services", href: "/services" }}
+  />
+</Site>

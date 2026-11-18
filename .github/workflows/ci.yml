@@ -1,0 +1,59 @@
+name: CI
+
+# The required check on every pull request (setup/github/ rulesets): the site must build, and
+# no secret or server-only file may be committed. The job is named "build" because the
+# rulesets require a check with that exact name.
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pull request
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build the site
+        run: pnpm build
+
+      - name: Check that no secrets or server-only files are committed
+        run: |
+          status=0
+          # The booking form's keys live only on the server (private/vhwpt-contact.php).
+          if git ls-files | grep -E '(^|/)(private/|vhwpt-contact\.php$|\.env($|\.)|[^/]*\.pem$)'; then
+            echo "::error::A server-only file is in the repo (listed above). Remove it and keep it on the server."
+            status=1
+          fi
+          # Resend keys, AWS access keys, private keys and GitHub tokens.
+          if git ls-files -z -- . ':!pnpm-lock.yaml' | xargs -0 grep -nIE \
+              're_[A-Za-z0-9_]{24,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,}'; then
+            echo "::error::Something that looks like a key or token is in the files above. Remove it, and tell Justin so the key can be replaced."
+            status=1
+          fi
+          exit $status

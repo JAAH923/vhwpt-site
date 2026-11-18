@@ -1,0 +1,84 @@
+---
+/**
+ * The services index. Each service has its own page at /services/<slug>
+ * ([slug].astro); this page lists them, group by group, and points to the
+ * first visit. Fees live on /book only. Physical therapy and wellness stay clearly separate
+ * (insurance compliance), here and on every service page.
+ */
+import Site from "../layouts/Site.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import Cta from "../components/Cta.astro";
+import { practice, services, groups } from "../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const byGroup = groups.map((g) => ({
+  ...g,
+  items: services.filter((s) => s.group === g.id),
+}));
+---
+
+<Site
+  title="Services | Dr. Bruce Valencia, DPT | Broward & Palm Beach"
+  description="Physical therapy (rehabilitation and recovery, balance and fall prevention) and wellness and training (senior fitness, personal training, weight loss, youth conditioning, pre and postnatal, virtual and corporate wellness), all led by a Doctor of Physical Therapy."
+  path="/services"
+>
+  <PageHead
+    label="Services"
+    title="Two kinds of care. One person running all of them."
+    lede={`Physical therapy starts with a PT evaluation. Wellness and training start with a wellness screening. Either way, you get a written plan built for your body and your history. Sessions happen in your home or care facility across ${practice.regionLong}, and virtual training is available anywhere.`}
+  />
+
+  <!-- The first visit gets top billing: it is the entry point to everything below. -->
+  <section class="section" id="start-here" aria-labelledby="start-title">
+    <div class="wrap narrow">
+      <p class="label">Start here</p>
+      <h2 id="start-title">Everything starts with a first visit.</h2>
+      <p class="lead">
+        A PT evaluation or a wellness screening. Bruce goes through your history, watches
+        how you actually move, and explains what is going on. You leave with a written
+        plan, and an honest answer if what you need is a physician.
+      </p>
+      <a class="more" href={withBase("/services/health-evaluation")}>
+        What happens at the first visit <Icon name="arrow" size={16} />
+      </a>
+    </div>
+  </section>
+
+  <section class="section" aria-label="All services">
+    <div class="wrap groups">
+      {
+        byGroup.map((g) => (
+          <div class="group">
+            <h2 class="label group-label" id={`group-${g.id}`}>{g.label}</h2>
+            <ul class="rows" aria-labelledby={`group-${g.id}`}>
+              {g.items.map((s) => (
+                <li>
+                  <a href={withBase(`/services/${s.slug}`)}>
+                    <div>
+                      <div class="row-title">
+                        <h3>{s.title}</h3>
+                        {s.tag && <p class="label row-tag">{s.tag}</p>}
+                      </div>
+                      <p>{s.lede}</p>
+                    </div>
+                    <Icon name="arrow" size={22} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <Cta
+    title="Not sure which one you need?"
+    body="That is what the first visit is for. Book a PT evaluation or a wellness screening, and Bruce will tell you, including if the answer is someone other than him."
+  />
+</Site>

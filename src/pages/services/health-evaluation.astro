@@ -1,0 +1,115 @@
+---
+/**
+ * "Your first visit" (was "The Health Evaluation"). The URL stays
+ * /services/health-evaluation so the old WordPress redirect and any inbound
+ * links keep working. It covers both entry points: the PT evaluation and the
+ * wellness screening.
+ */
+import Site from "../../layouts/Site.astro";
+import PageHead from "../../components/PageHead.astro";
+import Cta from "../../components/Cta.astro";
+import { practice, evaluationSteps } from "../../data/site";
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<Site
+  title="Your First Visit | Dr. Bruce Valencia, DPT"
+  description="Your first visit with a Doctor of Physical Therapy: a PT evaluation or a wellness screening, in your home or care facility across Broward and Palm Beach County. History, a movement and strength assessment, findings explained, and a written plan you keep."
+  path="/services/health-evaluation"
+>
+  <PageHead
+    label="The first visit"
+    title="Your first visit"
+    lede="PT patients start with a PT evaluation. Wellness clients start with a wellness screening. Both happen with a doctor of physical therapy, in your home or care facility. You leave knowing what is going on and what to do about it, written down."
+    photo={{
+      src: withBase("/assets/photos/ai/living-room-ready.webp"),
+      alt: "A living room cleared for a session, with a mat and a chair by the window",
+      position: "50% 70%",
+    }}
+  />
+
+  <section class="section" id="what-happens" aria-labelledby="happens-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="happens-title">What happens</h2>
+        <p>Four parts, in this order, for both the PT evaluation and the wellness screening.</p>
+      </div>
+      <ol class="steps">
+        {
+          evaluationSteps.map((s) => (
+            <li>
+              <span class="label">{s.n}</span>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="leave-with" aria-labelledby="leave-title">
+    <div class="wrap cols">
+      <div>
+        <h2 id="leave-title">What you leave with</h2>
+        <p class="note">The plan is yours. Nothing here is contingent on booking a package afterward.</p>
+      </div>
+      <ul class="lines">
+        <li>A written plan, with the progression spelled out</li>
+        <li>A home program you can do between sessions</li>
+        <li>An explanation you can repeat to your family</li>
+        <li>A recommendation to see your physician, if that is what you need</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="who-it-suits" aria-labelledby="suits-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="suits-title">Who it suits</h2>
+      </div>
+      <div class="cols three">
+        <div>
+          <h3>A good fit for a PT evaluation if you are</h3>
+          <ul class="lines">
+            <li>Recovering from surgery or an injury</li>
+            <li>Living with Parkinson’s or another condition that affects movement</li>
+            <li>Worried about balance, falls or losing independence</li>
+            <li>Referred by your physician for physical therapy</li>
+          </ul>
+        </div>
+        <div>
+          <h3>A good fit for a wellness screening if you are</h3>
+          <ul class="lines">
+            <li>Finished with formal PT but not back to normal</li>
+            <li>Wanting to lose weight or build healthier habits</li>
+            <li>Training around a history your last trainer did not understand</li>
+            <li>Cleared by a physician and unsure what is safe</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Not the right call if you</h3>
+          <ul class="lines">
+            <li>Need emergency or urgent medical care</li>
+            <li>Are looking for a medical diagnosis or a prescription</li>
+            <li>Want a program emailed over without being assessed</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">
+        Bruce provides physical therapy as a licensed DPT through {practice.legalName}.
+        Wellness screenings, training and coaching are separate services and are not
+        physical therapy. Neither replaces diagnosis or care from your physician.
+      </p>
+    </div>
+  </section>
+
+  <Cta
+    title="Book your first visit."
+    body="Tell Bruce what is going on and he will come to your home or care facility."
+  />
+</Site>
