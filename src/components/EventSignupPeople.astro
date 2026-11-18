@@ -1,7 +1,7 @@
 ---
 /**
- * Event sign-up, version 2 (/event2): for regular people, not for facility
- * owners and therapists (that is /event, components/EventSignup.astro). One
+ * Sign-up for potential clients (/signup/clients): for regular people, not for facility
+ * owners and therapists (that is /signup/partners, components/EventSignup.astro). One
  * screen, built for an iPad handed from person to person: name, a phone or an
  * email, what they are curious about (optional, PT and wellness kept apart as
  * everywhere else) and an explicit OK to be contacted. There is no free-text
@@ -127,7 +127,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     note.hidden = home;
     if (test) note.textContent = "Test copy: sign-ups here are saved on the server and marked as tests.";
 
-    // /event2?e=heart-walk tags every sign-up with the event it came from.
+    // /signup/clients?e=heart-walk tags every sign-up with the event it came from.
     const event = (new URLSearchParams(location.search).get("e") || "")
       .toLowerCase()
       .replace(/[^a-z0-9-]/g, "")
