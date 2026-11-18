@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Valencia Health &amp; Wellness · folding tent sign</title>
+<!--
+  The logo sign as a fold-in-half tent card: one letter-size sheet (8.5 x 11 in), folded across
+  the middle so it stands on a table with the logo on both sides. Each half is 8.5 x 5.5 in. The
+  top half is printed upside down so both sides read upright once folded. Small grey ticks at
+  the page edges show where to fold. build.sh turns it into the files the /banner page links to.
+  The logo is the banner's (../event-banner/logo.jpg).
+-->
+<style>
+  @page{size:8.5in 11in;margin:0}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{width:8.5in;height:11in;background:#fff;overflow:hidden}
+  .page{position:relative;width:8.5in;height:11in}
+  .half{position:absolute;left:0;width:8.5in;height:5.5in;display:flex;align-items:center;justify-content:center}
+  .half.top{top:0;transform:rotate(180deg)}
+  .half.bottom{top:5.5in}
+  /* the logo file has a faint square behind the badge: crop it to the badge's own circle */
+  .logo{width:4.3in;height:4.3in;clip-path:circle(47.6% at 50% 50%)}
+  /* fold marks: short ticks at the left and right edges, on the fold line */
+  .tick{position:absolute;top:5.5in;width:.35in;border-top:.01in solid #a1a1aa}
+  .tick.l{left:0}
+  .tick.r{right:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="half top"><img class="logo" src="../event-banner/logo.jpg" alt="Valencia Health &amp; Wellness"></div>
+  <div class="half bottom"><img class="logo" src="../event-banner/logo.jpg" alt=""></div>
+  <div class="tick l"></div>
+  <div class="tick r"></div>
+</div>
+</body>
+</html>
