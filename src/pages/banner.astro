@@ -6,6 +6,8 @@
  * public/banner/ are made by design/event-banner/build.sh from design/event-banner/banner.html,
  * where the words for every version are in one table; change a version there and run the
  * script, then this page picks the new files up. A tab can be linked directly: /banner/#facilities.
+ * Below the banners is the letter-size table sign (design/table-sign/build.sh makes its files);
+ * its QR opens the sign-up page through /qr/signup. Link it directly: /banner/#table-sign.
  */
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
@@ -170,6 +172,54 @@ const audiences = [
     </div>
   </section>
 
+  <section class="section sign" id="table-sign" aria-labelledby="sign-title">
+    <div class="wrap">
+      <div class="signrow">
+        <a
+          class="art signart"
+          href={bannerFile("valencia-table-sign-letter.pdf")}
+          target="_blank"
+          rel="noopener"
+          aria-label="Open the table sign as a PDF"
+        >
+          <img
+            src={bannerFile("valencia-table-sign-letter-preview.png")}
+            alt="The table sign: the logo, “Let’s stay in touch.”, a QR code to scan with a phone, then Bruce’s phone number and vhwpt.com."
+            width="800"
+            height="1035"
+            loading="lazy"
+          />
+        </a>
+        <div class="signtext">
+          <p class="label">For the table</p>
+          <h2 id="sign-title">Table sign</h2>
+          <p class="desc">
+            Letter size (8½″ × 11″), to print at home or any copy shop and stand in a sign holder. Its
+            QR code opens the sign-up page on the person’s own phone, so people can sign up while the
+            iPad is busy.
+          </p>
+          <details class="dlmenu">
+            <summary class="btn btn-primary btn-sm">Download</summary>
+            <ul class="dlopts">
+              <li>
+                <a href={bannerFile("valencia-table-sign-letter.pdf")} download>
+                  <strong>Print PDF</strong>
+                  <span>8½″ × 11″. Print at 100% (“Actual size”), not “Fit to page”.</span>
+                </a>
+              </li>
+              <li>
+                <a href={bannerFile("valencia-table-sign-letter.png")} download>
+                  <strong>Image (PNG)</strong>
+                  <span>The same sign as a picture, for email or other programs.</span>
+                </a>
+              </li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section" aria-labelledby="print-title">
     <div class="wrap narrow">
       <p class="label">How to print it</p>
@@ -232,6 +282,11 @@ const audiences = [
   .dlopts strong { display: block; font-size: 15px; line-height: 1.3; }
   .dlopts span { display: block; margin-top: 4px; font-size: 13px; line-height: 1.4; color: var(--grey); }
 
+  .sign { scroll-margin-top: 96px; }
+  .signrow { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 48px; align-items: center; max-width: 840px; }
+  .signart { margin-bottom: 0; }
+  .signtext h2 { font-size: 30px; line-height: 1.1; letter-spacing: -0.015em; margin: 8px 0 12px; }
+
   .howto { margin: 24px 0 0; padding-left: 24px; font-size: 19px; line-height: 1.45; }
   .howto li + li { margin-top: 16px; }
   .note { margin-top: 32px; font-size: 17px; line-height: 1.45; color: var(--grey); }
@@ -240,6 +295,7 @@ const audiences = [
     .boards { grid-template-columns: minmax(0, 1fr); gap: 64px; }
     .board { max-width: 380px; margin: 0 auto; width: 100%; }
     .panel + .panel { margin-top: 64px; }
+    .signrow { grid-template-columns: minmax(0, 1fr); gap: 32px; max-width: 380px; margin: 0 auto; }
   }
 </style>
 
