@@ -107,6 +107,10 @@ const topics = [
         <input type="checkbox" name="consent" />
         <span>It’s OK for Bruce to contact me by phone, text or email.</span>
       </label>
+      <label class="kconsent">
+        <input type="checkbox" name="news" />
+        <span>Also email me news and event invites from Valencia Health &amp; Wellness. Optional; unsubscribe anytime.</span>
+      </label>
       <p class="askprivacy">Your details go only to Bruce and are not shared.</p>
     </div>
 
@@ -271,6 +275,7 @@ const topics = [
           phone: val("phone"),
           email: val("email"),
           consent: checked("consent"),
+          news: checked("news"),
           event,
           website: val("website"),
         }),
