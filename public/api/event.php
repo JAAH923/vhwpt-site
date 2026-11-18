@@ -71,7 +71,7 @@ const NEWS = 'Also email me news and event invites from Valencia Health & Wellne
 // and its id is kept in private/resend-segments.json.
 const SEGMENTS = [
   'pros'   => 'Event sign-ups · Facilities & therapists',
-  'people' => 'Event sign-ups · Visitors',
+  'people' => 'Event sign-ups · Potential clients',
   'test'   => 'Event sign-ups · Test',
 ];
 
