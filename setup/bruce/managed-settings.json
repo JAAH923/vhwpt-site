@@ -2,13 +2,15 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "disableBypassPermissionsMode": "disable",
-    "deny": [
+    "ask": [
       "Bash(ssh *)",
       "Bash(scp *)",
       "Bash(sftp *)",
       "Bash(rsync *)",
+      "Bash(sudo *)"
+    ],
+    "deny": [
       "Bash(aws *)",
-      "Bash(sudo *)",
       "Bash(rm -rf *)",
       "Bash(rm -fr *)",
       "Bash(gh api *)",

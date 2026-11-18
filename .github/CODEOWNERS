@@ -2,7 +2,8 @@
 # rulesets (setup/github/) require a code owner's approval, so anything listed here waits
 # for him. Copy and practice details (src/data/), page text (src/pages/) and photos are left
 # out on purpose: Bruce can change those and see them on staging without waiting.
-# Pull requests from develop into main need Justin's approval whatever they touch.
+# Only the develop ruleset asks for code owner approval: a change reaches main only from develop
+# (the build check fails any other pull request into main), so it was already approved there.
 
 /.github/               @JAAH923
 /.claude/               @JAAH923
