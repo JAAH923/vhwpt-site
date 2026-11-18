@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Valencia Play</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
+<!--
+  play.vhwpt.com: games and tools for Bruce's events. Source: play/ in the vhwpt-site repo.
+  To add one: put it in play/<name>/index.html, add a card to the list below, then deploy:
+    ssh bruce-lightsail /srv/sites/play/deploy.sh [branch]
+-->
+<style>
+:root {
+  --ink: #18181b;
+  --white: #ffffff;
+  --grey: #52525b;
+  --hair: #d4d4d8;
+  --whisper: #f4f4f5;
+  --crimson: #c41230;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 18px;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+}
+main { max-width: 880px; margin: 0 auto; padding: clamp(40px, 9vh, 96px) 16px 64px; }
+.label {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+  margin: 0 0 10px;
+}
+h1 { margin: 0; font-size: clamp(36px, 6vw, 60px); line-height: 1.02; letter-spacing: -0.02em; }
+.lede { margin: 14px 0 40px; color: var(--grey); max-width: 40ch; font-size: 20px; }
+.list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin: 0; padding: 0; list-style: none; }
+.item a {
+  display: grid;
+  gap: 8px;
+  height: 100%;
+  padding: 24px;
+  border: 1px solid var(--hair);
+  border-radius: 24px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, transform 0.15s;
+}
+.item a:hover { border-color: var(--ink); }
+.item a:active { transform: scale(0.99); }
+.item a:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+.dot { width: 44px; height: 44px; border-radius: 50%; background: var(--crimson); display: grid; place-items: center; color: var(--white); margin-bottom: 6px; }
+.dot svg { width: 24px; height: 24px; }
+.item h2 { margin: 0; font-size: 24px; letter-spacing: -0.01em; }
+.item p { margin: 0; color: var(--grey); font-size: 17px; }
+.item .go { font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--crimson); margin-top: 6px; }
+.soon a { border-style: dashed; pointer-events: none; }
+.soon .dot { background: var(--whisper); color: var(--grey); }
+footer { margin-top: 56px; font-size: 15px; color: var(--grey); }
+footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <p class="label">Valencia Health &amp; Wellness</p>
+  <h1>Play</h1>
+  <p class="lede">Games and tools for events. Open one on the iPad and add it to the Home Screen for full screen.</p>
+
+  <ul class="list">
+    <li class="item">
+      <a href="/wheel/">
+        <span class="dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
+        </span>
+        <h2>Prize wheel</h2>
+        <p>Spin to win a prize or a wellness tip. Tap the prize counts to set them.</p>
+        <span class="go">Open →</span>
+      </a>
+    </li>
+    <li class="item soon">
+      <a href="#" tabindex="-1" aria-disabled="true">
+        <span class="dot" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <h2>More coming</h2>
+        <p>New games and tools show up here.</p>
+      </a>
+    </li>
+  </ul>
+
+  <footer><a href="https://www.vhwpt.com/">vhwpt.com</a></footer>
+</main>
+</body>
+</html>
