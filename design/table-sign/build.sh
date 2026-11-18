@@ -24,3 +24,4 @@ build() { # build <html file> <output name>
 
 build sign.html valencia-table-sign-letter   # logo, "Let's stay in touch." and the sign-up QR
 build logo.html valencia-logo-sign-letter    # just the logo
+build tent.html valencia-logo-tent-letter    # just the logo, twice: fold in half to stand on a table

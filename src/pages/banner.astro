@@ -8,7 +8,8 @@
  * script, then this page picks the new files up. A tab can be linked directly: /banner/#facilities.
  * Below the banners is the letter-size table sign (design/table-sign/build.sh makes its files);
  * its QR opens the sign-up page through /qr/signup. Link it directly: /banner/#table-sign.
- * After it is the logo-only sign (same script, design/table-sign/logo.html): /banner/#logo-sign.
+ * After it is the logo-only sign (same script, design/table-sign/logo.html): /banner/#logo-sign,
+ * and its fold-in-half tent version (design/table-sign/tent.html): /banner/#logo-tent.
  */
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
@@ -259,6 +260,54 @@ const audiences = [
                 <a href={bannerFile("valencia-logo-sign-letter.png")} download>
                   <strong>Image (PNG)</strong>
                   <span>The same sign as a picture, for email or other programs.</span>
+                </a>
+              </li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sign" id="logo-tent" aria-labelledby="logo-tent-title">
+    <div class="wrap">
+      <div class="signrow">
+        <a
+          class="art signart"
+          href={bannerFile("valencia-logo-tent-letter.pdf")}
+          target="_blank"
+          rel="noopener"
+          aria-label="Open the folding logo sign as a PDF"
+        >
+          <img
+            src={bannerFile("valencia-logo-tent-letter-preview.png")}
+            alt="The folding logo sign: the logo twice on one page, the top one upside down, with small marks where it folds."
+            width="800"
+            height="1035"
+            loading="lazy"
+          />
+        </a>
+        <div class="signtext">
+          <p class="label">For the table</p>
+          <h2 id="logo-tent-title">Folding logo sign</h2>
+          <p class="desc">
+            The logo sign as a tent card: print one letter-size sheet, fold it in half at the small
+            grey marks, and stand it on the table. The logo shows on both sides, so people see it from
+            either direction. Card stock stands best.
+          </p>
+          <details class="dlmenu">
+            <summary class="btn btn-primary btn-sm">Download</summary>
+            <ul class="dlopts">
+              <li>
+                <a href={bannerFile("valencia-logo-tent-letter.pdf")} download>
+                  <strong>Print PDF</strong>
+                  <span>8½″ × 11″, one side. Print at 100% (“Actual size”), then fold across the middle.</span>
+                </a>
+              </li>
+              <li>
+                <a href={bannerFile("valencia-logo-tent-letter.png")} download>
+                  <strong>Image (PNG)</strong>
+                  <span>The same sheet as a picture, for email or other programs.</span>
                 </a>
               </li>
             </ul>
