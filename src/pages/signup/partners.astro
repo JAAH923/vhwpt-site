@@ -1,0 +1,15 @@
+---
+/**
+ * Sign-up for partners: facility owners, therapists and other professionals Bruce meets at an
+ * event, on an iPad handed around. Not in the nav, the sitemap or search. Open it at
+ * /signup/partners, or /signup/partners?e=<short-name> to tag every sign-up with the event it came
+ * from (letters, numbers and hyphens, e.g. ?e=heart-walk). The old address /event redirects here.
+ * The form and its rules are in components/EventSignup.astro; sign-ups go to /api/event.php.
+ */
+import Kiosk from "../../layouts/Kiosk.astro";
+import EventSignup from "../../components/EventSignup.astro";
+---
+
+<Kiosk title="Sign Up | Valencia Health & Wellness">
+  <EventSignup />
+</Kiosk>

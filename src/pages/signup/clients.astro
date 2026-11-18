@@ -1,0 +1,14 @@
+---
+/**
+ * Sign-up for potential clients: patients and families Bruce meets at an event, all on one screen
+ * of an iPad handed around. Unlisted and out of search, like /signup/partners.
+ * /signup/clients?e=<short-name> tags each sign-up with its event. The old address /event2
+ * redirects here. The form is components/EventSignupPeople.astro; sign-ups go to /api/event.php.
+ */
+import Kiosk from "../../layouts/Kiosk.astro";
+import EventSignupPeople from "../../components/EventSignupPeople.astro";
+---
+
+<Kiosk title="Sign Up | Valencia Health & Wellness">
+  <EventSignupPeople />
+</Kiosk>
