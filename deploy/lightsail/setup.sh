@@ -63,6 +63,9 @@ systemctl enable --now php8.3-fpm
 systemctl restart php8.3-fpm
 
 echo "== caddy"
+# sites/vhwpt.caddy serves vhwpt.com with the Cloudflare Origin Certificate, so on a NEW server put
+# vhwpt.crt and vhwpt.key in /etc/caddy/certs first (README, "Moving vhwpt.com here"), or the
+# validate below fails.
 install -d -m 0755 /etc/caddy/sites
 install -m 0644 "$here/Caddyfile" /etc/caddy/Caddyfile
 for f in "$here"/sites/*.caddy; do install -m 0644 "$f" /etc/caddy/sites/; done

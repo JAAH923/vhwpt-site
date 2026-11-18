@@ -14,7 +14,7 @@ scp -r deploy/lightsail bruce-lightsail:lightsail && ssh bruce-lightsail 'sudo b
 | Piece | Where |
 |---|---|
 | Caddy 2 (web server, HTTPS) | `/etc/caddy/Caddyfile` imports `/etc/caddy/sites/*.caddy`, one file per site or app |
-| PHP 8.3-FPM | Runs only what a site file hands it (today: vhwpt's booking form) |
+| PHP 8.3-FPM | Runs only what a site file hands it (today: vhwpt's booking form and event sign-up) |
 | Node 22 + pnpm (corepack) | Builds sites from GitHub on the server |
 | Sites | `/srv/sites/<name>/`: `repo/`, `releases/`, `current` → the live release, `private/` (server-only) |
 | Apps | `/srv/apps/<name>/`, each listening on localhost behind `reverse_proxy` |
@@ -33,9 +33,12 @@ ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh develop  # or any branch
 switches `current` and reloads PHP-FPM (which otherwise keeps running the previous release's PHP
 files). It keeps five releases; its header shows how to roll back. Caddy's rules
 are in [`sites/vhwpt.caddy`](sites/vhwpt.caddy): the old WordPress URLs redirect (same map as
-`public/_redirects`), and only `/api/inquiry.php` and `/api/event.php` run as PHP.
+`public/_redirects`), `/qr` (the event banner's QR code) redirects to the home page with a
+temporary 302 so the printed code can be pointed somewhere else later by changing that one
+line, `/b` is a short link to the unlisted `/banner/` page, and only `/api/inquiry.php` and
+`/api/event.php` run as PHP.
 
-Until the DNS moves, the site is served only at **http://3.226.58.165/**, marked noindex.
+vhwpt.com has been live on this server since 2026-11-12. **http://3.226.58.165/** stays up as a test address, marked noindex.
 
 The booking form reads its settings from `/srv/sites/vhwpt/private/vhwpt-contact.php`
 (owner `www-data`, mode 600). Only Justin puts that file there; it is never in this repo.
@@ -71,6 +74,73 @@ to settle first. People who left only a phone number can't be added. And the tic
 covers Bruce contacting them (about their sign-up, on `/event2`), so a mailing list needs new
 wording; `consent_text` keeps what each person actually ticked.
 
+## Traffic: how people arrive
+
+Caddy keeps a **visit log** for vhwpt.com, and [`traffic-report.py`](traffic-report.py) turns it into
+a summary of how people arrive (a QR code, a search, typing the address, another site) and which page
+they land on. It needs no script on the pages, no cookies and no third-party service.
+
+**What is recorded.** For each page load: the time, the page, the site they came from (the host only,
+never the full address) and the browser name. **Not** recorded: IP addresses, cookies, form contents.
+Images, styles, the API and the banner page are left out. Files are in `/var/log/caddy/vhwpt-visits.log`,
+rotated at 20 MiB, with 90 days kept and older files deleted. The log shows page loads, not people: a
+reload counts twice.
+
+**Install** (once; the log folder already exists and belongs to Caddy):
+
+```
+ssh bruce-lightsail
+cd /srv/sites/vhwpt/repo && git fetch origin
+git show origin/<branch>:deploy/lightsail/sites/vhwpt.caddy | sudo tee /etc/caddy/sites/vhwpt.caddy >/dev/null
+git show origin/<branch>:deploy/lightsail/traffic-report.py | sudo tee /srv/sites/vhwpt/traffic-report.py >/dev/null
+sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy
+```
+
+**Read it** (it needs `sudo`, because the log is readable only by Caddy and root):
+
+```
+ssh bruce-lightsail 'sudo python3 /srv/sites/vhwpt/traffic-report.py --days 7'
+ssh bruce-lightsail 'sudo python3 /srv/sites/vhwpt/traffic-report.py --since 2026-11-20 --until 2026-11-22'
+ssh bruce-lightsail 'sudo python3 /srv/sites/vhwpt/traffic-report.py --days 30 --json'   # for another program
+```
+
+An **entry** is the first page of a visit: a page load whose referring site is empty or not ours.
+Clicks between our own pages are not entries. Each entry is counted one way:
+
+| Arrived by | How it is told |
+|---|---|
+| **qr / tagged** | The address has `?src=<tag>`. Every QR code we make has its own tag, and the tag is shown in the report. The banner's `/qr` is `src=banner`. |
+| **organic** | The referrer is a search engine (Google, Bing, DuckDuckGo, Yahoo, Ecosia, Brave, ...). |
+| **ai** | The referrer is an AI assistant (ChatGPT, Perplexity, Claude, Gemini, Copilot, ...). |
+| **social**, **email** | Facebook, Instagram, X, LinkedIn, YouTube and so on; Gmail and other webmail. |
+| **referral** | Any other site, with its host shown. |
+| **direct** | No referrer and no tag: typed the address, a bookmark, or an app that hides where the visit came from. |
+
+The report also counts **scans**: requests for `/qr` and `/qr/<name>`, which is the QR code itself before
+it redirects. And it shows, for each landing page, how people got there, so a QR code that points at the
+event form (`/event/`) appears there separately from the home page.
+
+**Adding a QR code** (for example one for the event sign-up):
+
+1. Pick a short name, say `heart-walk`, and a tag, `qr-heart-walk`. Keep the tag unique to that code.
+2. In `sites/vhwpt.caddy`, next to the `/qr` lines, add:
+   ```
+   @qr_heart_walk path /qr/heart-walk /qr/heart-walk/
+   redir @qr_heart_walk /event/?e=heart-walk&src=qr-heart-walk 302
+   ```
+   (`e=` also tags the sign-ups with the event; leave it off for a plain landing page.) Install the file
+   and reload Caddy as above.
+3. Make the QR code for `https://www.vhwpt.com/qr/heart-walk`. It stays small, and where it lands can be
+   changed later without reprinting.
+4. In the report, `qr-heart-walk` shows under **qr / tagged**, `/qr/heart-walk` under scans, and `/event/`
+   under entry pages.
+
+Without a Caddy change, any address with `?src=qr-<name>` on the end is counted the same way, but a
+longer address makes a denser QR code.
+
+What it cannot tell you: who a person is, whether two visits are the same person, or what someone
+searched for (search engines do not pass it on).
+
 ## Adding another site or app
 
 1. A static or PHP site goes in `/srv/sites/<name>/`. An app goes in `/srv/apps/<name>/`, run by
@@ -83,10 +153,12 @@ wording; `consent_text` keeps what each person actually ticked.
 
 ## Moving vhwpt.com here (cutover)
 
-What is live today: the old WordPress site, behind Cloudflare (Bruce's DNS), on a cPanel
-host at 108.170.32.242. **That host also runs Bruce's email** (`MX mail.vhwpt.com`, info@vhwpt.com).
+**Done 2026-11-12:** vhwpt.com and www now point here (proxied by Cloudflare, SSL mode Full
+(strict)) and Caddy serves them with the Origin Certificate. The steps below are kept as the
+record and for the next server. The old WordPress site is still on a cPanel host at
+108.170.32.242. **That host also runs Bruce's email** (`MX mail.vhwpt.com`, info@vhwpt.com).
 Moving the website does not move email. Keep the mail records and the old hosting until
-email has a new home.
+email has a new home. To roll back the website, point the A records back at 108.170.32.242.
 
 1. **Lightsail firewall.** In the instance's Networking tab, allow HTTPS (443). HTTP (80) and
    SSH are open by default. Turn on automatic snapshots too.
@@ -95,18 +167,21 @@ email has a new home.
    The form's email also needs Resend's DNS records for the sending domain (T-900).
 3. **Decide what goes live.** `main` is behind `develop`. Merge `develop` into `main`, then
    run `deploy.sh` with no branch.
-4. **Certificate behind Cloudflare.** In Cloudflare, create an Origin Certificate for
-   `vhwpt.com, *.vhwpt.com` and save the cert and key in `/etc/caddy/certs/` (readable only by
-   caddy). Add `tls /etc/caddy/certs/vhwpt.pem /etc/caddy/certs/vhwpt.key` to both blocks
-   below, and set Cloudflare SSL/TLS to **Full (strict)**.
-5. **Caddy.** Uncomment the `www.vhwpt.com` and `vhwpt.com` blocks in `sites/vhwpt.caddy`,
-   install the file, validate, then reload. Check with
+4. **Certificate behind Cloudflare.** Make the key and a CSR on the server, so the key never
+   leaves it, in `/etc/caddy/certs/` (folder `750 root:caddy`, key `640`). In Cloudflare, create an
+   Origin Certificate for `vhwpt.com, *.vhwpt.com` from that CSR ("Use my private key and CSR"),
+   and save it as `/etc/caddy/certs/vhwpt.crt` (`644`). Check that the certificate, key and CSR
+   give the same `openssl ... -pubkey | md5sum`. The two Caddy blocks use
+   `tls /etc/caddy/certs/vhwpt.crt /etc/caddy/certs/vhwpt.key`. Set Cloudflare SSL/TLS to
+   **Full (strict)**.
+5. **Caddy.** The `www.vhwpt.com` and `vhwpt.com` blocks in `sites/vhwpt.caddy` are on. Install
+   the file, validate, then reload. Check with
    `curl -k --resolve www.vhwpt.com:443:3.226.58.165 https://www.vhwpt.com/`.
 6. **DNS.** In Cloudflare, point the `vhwpt.com` and `www` A records at 3.226.58.165 (still
    proxied) and remove their AAAA records. **Leave `mail`, MX, SPF, DMARC and the Google
    verification record alone.** To roll back, point the A records back at 108.170.32.242.
-7. **After.** Check every page and the old URLs. Send a test booking. Add `/questions` and the
-   service pages to `public/sitemap.xml` if they aren't there yet. Watch Search Console.
+7. **After.** Check every page and the old URLs. Send a test booking. Check
+   `public/sitemap.xml` lists every page. Watch Search Console.
    Update `CLAUDE.md` ("Merges to `main` deploy by themselves") to the real deploy step.
    Once the new site has run for a while, take a full cPanel backup (files and database)
    before anyone cancels the old hosting.
