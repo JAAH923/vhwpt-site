@@ -5,6 +5,39 @@
 	root * /srv/sites/vhwpt/current
 	encode zstd gzip
 
+	# The visit log: how people arrive (a QR code, a search, typing the address, another site) and
+	# on which page. It keeps the time, the page, the site they came from and the browser name, and
+	# nothing that identifies a person: no cookies, no scripts, no IP addresses, and only the host of
+	# the referring site. Files, the API and the banner page are left out. 90 days are kept, then the
+	# oldest are deleted. deploy/lightsail/traffic-report.py reads it.
+	@untracked path /_astro/* /assets/* /banner/* /api/* /favicon.ico /apple-touch-icon.png /robots.txt /sitemap.xml /.well-known/*
+	log_skip @untracked
+	log {
+		output file /var/log/caddy/vhwpt-visits.log {
+			mode 640
+			roll_size 20MiB
+			roll_keep 20
+			roll_keep_for 2160h
+		}
+		format filter {
+			wrap json
+			fields {
+				request>remote_ip delete
+				request>remote_port delete
+				request>client_ip delete
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+				request>headers>Cf-Connecting-Ip delete
+				request>headers>Cf-Connecting-Ipv6 delete
+				request>headers>True-Client-Ip delete
+				request>headers>X-Forwarded-For delete
+				request>headers>X-Real-Ip delete
+				request>headers>Forwarded delete
+				request>headers>Referer regexp "^(https?://[^/?#]+).*$" "$1"
+			}
+		}
+	}
+
 	# The QR code on the event banner points at /qr, not at a page, so where it lands can change
 	# after the banner is printed. 302 (temporary), never 301: browsers keep a 301 for good.
 	# To send people somewhere else, change the one address below, then validate and reload Caddy.
@@ -13,6 +46,11 @@
 	# /b is a short link to the banner page for Bruce and whoever prints it.
 	@b path /b /b/
 	redir @b /banner/ 302
+	# More QR codes (the visit log tags each one, so the report counts them separately): add a pair of
+	# lines like these, then print the QR for https://www.vhwpt.com/qr/<name>. Keep the src= tag
+	# unique to that code. See deploy/lightsail/README.md ("Traffic").
+	#   @qr_event path /qr/event /qr/event/
+	#   redir @qr_event /event/?src=qr-event 302
 
 	# The old WordPress URLs (same map as public/_redirects).
 	@contact path /contact /contact/
