@@ -159,7 +159,7 @@ const topics = [
     note.hidden = home;
     if (test) note.textContent = "Test copy: sign-ups here are saved on the server and marked as tests.";
 
-    // /event?e=heart-walk tags every sign-up with the event it came from.
+    // /signup/partners?e=heart-walk tags every sign-up with the event it came from.
     const event = (new URLSearchParams(location.search).get("e") || "")
       .toLowerCase()
       .replace(/[^a-z0-9-]/g, "")
