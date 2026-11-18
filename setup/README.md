@@ -6,14 +6,15 @@ it slips:
 
 | Layer | What it stops | Can Bruce's Claude change it? |
 |---|---|---|
-| GitHub rulesets (`setup/github/`) | Pushes to `main` or `develop`, force-pushes, merges with a failing build, changes to sensitive files without Justin, anything reaching `main` without Justin | No. His token has no admin rights |
+| GitHub rulesets (`setup/github/`) | Pushes to `main` or `develop`, force-pushes, merges with a failing build, changes to sensitive files without Justin, anything reaching `main` except from `develop` | No. His token has no admin rights |
 | His GitHub token | Repo settings, workflows, secrets, any other repo | No |
-| Managed settings on his Mac (`setup/bruce/`) | Server and AWS commands, edits to `.github/`, `.claude/`, `CLAUDE.md`, `setup/`, `deploy/`, bypass mode | No. Changing them needs his Mac password |
+| Managed settings on his Mac (`setup/bruce/`) | AWS commands, edits to `.github/`, `.claude/`, `CLAUDE.md`, `setup/`, `deploy/`, bypass mode. Server commands (`ssh`, `scp`, `sudo`…) always ask him first | No. Changing them needs his Mac password |
 | `CLAUDE.md` and `.claude/` in the repo | Catches mistakes early and explains them in plain words | Only through a pull request Justin approves (CODEOWNERS) |
 
-The server is not on this list on purpose: nothing on Bruce's Mac can reach it. Merges to
-`main` deploy through the pipeline (task-core T-928). Until that exists, Justin deploys by hand
-(T-689).
+Bruce can release: he merges `develop` into `main` (step 2) and runs the deploy on his own
+server (`ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh`), with his own SSH key (step 3.4).
+It's his server, so his key gets the same access as Justin's; his Claude asks him before every
+server command. Justin keeps a daily copy of the live site so any day can be put back.
 
 The org name `vhwpt` below is an example. Swap in the real one everywhere.
 
@@ -65,11 +66,12 @@ What they do:
 - **develop (staging):** a pull request and a passing `build` check are required. A change to
   any path in `.github/CODEOWNERS` also needs Justin's approval. Everything else (copy, Q&A
   answers, photos) Bruce can merge himself. No force-push and no deletion.
-- **main (production):** a pull request, a passing build and Justin's approval on every
-  change. No force-push and no deletion.
+- **main (production):** a pull request and a passing build. The build check fails any pull
+  request into `main` that doesn't come from `develop`, so everything going live already
+  passed Justin's review on its way to staging. Bruce or Justin can merge. No force-push and
+  no deletion.
 
-Justin's own pull requests that touch code-owned paths, and every release from `develop` into
-`main`, merge through his bypass: `gh pr merge <n> --merge --admin`, or tick "Merge without
+Justin's own pull requests that touch code-owned paths merge through his bypass: `gh pr merge <n> --merge --admin`, or tick "Merge without
 waiting for requirements" in GitHub.
 
 **Check the rules before Bruce starts:**
@@ -77,6 +79,7 @@ waiting for requirements" in GitHub.
    passes.
 2. One that changes `src/styles/site.css` waits for Justin's review.
 3. `git push origin develop` from Bruce's login is rejected.
+4. A pull request into `main` from any branch but `develop` fails the `build` check.
 
 ## 3. Bruce's Mac (on a call, about 30 minutes)
 
@@ -107,15 +110,31 @@ waiting for requirements" in GitHub.
    git clone https://github.com/vhwpt/vhwpt-site.git && cd vhwpt-site
    pnpm install
    ```
-4. **Lock his Claude down.** This needs his Mac password once. It applies to every Claude Code
+4. **His key to the server.** It's his server, so he adds his own key, with no one else
+   handling it. In Terminal on his Mac:
+   ```sh
+   ssh-keygen -t ed25519 -C "bruce@vhwpt" -f ~/.ssh/id_ed25519   # Enter twice (or set a passphrase)
+   cat >> ~/.ssh/config <<'CFG'
+   Host bruce-lightsail
+     HostName 3.226.58.165
+     User ubuntu
+     IdentityFile ~/.ssh/id_ed25519
+   CFG
+   pbcopy < ~/.ssh/id_ed25519.pub    # copies the public half; it's safe to share
+   ```
+   Then in the Lightsail console, open the server (VHAW) > **Connect using SSH**, and in that
+   browser terminal type `cat >> ~/.ssh/authorized_keys`, paste, press Enter, then Control-D.
+   Back in Terminal, `ssh bruce-lightsail whoami` should print `ubuntu`. If it times out, his
+   network blocks port 22; Tailscale fixes that (T-960).
+5. **Lock his Claude down.** This needs his Mac password once. It applies to every Claude Code
    session on his Mac, and nothing Claude runs can change it:
    ```sh
    sudo mkdir -p "/Library/Application Support/ClaudeCode"
    sudo cp setup/bruce/managed-settings.json "/Library/Application Support/ClaudeCode/managed-settings.json"
    ```
-5. **Check it.** In the repo, run `claude`, then type `/permissions`: the deny list should
-   show. Ask it to "push this straight to main": the hook blocks it and explains why. Ask it
-   to "ssh into the server": it's denied.
+6. **Check it.** In the repo, run `claude`, then type `/permissions`: the ask and deny lists
+   should show. Ask it to "push this straight to main": the hook blocks it and explains why.
+   Ask it to "check the server is up with ssh": it asks him first.
 
 ## 4. First change together
 
@@ -126,9 +145,10 @@ special prompt. Good first asks:
 - "Show me the staging link for the About page."
 
 Follow one all the way: Claude makes a branch, builds, opens a pull request, the check passes,
-Bruce says it looks right, Claude merges into `develop`, and Bruce checks staging. Then try
-one that touches styling, to show it waiting for Justin. Going live is Justin's release from
-`develop` into `main`.
+Bruce says it looks right, Claude merges into `develop`, and Bruce checks staging. Then he
+says "put it live": Claude opens the pull request from `develop` into `main`, merges it once
+the check passes, runs the deploy and gives him the live link. Then try one that touches
+styling, to show it waiting for Justin.
 
 ## Files
 
@@ -140,4 +160,4 @@ one that touches styling, to show it waiting for Justin. Going live is Justin's 
 | `.github/CODEOWNERS` | Paths that need Justin's approval |
 | `.github/workflows/ci.yml` | The required `build` check: site builds, no keys or server files committed |
 | `setup/github/ruleset-*.json` | The two branch rulesets, applied in step 2 |
-| `setup/bruce/managed-settings.json` | Bruce's machine-wide Claude Code limits, installed in step 3.4 |
+| `setup/bruce/managed-settings.json` | Bruce's machine-wide Claude Code limits, installed in step 3.5 |

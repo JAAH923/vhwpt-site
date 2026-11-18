@@ -2,14 +2,14 @@
 
 This is the website for Valencia Health & Wellness. Bruce Valencia (DPT) owns the practice and
 the site. Justin Hunter (GitHub `JAAH923`) built it, maintains it and reviews changes before
-they go live. Run `git config user.name`: if it isn't Justin's, you are working with Bruce.
+they reach staging. Run `git config user.name`: if it isn't Justin's, you are working with Bruce.
 
 ## How a change goes live
 
 | Branch | Where it shows | Who merges |
 |---|---|---|
 | `develop` | Staging, https://jaah923.github.io/vhwpt-site/ (hidden from Google) | Bruce or Justin, once the build check passes |
-| `main` | www.vhwpt.com, once Justin runs the deploy (step 5) | Justin only |
+| `main` | www.vhwpt.com, once the deploy runs (step 5) | Bruce or Justin, only from `develop`, once the build check passes |
 
 1. Start every change on a new branch from the latest `develop`:
    `git switch develop && git pull && git switch -c change/<short-name>`.
@@ -21,11 +21,19 @@ they go live. Run `git config user.name`: if it isn't Justin's, you are working 
    merge into `develop` with `gh pr merge <number> --merge`. Staging updates about two minutes
    later. Give them the link to the
    page that changed (the staging address plus the page path, e.g. `/vhwpt-site/about/`).
-5. Going live is Justin's step: he opens and approves the pull request from `develop` into
-   `main`. Merging into `main` doesn't change the live site by itself. It goes live when the
-   deploy runs on Bruce's server: `ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh`. Only run
-   that when Justin asks in the conversation. If you're working with Bruce, never open, approve
-   or merge anything into `main`, and never run the deploy.
+5. **Going live**, only when the person you're working with asks for it:
+   - Open a pull request from `develop` into `main`
+     (`gh pr create --base main --head develop`) that lists, in plain words, every change it
+     takes live (`git log --oneline --first-parent origin/main..origin/develop`). Never open
+     one into `main` from any other branch; the build check fails it.
+   - When the check passes, merge it with `gh pr merge <number> --merge`.
+   - Merging doesn't change the live site by itself. Run the deploy on Bruce's server:
+     `ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh`. It builds `main`, and only switches the
+     live site once the key pages exist. Then open the changed page on www.vhwpt.com and give
+     them the link.
+   - If the live site looks wrong after a deploy, say so straight away. The server keeps the
+     last five versions; how to switch back is at the top of
+     `deploy/lightsail/deploy-vhwpt.sh`. Ask before switching.
 
 Never commit on `main` or `develop`, push to them, force-push, or rewrite history that's
 already pushed. GitHub blocks these. The hook in `.claude/hooks/git-guard.mjs` stops them
@@ -65,8 +73,10 @@ review, and tell Bruce it's waiting on Justin:
   recreate it.
 - Install, remove or upgrade packages unless Justin asked.
 - Delete files you didn't create in this change.
-- Change GitHub settings, or connect to the web server unless Justin asks (the deploy in
-  step 5 is the usual case). Server work is Justin's.
+- Change GitHub settings.
+- On the server, do anything besides the deploy in step 5 without asking first. Never print,
+  copy or download what's in `/srv/sites/vhwpt/private/`: it holds the email keys and the
+  names and phone numbers of everyone who signed up.
 
 ## Working with Bruce
 
@@ -74,6 +84,8 @@ Bruce is a physical therapist, not a developer. Use plain words and skip git jar
 back what he wants before you change anything. When you're done, tell him in a sentence or two
 what changed and give him the staging link to check. If part of a request is on the "needs
 Justin" list, do the safe part, open the pull request, and tell him Justin will review it.
+Bruce can take the site live himself (step 5) once a change is on staging and he's happy
+with it.
 
 ## Commands
 
