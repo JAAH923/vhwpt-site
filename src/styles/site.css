@@ -239,7 +239,7 @@ html.asking { overflow: hidden; }
 @keyframes stepin { from { opacity: 0; transform: translateX(16px); } }
 @keyframes stepback { from { opacity: 0; transform: translateX(-16px); } }
 
-/* ---------- Event sign-up (/event): the booking pop-out's format, held open on an iPad handed around ---------- */
+/* ---------- Partner sign-up (/signup/partners): the booking pop-out's format, held open on an iPad handed around ---------- */
 .kiosk { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 16px; padding: 32px 24px; text-align: center; }
 .kiosk img { width: 96px; height: 96px; }
 .ask label, .ask button { touch-action: manipulation; }
@@ -258,7 +258,7 @@ html.asking { overflow: hidden; }
   .askform.big { width: min(760px, 100%); padding: 28px 40px 36px; }
 }
 
-/* ---------- /event2: one screen for regular people, on an iPad handed around ---------- */
+/* ---------- /signup/clients: one screen for regular people, on an iPad handed around ---------- */
 .kwrap { min-height: 100dvh; display: grid; align-content: center; justify-items: center; gap: 16px; padding: 32px 24px calc(32px + env(safe-area-inset-bottom)); -webkit-tap-highlight-color: transparent; }
 .kwrap [hidden] { display: none !important; }
 .kwrap label, .kwrap button { touch-action: manipulation; }
