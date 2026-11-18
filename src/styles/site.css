@@ -232,12 +232,27 @@ html.asking { overflow: hidden; }
 .askkey { margin-left: auto; }
 /* Not ready yet: grey, so crimson only ever means "this moves you forward". */
 .asknav .btn:disabled { background: var(--whisper); color: var(--grey); cursor: default; }
-.askdone .btn { margin-top: 32px; }
 .askerr { margin-top: 16px; font-size: 15px; font-weight: 700; }
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 @keyframes askin { from { opacity: 0; transform: translateY(12px); } }
 @keyframes stepin { from { opacity: 0; transform: translateX(16px); } }
 @keyframes stepback { from { opacity: 0; transform: translateX(-16px); } }
+
+/* ---------- The thank-you every form shows once it has sent (components/Thanks.astro) ---------- */
+.thanks { width: min(480px, calc(100% - 32px)); max-width: none; max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0; border-radius: 16px; background: var(--white); color: var(--ink); overflow: hidden; }
+.thanks[open] { animation: askin 0.35s ease both; }
+.thanks::backdrop { background: rgba(24, 24, 27, 0.5); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
+.thanks [hidden] { display: none !important; }
+.thankscard { position: relative; padding: 36px 32px 32px; text-align: center; }
+.thanksmark { display: block; margin: 0 auto 20px; color: var(--crimson); }
+.thanks .askhelp { margin: 12px auto 0; font-size: 18px; }
+.thanks .kpreview { margin: 16px 0 0; }
+.thanksnav { display: grid; gap: 10px; margin-top: 28px; }
+.thanksnav .btn { width: 100%; justify-content: center; padding: 16px 24px; font-size: 18px; }
+.thanksbar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--whisper); }
+.thanksbar i { display: block; height: 100%; width: 100%; background: var(--hair); }
+.thanks label, .thanks button, .thanks a { touch-action: manipulation; }
+@media (prefers-reduced-motion: reduce) { .thanks[open] { animation: none; } }
 
 /* ---------- Partner sign-up (/signup/partners): the booking pop-out's format, held open on an iPad handed around ---------- */
 .kiosk { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 16px; padding: 32px 24px; text-align: center; }
@@ -263,11 +278,11 @@ html.asking { overflow: hidden; }
 .kwrap [hidden] { display: none !important; }
 .kwrap label, .kwrap button { touch-action: manipulation; }
 .kwrap .kpreview { width: min(760px, 100%); margin-top: 0; padding: 12px 16px; }
-.kform, .kdone { width: min(760px, 100%); }
+.kform { width: min(760px, 100%); }
 .kbrand { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
 .kbrand img { width: 56px; height: 56px; }
-.kform h1, .kdone h1 { font-size: clamp(34px, 5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; }
-.kform .askhelp, .kdone .askhelp { font-size: 19px; }
+.kform h1 { font-size: clamp(34px, 5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; }
+.kform .askhelp { font-size: 19px; }
 .kform .fields { margin-top: 28px; gap: 14px; }
 .kform .field { padding: 14px 20px; }
 .kform .field span { font-size: 16px; }
