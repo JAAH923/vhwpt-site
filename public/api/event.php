@@ -17,8 +17,11 @@
 // Sign-ups from any address other than vhwpt.com (today the test address on Bruce's server) are
 // marked test = 1 and get "[TEST]" on the email subject, so they never mix with real ones.
 //
-// The database is where the sign-ups live. The resend_* columns stay empty until the sign-ups are
-// pushed to Resend as contacts (a later step; see deploy/lightsail/README.md).
+// The database is where the sign-ups live. A second, optional tick box asks to be emailed news and
+// event invites. Only those sign-ups, and only with an email, become Resend contacts: after the
+// visitor has their answer, each one is added to a segment per form (SEGMENTS below; test
+// sign-ups go to their own), and the contact id or the error lands in the resend_* columns. The
+// first tick box only covers Bruce contacting them, so it never adds anyone to a list.
 //
 // Two forms post here. /event (src/components/EventSignup.astro) is for facility owners and other
 // therapists: it sends a role and topics. /event2 (src/components/EventSignupPeople.astro) is for
@@ -63,6 +66,14 @@ const CONSENT = [
   'pros'   => 'It’s OK for Bruce to contact me by phone, text or email.',
   'people' => 'It’s OK for Bruce to contact me by phone, text or email about my sign-up.',
 ];
+const NEWS = 'Also email me news and event invites from Valencia Health & Wellness. Optional; unsubscribe anytime.';
+// Resend segments for those who ticked NEWS, by name. Each is created the first time it is needed,
+// and its id is kept in private/resend-segments.json.
+const SEGMENTS = [
+  'pros'   => 'Event sign-ups · Facilities & therapists',
+  'people' => 'Event sign-ups · Potential clients',
+  'test'   => 'Event sign-ups · Test',
+];
 
 // One row per sign-up. Times are UTC, ISO 8601.
 const DB_SCHEMA = 'CREATE TABLE IF NOT EXISTS signups (
@@ -80,6 +91,8 @@ const DB_SCHEMA = 'CREATE TABLE IF NOT EXISTS signups (
   email             TEXT,
   consent_text      TEXT    NOT NULL,            -- the wording they ticked
   emailed           INTEGER NOT NULL DEFAULT 0,  -- 1 when the email to Bruce went out
+  news_optin        INTEGER NOT NULL DEFAULT 0,  -- 1 when they ticked NEWS and gave an email
+  news_text         TEXT,                        -- the NEWS wording they ticked
   resend_contact_id TEXT,                        -- set when pushed to Resend
   resend_pushed_at  TEXT,
   resend_error      TEXT
@@ -117,6 +130,10 @@ function db_open(string $dir): ?PDO {
     $db = new PDO('sqlite:' . $file, null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
     $db->exec('PRAGMA busy_timeout = 5000');
     $db->exec(DB_SCHEMA);
+    // Databases made before the news tick box get its columns.
+    $cols = array_column($db->query('PRAGMA table_info(signups)')->fetchAll(PDO::FETCH_ASSOC), 'name');
+    if (!in_array('news_optin', $cols, true)) $db->exec('ALTER TABLE signups ADD COLUMN news_optin INTEGER NOT NULL DEFAULT 0');
+    if (!in_array('news_text', $cols, true))  $db->exec('ALTER TABLE signups ADD COLUMN news_text TEXT');
     if ($new) @chmod($file, 0600);
     return $db;
   } catch (Throwable $e) {
@@ -154,6 +171,7 @@ $email  = filter_var(trim((string) ($in['email'] ?? '')), FILTER_VALIDATE_EMAIL)
 $phone  = oneLine(clean($in['phone'] ?? '', 30));
 $phoneOk = strlen(preg_replace('/\D/', '', $phone) ?? '') >= 10;
 $consent = ($in['consent'] ?? false) === true;
+$news   = ($in['news'] ?? false) === true && $email !== '';   // a list needs an email
 $event  = substr(preg_replace('/[^a-z0-9-]/', '', strtolower(is_string($in['event'] ?? null) ? $in['event'] : '')) ?? '', 0, 40);
 $chosen = [];
 foreach ((array) ($in[$people ? 'interests' : 'topics'] ?? []) as $t) {
@@ -179,6 +197,7 @@ $rows = $people ? [
   'Curious about' => $chosen ? implode(', ', $chosen) : '(not answered)',
   'Event'         => $event !== '' ? $event : '(not tagged)',
   'OK to contact' => 'Yes, by phone, text or email',
+  'Email list'    => $news ? 'Yes, news and event invites' : 'No',
 ] : [
   'Name'          => $name,
   'Facility or practice' => $org !== '' ? $org : '(not given)',
@@ -188,6 +207,7 @@ $rows = $people ? [
   'Email'         => $email !== '' ? $email : '(not given)',
   'Event'         => $event !== '' ? $event : '(not tagged)',
   'OK to contact' => 'Yes, by phone, text or email',
+  'Email list'    => $news ? 'Yes, news and event invites' : 'No',
 ];
 if ($test) $rows['Test'] = 'Filled in on ' . ($host !== '' ? $host : 'an unknown address') . ', not vhwpt.com';
 
@@ -197,12 +217,13 @@ $db = db_open($private);
 $dbId = null;
 if ($db) {
   try {
-    $st = $db->prepare('INSERT INTO signups (created_at, form, event, host, test, name, organization, role, topics, phone, email, consent_text)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $st = $db->prepare('INSERT INTO signups (created_at, form, event, host, test, name, organization, role, topics, phone, email, consent_text, news_optin, news_text)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $st->execute([
       gmdate('c'), $people ? 'people' : 'pros', orNull($event), orNull($host), $test ? 1 : 0, $name,
       $people ? null : orNull($org), $people ? null : $role,
       json_encode($chosen, JSON_UNESCAPED_UNICODE), orNull($phone), orNull($email), CONSENT[$people ? 'people' : 'pros'],
+      $news ? 1 : 0, $news ? NEWS : null,
     ]);
     $dbId = (int) $db->lastInsertId();
   } catch (Throwable $e) {
@@ -255,4 +276,73 @@ if ($dbId === null && !$filed && !$sent) {
           . ' file=' . (error_get_last()['message'] ?? 'no error recorded'));
   finish(false, 'That didn’t go through. Please ask Bruce to take your details, or ' . CONTACT . '.', 502);
 }
-finish(true, '', 200);
+if (!$news || !is_array($cfg) || empty($cfg['resend_key'])) finish(true, '', 200);
+
+// The visitor gets their answer now; the contact is added after, so a slow Resend never holds up
+// the next person at the booth.
+http_response_code(200);
+echo json_encode(['ok' => true, 'error' => '']);
+if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
+
+[$contactId, $pushErr] = resend_add_contact($cfg['resend_key'], $private, $test ? 'test' : ($people ? 'people' : 'pros'), $email, $name);
+if ($pushErr !== null) error_log('vhwpt event signups resend: ' . $pushErr);
+if ($db && $dbId !== null) {
+  try {
+    $db->prepare('UPDATE signups SET resend_contact_id = ?, resend_pushed_at = ?, resend_error = ? WHERE id = ?')
+       ->execute([$contactId, $contactId !== null ? gmdate('c') : null, $pushErr, $dbId]);
+  } catch (Throwable $e) { error_log('vhwpt event signups update: ' . $e->getMessage()); }
+}
+exit;
+
+// One Resend API call: [HTTP status, decoded body].
+function resend(string $key, string $method, string $path, ?array $body = null): array {
+  $ch = curl_init('https://api.resend.com' . $path);
+  $opts = [CURLOPT_CUSTOMREQUEST => $method, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10,
+           CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $key, 'Content-Type: application/json']];
+  if ($body !== null) $opts[CURLOPT_POSTFIELDS] = json_encode($body, JSON_UNESCAPED_UNICODE);
+  curl_setopt_array($ch, $opts);
+  $raw = curl_exec($ch);
+  $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  $j = is_string($raw) ? json_decode($raw, true) : null;
+  return [$code, is_array($j) ? $j : []];
+}
+function ok(int $code): bool { return $code >= 200 && $code < 300; }
+
+// The segment's id, found by name or created, and remembered in private/resend-segments.json.
+function resend_segment(string $key, string $private, string $which): ?string {
+  $cache = $private . '/resend-segments.json';
+  $ids = is_file($cache) ? (array) json_decode((string) file_get_contents($cache), true) : [];
+  if (!empty($ids[$which])) return (string) $ids[$which];
+  $name = SEGMENTS[$which];
+  [$c, $j] = resend($key, 'GET', '/segments');
+  $id = null;
+  if (ok($c)) foreach ((array) ($j['data'] ?? []) as $sg) if (($sg['name'] ?? '') === $name) { $id = (string) $sg['id']; break; }
+  if ($id === null) {
+    [$c, $j] = resend($key, 'POST', '/segments', ['name' => $name]);
+    if (!ok($c) || empty($j['id'])) return null;
+    $id = (string) $j['id'];
+  }
+  $ids[$which] = $id;
+  if (@file_put_contents($cache, json_encode($ids, JSON_UNESCAPED_UNICODE), LOCK_EX) !== false) @chmod($cache, 0600);
+  return $id;
+}
+
+// Adds the person as a Resend contact in the segment: [contact id, null] or [null, error].
+// Someone already in Resend (an earlier sign-up) is added to the segment as they are; their
+// unsubscribe choice is left alone.
+function resend_add_contact(string $key, string $private, string $which, string $email, string $name): array {
+  $seg = resend_segment($key, $private, $which);
+  if ($seg === null) return [null, 'could not find or create the segment "' . SEGMENTS[$which] . '"'];
+  $parts = preg_split('/\s+/u', $name, 2) ?: [$name];
+  [$c, $j] = resend($key, 'POST', '/contacts', [
+    'email' => $email, 'first_name' => $parts[0], 'last_name' => $parts[1] ?? '',
+    'unsubscribed' => false, 'segments' => [['id' => $seg]],
+  ]);
+  if (ok($c) && !empty($j['id'])) return [(string) $j['id'], null];
+  $createErr = 'create ' . $c . ': ' . (string) ($j['message'] ?? 'no message');
+  [$c, $j] = resend($key, 'GET', '/contacts/' . rawurlencode($email));
+  if (!ok($c) || empty($j['id'])) return [null, $createErr];
+  $id = (string) $j['id'];
+  [$c, $j] = resend($key, 'POST', '/contacts/' . rawurlencode($id) . '/segments/' . rawurlencode($seg));
+  return ok($c) ? [$id, null] : [null, 'add to segment ' . $c . ': ' . (string) ($j['message'] ?? 'no message')];
+}
