@@ -8,6 +8,7 @@
  * script, then this page picks the new files up. A tab can be linked directly: /banner/#facilities.
  * Below the banners is the letter-size table sign (design/table-sign/build.sh makes its files);
  * its QR opens the sign-up page through /qr/signup. Link it directly: /banner/#table-sign.
+ * After it is the logo-only sign (same script, design/table-sign/logo.html): /banner/#logo-sign.
  */
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
@@ -209,6 +210,53 @@ const audiences = [
               </li>
               <li>
                 <a href={bannerFile("valencia-table-sign-letter.png")} download>
+                  <strong>Image (PNG)</strong>
+                  <span>The same sign as a picture, for email or other programs.</span>
+                </a>
+              </li>
+            </ul>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section sign" id="logo-sign" aria-labelledby="logo-sign-title">
+    <div class="wrap">
+      <div class="signrow">
+        <a
+          class="art signart"
+          href={bannerFile("valencia-logo-sign-letter.pdf")}
+          target="_blank"
+          rel="noopener"
+          aria-label="Open the logo sign as a PDF"
+        >
+          <img
+            src={bannerFile("valencia-logo-sign-letter-preview.png")}
+            alt="The logo sign: just the Valencia Health & Wellness logo, large and centred on a white page."
+            width="800"
+            height="1035"
+            loading="lazy"
+          />
+        </a>
+        <div class="signtext">
+          <p class="label">For the table</p>
+          <h2 id="logo-sign-title">Logo sign</h2>
+          <p class="desc">
+            The simplest sign: just the logo, large on a white page. Letter size (8½″ × 11″), for a
+            sign holder anywhere people should see the name.
+          </p>
+          <details class="dlmenu">
+            <summary class="btn btn-primary btn-sm">Download</summary>
+            <ul class="dlopts">
+              <li>
+                <a href={bannerFile("valencia-logo-sign-letter.pdf")} download>
+                  <strong>Print PDF</strong>
+                  <span>8½″ × 11″. Print at 100% (“Actual size”), not “Fit to page”.</span>
+                </a>
+              </li>
+              <li>
+                <a href={bannerFile("valencia-logo-sign-letter.png")} download>
                   <strong>Image (PNG)</strong>
                   <span>The same sign as a picture, for email or other programs.</span>
                 </a>

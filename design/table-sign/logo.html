@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Valencia Health &amp; Wellness · logo sign</title>
+<!--
+  The simplest table sign: just the logo, large and centred on a white letter-size page
+  (8.5 x 11 in), for a sign holder at events. build.sh turns it into the files the /banner page
+  links to. The logo is the banner's (../event-banner/logo.jpg, 1600 px square, so it stays sharp
+  at 6.5 in when printed).
+-->
+<style>
+  @page{size:8.5in 11in;margin:0}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  html,body{width:8.5in;height:11in;background:#fff;overflow:hidden}
+  .page{width:8.5in;height:11in;display:flex;align-items:center;justify-content:center}
+  /* the logo file has a faint square behind the badge: crop it to the badge's own circle */
+  .logo{width:6.5in;height:6.5in;clip-path:circle(47.6% at 50% 50%)}
+</style>
+</head>
+<body>
+<div class="page">
+  <img class="logo" src="../event-banner/logo.jpg" alt="Valencia Health &amp; Wellness">
+</div>
+</body>
+</html>
