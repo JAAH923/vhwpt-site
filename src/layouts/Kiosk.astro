@@ -1,0 +1,48 @@
+---
+/**
+ * A stripped page for a screen that gets handed around: no nav, no footer, no
+ * booking pop-out, so nobody wanders off the form. Always out of search. The
+ * Apple tags let the page be added to an iPad's Home Screen and open full
+ * screen, with no Safari bars.
+ */
+import "../styles/site.css";
+
+export interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Sign-up" />
+    <link
+      rel="preload"
+      href={withBase("/assets/fonts/inter-latin-700-normal.woff2")}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href={withBase("/assets/fonts/fonts.css")} />
+    <link rel="icon" type="image/png" href={withBase("/assets/brand/valencia-health-wellness-icon.png")} />
+    <link rel="apple-touch-icon" href={withBase("/assets/brand/valencia-health-wellness-icon.png")} />
+    <title>{title}</title>
+  </head>
+
+  <body>
+    <main id="content">
+      <slot />
+    </main>
+  </body>
+</html>

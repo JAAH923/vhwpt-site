@@ -239,6 +239,57 @@ html.asking { overflow: hidden; }
 @keyframes stepin { from { opacity: 0; transform: translateX(16px); } }
 @keyframes stepback { from { opacity: 0; transform: translateX(-16px); } }
 
+/* ---------- Partner sign-up (/signup/partners): the booking pop-out's format, held open on an iPad handed around ---------- */
+.kiosk { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 16px; padding: 32px 24px; text-align: center; }
+.kiosk img { width: 96px; height: 96px; }
+.ask label, .ask button { touch-action: manipulation; }
+.askform.big .askq { font-size: clamp(30px, 3.6vw, 40px); }
+.askform.big .askhelp { font-size: 19px; }
+.askform.big .chip span { padding: 14px 22px; font-size: 19px; }
+.askform.big .field { padding: 10px 18px; }
+.askform.big .field span { font-size: 16px; }
+.askform.big .field input { padding-top: 4px; font-size: 22px; }
+.askform.big .asknav .btn { padding: 18px 32px; font-size: 20px; }
+.kpreview { margin-top: 16px; padding: 10px 14px; border-radius: 12px; background: var(--whisper); font-size: 15px; font-weight: 700; }
+.kconsent { display: flex; align-items: flex-start; gap: 14px; margin-top: 20px; cursor: pointer; }
+.kconsent input { flex: none; width: 28px; height: 28px; margin: 1px 0 0; accent-color: var(--ink); }
+.kconsent span { font-size: 19px; line-height: 1.4; }
+@media (min-width: 761px) {
+  .askform.big { width: min(760px, 100%); padding: 28px 40px 36px; }
+}
+
+/* ---------- /signup/clients: one screen for regular people, on an iPad handed around ---------- */
+.kwrap { min-height: 100dvh; display: grid; align-content: center; justify-items: center; gap: 16px; padding: 32px 24px calc(32px + env(safe-area-inset-bottom)); -webkit-tap-highlight-color: transparent; }
+.kwrap [hidden] { display: none !important; }
+.kwrap label, .kwrap button { touch-action: manipulation; }
+.kwrap .kpreview { width: min(760px, 100%); margin-top: 0; padding: 12px 16px; }
+.kform, .kdone { width: min(760px, 100%); }
+.kbrand { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; }
+.kbrand img { width: 56px; height: 56px; }
+.kform h1, .kdone h1 { font-size: clamp(34px, 5vw, 48px); line-height: 1.05; letter-spacing: -0.02em; }
+.kform .askhelp, .kdone .askhelp { font-size: 19px; }
+.kform .fields { margin-top: 28px; gap: 14px; }
+.kform .field { padding: 14px 20px; }
+.kform .field span { font-size: 16px; }
+.kform .field input { padding-top: 6px; font-size: 24px; }
+.kinterest { margin: 28px 0 0; padding: 0; border: 0; min-width: 0; }
+.kinterest .askq { padding: 0; font-size: clamp(22px, 3vw, 26px); }
+.kgroup { margin-top: 20px; }
+.kgroup .chips { margin-top: 10px; }
+.kform .chip span { padding: 14px 22px; font-size: 19px; }
+.kform .btn { width: 100%; margin-top: 24px; padding: 20px 24px; font-size: 22px; }
+.kform .btn:disabled { background: var(--whisper); color: var(--grey); cursor: default; }
+/* An iPad on its side: details on the left, interests and the button on the right, so it fits without scrolling. */
+@media (min-width: 1000px) {
+  .kwrap { padding-top: 24px; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+  .kform { width: min(1120px, 100%); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 56px; align-items: start; }
+  .kform .kinterest { margin-top: 0; }
+  .kform .kinterest .askhelp { margin-top: 6px; }
+  .kform .kgroup { margin-top: 14px; }
+  .kform .chip span { padding: 12px 20px; }
+  .kform .btn { margin-top: 16px; padding: 16px 24px; }
+}
+
 /* Closing call to action: white, generous, one primary. */
 .cta { padding: 128px 0; border-top: 1px solid var(--hair); }
 .cta h2 { font-size: clamp(37px, 4.4vw, 56px); line-height: 1.05; letter-spacing: -0.022em; max-width: 16ch; }
