@@ -1,5 +1,5 @@
 <?php
-// vhwpt.com: the event sign-up's endpoint (/api/event.php), for the iPad pages /event and /event2.
+// vhwpt.com: the event sign-up's endpoint (/api/event.php), for the iPad pages /signup/partners and /signup/clients.
 // Written beside inquiry.php on purpose, not folded into it: a screen handed around a booth
 // shares one network address and fills the form quickly, which inquiry.php's "5 an hour" limit
 // and "filled too fast" check would silently throw away.
@@ -23,8 +23,8 @@
 // sign-ups go to their own), and the contact id or the error lands in the resend_* columns. The
 // first tick box only covers Bruce contacting them, so it never adds anyone to a list.
 //
-// Two forms post here. /event (src/components/EventSignup.astro) is for facility owners and other
-// therapists: it sends a role and topics. /event2 (src/components/EventSignupPeople.astro) is for
+// Two forms post here. /signup/partners (src/components/EventSignup.astro) is for facility owners and other
+// therapists: it sends a role and topics. /signup/clients (src/components/EventSignupPeople.astro) is for
 // regular people: it sends "form": "people" and the services they are curious about. The ids and
 // the consent wording below mirror those components, and the ids mirror the service ids in
 // src/data/site.ts and inquiry.php; change them together. Neither form has a free-text box, so a
@@ -79,14 +79,14 @@ const SEGMENTS = [
 const DB_SCHEMA = 'CREATE TABLE IF NOT EXISTS signups (
   id                INTEGER PRIMARY KEY AUTOINCREMENT,
   created_at        TEXT    NOT NULL,
-  form              TEXT    NOT NULL,            -- "pros" (/event) or "people" (/event2)
+  form              TEXT    NOT NULL,            -- "pros" (/signup/partners) or "people" (/signup/clients)
   event             TEXT,                        -- the ?e= tag on the page address
   host              TEXT,                        -- the address it was filled in on
   test              INTEGER NOT NULL DEFAULT 0,  -- 1 when it was not filled in on vhwpt.com
   name              TEXT    NOT NULL,
-  organization      TEXT,                        -- facility or practice (/event only)
-  role              TEXT,                        -- who they are (/event only)
-  topics            TEXT,                        -- JSON list: topics (/event) or services (/event2)
+  organization      TEXT,                        -- facility or practice (/signup/partners only)
+  role              TEXT,                        -- who they are (/signup/partners only)
+  topics            TEXT,                        -- JSON list: topics (/signup/partners) or services (/signup/clients)
   phone             TEXT,
   email             TEXT,
   consent_text      TEXT    NOT NULL,            -- the wording they ticked
@@ -163,7 +163,7 @@ if (count($hits) >= PER_HOUR) finish(false, 'Too many sign-ups from here in the 
 $hits[] = $now;
 @file_put_contents($rlf, json_encode(array_values($hits)), LOCK_EX);
 
-$people = ($in['form'] ?? '') === 'people';   // /event2; otherwise the facility-owner and therapist form
+$people = ($in['form'] ?? '') === 'people';   // /signup/clients; otherwise the facility-owner and therapist form
 $role   = (is_string($in['role'] ?? null) && isset(ROLES[$in['role']])) ? ROLES[$in['role']] : '';
 $org    = oneLine(clean($in['org'] ?? '', 120));
 $name   = oneLine(clean($in['name'] ?? '', 100));
