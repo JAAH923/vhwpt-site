@@ -1,0 +1,39 @@
+---
+/**
+ * The thank-you every form shows once it has sent: a pop-up over the page, not a page of its
+ * own, so nobody is left on a screen with nowhere to go (Justin, 2026-11-17). Done closes it.
+ * The form behind it is already cleared by then, so on a shared iPad the next person never
+ * sees the last person's details.
+ *
+ * One per page, opened from a form's script with showThanks() (src/scripts/thanks.ts). On the
+ * sign-up pages (kiosk layout, no menu) `site` adds a link to the home page for people who
+ * scanned the QR on their own phone. The link is hidden when the page runs from an iPad's
+ * Home Screen, so the event iPad can't wander off the sign-up.
+ */
+export interface Props {
+  /** Show "Visit vhwpt.com" (kiosk pages, which have no menu). */
+  site?: boolean;
+}
+const { site = false } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+---
+
+<dialog class="thanks" id="thanks" aria-labelledby="thanks-title" aria-describedby="thanks-msg">
+  <div class="thankscard">
+    <svg class="thanksmark" width="56" height="56" viewBox="0 0 56 56" fill="none" aria-hidden="true">
+      <circle cx="28" cy="28" r="27" stroke="currentColor" stroke-width="2" />
+      <path d="M17 29l7.5 7.5L39 21" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <h2 class="askq" id="thanks-title" tabindex="-1">Thank you<span data-name></span>.</h2>
+    <p class="askhelp" id="thanks-msg" data-msg></p>
+    <p class="kpreview" data-note hidden></p>
+    <div class="thanksnav">
+      <button type="button" class="btn btn-primary" data-done>Done</button>
+      {site && <a class="btn btn-line" href={basePath} data-site>Visit vhwpt.com</a>}
+    </div>
+    <div class="thanksbar" aria-hidden="true" hidden><i></i></div>
+  </div>
+</dialog>

@@ -16,6 +16,7 @@
  * (T-883, the BAA question).
  */
 import { practice, services, groups } from "../data/site";
+import Thanks from "./Thanks.astro";
 
 export interface Props {
   /** On /book, arriving with ?for=pt or ?for=wellness opens the form. */
@@ -145,13 +146,6 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
       </p>
     </div>
 
-    <div class="step askdone" id="askdone" tabindex="-1">
-      <h2 class="askq" id="qdone">Thank you<span id="askname"></span>.</h2>
-      <p class="askhelp">Bruce reads every request himself and will be in touch within one business day.</p>
-      <p class="askhelp asknote" id="asknote" hidden>Preview only: nothing was sent from this copy of the site.</p>
-      <button type="button" class="btn btn-line" data-close>Close</button>
-    </div>
-
     <p class="askerr" id="askerr" role="alert" hidden></p>
     <div class="asknav" id="asknav">
       <button type="button" class="askback" data-back>Back</button>
@@ -161,7 +155,12 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
   </form>
 </dialog>
 
+<Thanks />
+
 <script>
+  import { showThanks } from "../scripts/thanks";
+  import { formatPhoneFields } from "../scripts/phone";
+
   // One question at a time: a single choice moves on by itself, Enter moves on,
   // Escape or a click outside closes. Ported from donovanhunter.com's form.
   const dlgEl = document.getElementById("ask") as HTMLDialogElement | null;
@@ -169,8 +168,8 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
   if (dlgEl && formEl && typeof dlgEl.showModal === "function") setup(dlgEl, formEl);
 
   function setup(dlg: HTMLDialogElement, form: HTMLFormElement) {
-    const steps = [...form.querySelectorAll<HTMLElement>(".step")].filter((s) => s.id !== "askdone");
-    const done = document.getElementById("askdone")!;
+    formatPhoneFields(form);
+    const steps = [...form.querySelectorAll<HTMLElement>(".step")];
     const nav = document.getElementById("asknav")!;
     const err = document.getElementById("askerr")!;
     const back = form.querySelector<HTMLButtonElement>("[data-back]")!;
@@ -180,6 +179,7 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
     let i = 0;
     let openedAt = 0;
     let sending = false;
+    let thanked = false;
     let auto = 0;
 
     // Only vhwpt.com sends. Staging and local copies stop at the thank-you with a note.
@@ -246,7 +246,6 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
 
     function show(n: number, backward = false) {
       steps.forEach((s) => s.classList.remove("on", "backward"));
-      done.classList.remove("on");
       i = n;
       const s = steps[i];
       s.classList.add("on");
@@ -270,7 +269,6 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
     }
 
     function open(kind: string) {
-      if (done.classList.contains("on")) form.reset(); // a fresh request after a sent one
       const pick = form.querySelector<HTMLInputElement>(`input[name="booking"][value="${kind}"]`);
       if (pick) pick.checked = true;
       filterServices();
@@ -303,17 +301,18 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
       };
     }
 
+    // Sent: the form closes and clears, and the thank-you pops up over the page the visitor was on.
     function finished(preview: boolean) {
-      steps.forEach((s) => s.classList.remove("on"));
-      const first = val("name").split(/\s+/)[0];
-      document.getElementById("askname")!.textContent = first ? `, ${first}` : "";
-      document.getElementById("asknote")!.hidden = !preview;
-      nav.hidden = true;
-      count.hidden = true;
-      bar.style.width = "100%";
-      done.classList.add("on");
-      dlg.setAttribute("aria-labelledby", "qdone");
-      done.focus({ preventScroll: true });
+      const name = val("name");
+      thanked = true;
+      dlg.close();
+      form.reset();
+      showThanks({
+        name,
+        message: "Bruce reads every request himself and will be in touch within one business day.",
+        note: preview ? "Preview only: nothing was sent from this copy of the site." : "",
+        onClose: () => { thanked = false; },
+      });
     }
 
     const failed = form.dataset.failed || "That didn’t go through. Please call or email instead.";
@@ -340,8 +339,8 @@ const ptGroup = groups.find((g) => g.id === "pt")!.label;
         .then(() => {
           sending = false;
           next.textContent = "Send";
-          if (!done.classList.contains("on") && widget !== null && ts()) {
-            captcha = ""; // a token works once
+          if (widget !== null && ts()) {
+            captcha = ""; // a token works once, sent or not
             ts()!.reset(widget);
           }
           next.disabled = !valid(steps[i]);

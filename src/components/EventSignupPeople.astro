@@ -9,8 +9,10 @@
  * can see (T-883).
  *
  * Shared-screen rules: nothing is stored in the browser; the form clears itself
- * after each sign-up (8 seconds) and after two idle minutes; autofill is off so
- * the iPad owner's own contact card is never offered.
+ * as soon as a sign-up goes through (the thank-you pops up over the blank form,
+ * components/Thanks.astro, and closes itself after 10 seconds) and after two
+ * idle minutes; autofill is off so the iPad owner's own contact card is never
+ * offered. The phone field formats as it is typed (src/scripts/phone.ts).
  *
  * Sign-ups go to /api/event.php (public/api) with form "people", which saves
  * them in a small database on the server and emails Bruce. Only vhwpt.com
@@ -20,6 +22,7 @@
  * public/api/event.php.
  */
 import { practice, services, groups } from "../data/site";
+import Thanks from "./Thanks.astro";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -97,25 +100,26 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
     </div>
   </form>
 
-  <section class="kdone" id="p2done" tabindex="-1" hidden>
-    <h1>Thank you<span id="p2name"></span>.</h1>
-    <p class="askhelp">Bruce will be in touch.</p>
-  </section>
 </div>
 
+<Thanks site />
+
 <script>
+  import { showThanks } from "../scripts/thanks";
+  import { formatPhoneFields } from "../scripts/phone";
+
   // Shared screen: nothing is kept in the browser, and the form clears itself.
   const form = document.getElementById("p2form") as HTMLFormElement | null;
   if (form) setup(form);
 
   function setup(form: HTMLFormElement) {
-    const done = document.getElementById("p2done")!;
+    formatPhoneFields(form);
     const submit = document.getElementById("p2submit") as HTMLButtonElement;
     const err = document.getElementById("p2err")!;
-    const THANKS_MS = 8000; // how long the thank-you shows before the next person's blank form
+    const THANKS_MS = 10000; // how long the thank-you shows before it closes by itself
     const IDLE_MS = 120000; // a half-filled form clears after this long untouched
     let sending = false;
-    let thanksTimer = 0;
+    let thanked = false;
     let idleTimer = 0;
 
     // Only vhwpt.com sends. Staging and local copies show a banner and stop at the thank-you.
@@ -147,32 +151,32 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
 
     // A blank form for the next person.
     function reset() {
-      clearTimeout(thanksTimer);
       clearTimeout(idleTimer);
       form.reset();
       err.hidden = true;
-      done.hidden = true;
-      form.hidden = false;
       submit.textContent = "Sign me up";
       submit.disabled = true;
       sending = false;
       window.scrollTo(0, 0);
     }
 
-    function finished() {
-      const first = val("name").split(/\s+/)[0];
-      document.getElementById("p2name")!.textContent = first ? `, ${first}` : "";
-      form.hidden = true;
-      done.hidden = false;
-      done.focus({ preventScroll: true });
-      window.scrollTo(0, 0);
-      clearTimeout(idleTimer);
-      thanksTimer = window.setTimeout(reset, THANKS_MS);
+    // The thank-you pops up over a form that is already blank for the next person.
+    function finished(preview = false) {
+      const name = val("name");
+      reset();
+      thanked = true;
+      showThanks({
+        name,
+        message: "Bruce will be in touch.",
+        note: preview ? "Preview only: nothing was sent from this copy of the site." : "",
+        closeAfter: THANKS_MS,
+        onClose: () => { thanked = false; },
+      });
     }
 
     function send() {
       if (sending || !valid()) return;
-      if (!live) return finished();
+      if (!live) return finished(true);
       sending = true;
       submit.disabled = true;
       submit.textContent = "Sending";
@@ -208,7 +212,7 @@ const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
         .then(() => {
           clearTimeout(giveUp);
           sending = false;
-          if (!done.hidden) return;
+          if (thanked) return;
           submit.textContent = "Sign me up";
           submit.disabled = !valid(); // what was typed stays, so one more tap retries
         });
