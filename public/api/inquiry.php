@@ -56,11 +56,13 @@ const SOURCES = [
   'other'  => 'Something else',
 ];
 
-// The private folder sits beside the web root (~/private next to ~/public_html). Look two and
-// three levels up, so the site can live in public_html or in a folder inside it.
+// The private folder sits beside the web root (~/private next to ~/public_html), or beside the
+// releases on Bruce's server (/srv/sites/vhwpt/private, with this file in releases/<id>/api). Look
+// two and three levels up for a folder that exists. The settings file does not have to be in it
+// yet, so requests are still saved before the email is set up.
 $private = dirname(__DIR__, 2) . '/private';
 foreach ([2, 3] as $up) {
-  if (is_file(dirname(__DIR__, $up) . '/private/vhwpt-contact.php')) { $private = dirname(__DIR__, $up) . '/private'; break; }
+  if (is_dir(dirname(__DIR__, $up) . '/private')) { $private = dirname(__DIR__, $up) . '/private'; break; }
 }
 $isJson = stripos($_SERVER['CONTENT_TYPE'] ?? '', 'application/json') !== false;
 
@@ -186,8 +188,17 @@ if (is_array($cfg) && !empty($cfg['resend_key']) && !empty($cfg['from']) && !emp
 }
 $entry['emailed'] = $sent;
 $new = !is_file($log);
-@file_put_contents($log, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX);
-if ($new) @chmod($log, 0600);
+$saved = @file_put_contents($log, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX) !== false;
+if ($new && $saved) @chmod($log, 0600);
 
-if (!$sent) finish(false, "Your answers were saved, but the email didn’t go out. Please also " . CONTACT . '.', 502, $isJson);
+// Only say "saved" when it was. With no email and no saved copy the request is lost, so say that.
+if (!$sent) {
+  if (!$saved) {
+    error_log('vhwpt inquiry: could not save a request and the email did not go out. private=' . $private
+            . ' file=' . (error_get_last()['message'] ?? 'no error recorded'));
+  }
+  finish(false, $saved
+    ? "Your answers were saved, but the email didn’t go out. Please also " . CONTACT . '.'
+    : 'That didn’t go through. Please ' . CONTACT . '.', 502, $isJson);
+}
 finish(true, '', 200, $isJson);

@@ -41,6 +41,11 @@ main() {
   cp -a dist "$out"
   ln -sfn "$out" "$home/current.next"
   mv -Tf "$home/current.next" "$home/current"
+  # PHP-FPM remembers compiled scripts by the "current" path, so without this it keeps running
+  # the previous release's PHP files (the booking form, the event sign-up) after the switch.
+  # A graceful reload clears that.
+  sudo -n systemctl reload php8.3-fpm 2>/dev/null \
+    || echo "note: could not reload php8.3-fpm; PHP may serve the previous release until it is reloaded" >&2
   ls -1dt "$home"/releases/* | tail -n +6 | xargs -r rm -rf
 
   local code; code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: 3.226.58.165' http://127.0.0.1/)
