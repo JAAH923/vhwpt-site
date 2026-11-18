@@ -24,6 +24,7 @@
  * topic ids here are mirrored in public/api/event.php; change both together.
  */
 import { practice } from "../data/site";
+import Thanks from "./Thanks.astro";
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -114,11 +115,6 @@ const topics = [
       <p class="askprivacy">Your details go only to Bruce and are not shared.</p>
     </div>
 
-    <div class="step askdone" id="evdone" tabindex="-1">
-      <h2 class="askq" id="evqdone">Thank you<span id="evname"></span>.</h2>
-      <p class="askhelp">Bruce will be in touch.</p>
-    </div>
-
     <p class="askerr" id="everr" role="alert" hidden></p>
     <div class="asknav" id="evnav">
       <button type="button" class="askback" data-back>Back</button>
@@ -127,27 +123,32 @@ const topics = [
   </form>
 </dialog>
 
+<Thanks site />
+
 <script>
+  import { showThanks } from "../scripts/thanks";
+  import { formatPhoneFields } from "../scripts/phone";
+
   // One question at a time, as on the booking form, held open on a shared screen.
   const dlgEl = document.getElementById("evdlg") as HTMLDialogElement | null;
   const formEl = document.getElementById("evform") as HTMLFormElement | null;
   if (dlgEl && formEl) setup(dlgEl, formEl);
 
   function setup(dlg: HTMLDialogElement, form: HTMLFormElement) {
-    const steps = [...form.querySelectorAll<HTMLElement>(".step")].filter((s) => s.id !== "evdone");
-    const done = document.getElementById("evdone")!;
+    formatPhoneFields(form);
+    const steps = [...form.querySelectorAll<HTMLElement>(".step")];
     const nav = document.getElementById("evnav")!;
     const err = document.getElementById("everr")!;
     const back = form.querySelector<HTMLButtonElement>("[data-back]")!;
     const next = form.querySelector<HTMLButtonElement>("[data-next]")!;
     const bar = document.getElementById("evprogress")!;
     const count = document.getElementById("evcount")!;
-    const THANKS_MS = 8000; // how long the thank-you shows before the next person's blank form
+    const THANKS_MS = 10000; // how long the thank-you shows before it closes by itself
     const IDLE_MS = 120000; // a half-filled form clears after this long untouched
     let i = 0;
     let sending = false;
+    let thanked = false;
     let auto = 0;
-    let thanksTimer = 0;
     let idleTimer = 0;
 
     // Only vhwpt.com sends. Staging and local copies show a note and stop at the thank-you.
@@ -199,7 +200,6 @@ const topics = [
 
     function show(n: number, backward = false) {
       steps.forEach((s) => s.classList.remove("on", "backward"));
-      done.classList.remove("on");
       i = n;
       const s = steps[i];
       s.classList.add("on");
@@ -224,7 +224,6 @@ const topics = [
 
     // A blank form for the next person.
     function reset() {
-      clearTimeout(thanksTimer);
       clearTimeout(idleTimer);
       clearTimeout(auto);
       form.reset();
@@ -240,24 +239,27 @@ const topics = [
       if (dirty()) idleTimer = window.setTimeout(reset, IDLE_MS);
     }
 
-    function finished() {
-      steps.forEach((s) => s.classList.remove("on"));
-      const first = val("name").split(/\s+/)[0];
-      document.getElementById("evname")!.textContent = first ? `, ${first}` : "";
-      nav.hidden = true;
-      count.hidden = true;
-      bar.style.width = "100%";
-      done.classList.add("on");
-      dlg.setAttribute("aria-labelledby", "evqdone");
-      done.focus({ preventScroll: true });
-      clearTimeout(idleTimer);
-      thanksTimer = window.setTimeout(reset, THANKS_MS);
+    // The thank-you pops up over a form that is already back at question 1 for the next person.
+    function finished(preview = false) {
+      const name = val("name");
+      reset();
+      thanked = true;
+      showThanks({
+        name,
+        message: "Bruce will be in touch.",
+        note: preview ? "Preview only: nothing was sent from this copy of the site." : "",
+        closeAfter: THANKS_MS,
+        onClose: () => {
+          thanked = false;
+          show(i); // focus back on the form
+        },
+      });
     }
 
     const failed = form.dataset.failed || "That didn’t go through. Please ask Bruce to take your details.";
     function send() {
       if (sending) return;
-      if (!live) return finished();
+      if (!live) return finished(true);
       sending = true;
       next.disabled = true;
       next.textContent = "Sending";
@@ -293,7 +295,7 @@ const topics = [
         .then(() => {
           clearTimeout(giveUp);
           sending = false;
-          if (done.classList.contains("on")) return;
+          if (thanked) return;
           next.textContent = "Send";
           next.disabled = !valid(steps[i]); // what was typed stays, so one more tap retries
         });
