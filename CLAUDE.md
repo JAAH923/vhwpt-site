@@ -9,7 +9,7 @@ they go live. Run `git config user.name`: if it isn't Justin's, you are working 
 | Branch | Where it shows | Who merges |
 |---|---|---|
 | `develop` | Staging, https://jaah923.github.io/vhwpt-site/ (hidden from Google) | Bruce or Justin, once the build check passes |
-| `main` | www.vhwpt.com | Justin only |
+| `main` | www.vhwpt.com, once Justin runs the deploy (step 5) | Justin only |
 
 1. Start every change on a new branch from the latest `develop`:
    `git switch develop && git pull && git switch -c change/<short-name>`.
@@ -22,7 +22,10 @@ they go live. Run `git config user.name`: if it isn't Justin's, you are working 
    later. Give them the link to the
    page that changed (the staging address plus the page path, e.g. `/vhwpt-site/about/`).
 5. Going live is Justin's step: he opens and approves the pull request from `develop` into
-   `main`. If you're working with Bruce, never open, approve or merge anything into `main`.
+   `main`. Merging into `main` doesn't change the live site by itself. It goes live when the
+   deploy runs on Bruce's server: `ssh bruce-lightsail /srv/sites/vhwpt/deploy.sh`. Only run
+   that when Justin asks in the conversation. If you're working with Bruce, never open, approve
+   or merge anything into `main`, and never run the deploy.
 
 Never commit on `main` or `develop`, push to them, force-push, or rewrite history that's
 already pushed. GitHub blocks these. The hook in `.claude/hooks/git-guard.mjs` stops them
@@ -62,8 +65,8 @@ review, and tell Bruce it's waiting on Justin:
   recreate it.
 - Install, remove or upgrade packages unless Justin asked.
 - Delete files you didn't create in this change.
-- Change GitHub settings, or connect to the web server. Merges to `main` deploy by themselves.
-  Server work is Justin's.
+- Change GitHub settings, or connect to the web server unless Justin asks (the deploy in
+  step 5 is the usual case). Server work is Justin's.
 
 ## Working with Bruce
 
@@ -80,5 +83,6 @@ pnpm dev         # local preview at http://localhost:4321
 pnpm build       # must pass before every pull request
 ```
 
-How the staging and review copies deploy is in `README.md`. How Bruce's computer and GitHub
+How the staging and review copies deploy is in `README.md`; the live server is in
+`deploy/lightsail/README.md`. How Bruce's computer and GitHub
 are set up is in `setup/README.md`.
