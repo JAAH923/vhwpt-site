@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Valencia Play</title>
-<link rel="icon" href="/favicon.ico">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="../favicon.ico">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
 <!--
-  play.vhwpt.com: games and tools for Bruce's events. Source: play/ in the vhwpt-site repo.
-  To add one: put it in play/<name>/index.html, add a card to the list below, then deploy:
-    ssh bruce-lightsail /srv/sites/play/deploy.sh [branch]
+  www.vhwpt.com/play/: games and tools for Bruce's events. Plain HTML that Astro copies as is.
+  To add one: put it in public/play/<name>/index.html (relative links only, so it also works on
+  staging under /vhwpt-site/), add a card to the list below, then deploy the site as usual.
 -->
 <style>
 :root {
@@ -82,7 +82,7 @@ footer a { color: inherit; }
 
   <ul class="list">
     <li class="item">
-      <a href="/wheel/">
+      <a href="wheel/">
         <span class="dot" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/></svg>
         </span>
