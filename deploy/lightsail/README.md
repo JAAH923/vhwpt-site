@@ -40,6 +40,23 @@ The booking form reads its settings from `/srv/sites/vhwpt/private/vhwpt-contact
 (owner `www-data`, mode 600). Only Justin puts that file there; it is never in this repo.
 The form keeps its copy of every request in the same folder.
 
+## play.vhwpt.com
+
+Games and tools for Bruce's events, starting with the prize wheel at
+https://play.vhwpt.com/wheel/. Plain HTML in the repo's [`play/`](../../play) folder; the hub page
+(`play/index.html`) lists them. Hidden from search. Caddy's rules are in
+[`sites/play.caddy`](sites/play.caddy), on the same Cloudflare Origin Certificate as vhwpt.com
+(it covers `*.vhwpt.com`). Cloudflare has one record for it: `A play 3.226.58.165`, proxied.
+
+```sh
+ssh bruce-lightsail /srv/sites/play/deploy.sh          # publish play/ from main
+ssh bruce-lightsail /srv/sites/play/deploy.sh <branch> # or any branch
+```
+
+To add one: put it in `play/<name>/index.html`, add a card to `play/index.html`, push, then run
+the deploy. [`deploy-play.sh`](deploy-play.sh) reads the branch from vhwpt's clone with
+`git archive`, so it never moves vhwpt's checkout. It keeps five releases.
+
 ## Adding another site or app
 
 1. A static or PHP site goes in `/srv/sites/<name>/`. An app goes in `/srv/apps/<name>/`, run by

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Spin">
+<title>Valencia Prize Wheel</title>
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Layout: one kiosk screen for an iPad. Wheel on top in portrait, wheel left in landscape.
+     Crimson marks the prize slices only, so "land on red" is the whole rule. */
+  --ink: #18181b;
+  --white: #ffffff;
+  --grey: #52525b;
+  --hair: #d4d4d8;
+  --whisper: #f4f4f5;
+  --crimson: #c41230;
+  --crimson-press: #a30f28;
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --w: min(86vw, 56vh, 720px);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 18px;
+  line-height: 1.45;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+  overflow: auto;
+}
+button { font-family: inherit; touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+h1, h2 { margin: 0; font-weight: 700; text-wrap: balance; letter-spacing: -0.02em; }
+p { margin: 0; text-wrap: pretty; }
+.label {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- Stage ---------- */
+.stage {
+  min-height: 100%;
+  display: grid;
+  grid-template-areas: "intro" "wheel" "controls";
+  grid-template-rows: auto auto auto;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(18px, 3.2vh, 36px);
+  padding: 28px 24px 32px;
+  text-align: center;
+}
+.intro { grid-area: intro; display: grid; gap: 10px; justify-items: inherit; }
+.intro h1 { font-size: clamp(36px, 5.4vw, 60px); line-height: 1.02; }
+.odds { font-size: clamp(18px, 2.2vw, 22px); color: var(--grey); max-width: 30ch; }
+.odds b { color: var(--crimson); }
+
+.wheelbox { grid-area: wheel; position: relative; width: var(--w); aspect-ratio: 1; }
+#wheel { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 18px 36px rgba(24, 24, 27, 0.18)); }
+.pointer {
+  position: absolute;
+  top: 50%;
+  right: -3.5%;
+  width: 12%;
+  transform: translateY(-50%);
+  transform-origin: 70% 50%;
+  z-index: 2;
+  filter: drop-shadow(0 3px 4px rgba(24, 24, 27, 0.35));
+  pointer-events: none;
+}
+.hub {
+  position: absolute;
+  inset: 38%;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--white);
+  box-shadow: 0 0 0 5px var(--white), 0 6px 22px rgba(24, 24, 27, 0.3);
+  overflow: hidden;
+  cursor: pointer;
+  z-index: 1;
+}
+.hub img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); display: block; }
+
+.controls { grid-area: controls; display: grid; gap: 18px; justify-items: inherit; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 9999px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 16px 24px;
+  cursor: pointer;
+}
+.btn-primary { background: var(--crimson); color: var(--white); }
+.btn-primary:hover { background: var(--crimson-press); }
+.btn-primary:disabled { opacity: 0.55; cursor: default; }
+.btn-line { background: var(--white); color: var(--ink); border: 1px solid var(--hair); font-weight: 400; }
+.btn-line:hover { border-color: var(--ink); }
+.spin { font-size: clamp(26px, 3.4vw, 32px); padding: 22px 64px; min-width: min(320px, 80vw); box-shadow: 0 10px 24px rgba(196, 18, 48, 0.28); }
+
+.stock { display: flex; flex-wrap: wrap; gap: 10px; justify-content: inherit; }
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--hair);
+  background: var(--white);
+  border-radius: 9999px;
+  padding: 9px 16px;
+  font-size: 16px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.chip i { width: 10px; height: 10px; border-radius: 50%; background: var(--crimson); flex: none; }
+.chip.out { color: var(--grey); }
+.chip.out i { background: var(--hair); }
+.chip b { font-variant-numeric: tabular-nums; }
+
+.corner { position: fixed; top: 14px; right: 14px; display: flex; gap: 8px; z-index: 5; }
+.icon {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--hair); background: var(--white); color: var(--grey);
+  display: grid; place-items: center; cursor: pointer; padding: 0;
+}
+.icon svg { width: 22px; height: 22px; }
+
+@media (orientation: landscape) and (min-width: 760px) {
+  :root { --w: min(82vh, 54vw, 760px); }
+  .stage {
+    grid-template-areas: "wheel intro" "wheel controls";
+    grid-template-columns: auto minmax(300px, 420px);
+    grid-template-rows: 1fr 1fr;
+    align-content: center;
+    justify-content: center;
+    justify-items: start;
+    column-gap: clamp(40px, 6vw, 88px);
+    row-gap: 32px;
+    text-align: left;
+    padding: 24px 32px;
+  }
+  .intro { align-self: end; }
+  .controls { align-self: start; }
+  .stock { justify-content: flex-start; }
+}
+
+/* ---------- Overlays ---------- */
+.scrim {
+  position: fixed; inset: 0; z-index: 10;
+  display: grid; place-items: center;
+  background: rgba(24, 24, 27, 0.55);
+  padding: 24px;
+  animation: fade 0.2s ease-out;
+}
+.scrim[hidden] { display: none; }
+.card {
+  width: min(560px, 100%);
+  background: var(--white);
+  border-radius: 28px;
+  padding: 40px 36px 32px;
+  box-shadow: 0 30px 80px rgba(24, 24, 27, 0.35);
+  text-align: center;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  animation: pop 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+.badge { width: 88px; height: 88px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 6px; }
+.badge svg { width: 46px; height: 46px; }
+.badge.win { background: var(--crimson); color: var(--white); }
+.badge.tip { background: var(--whisper); color: var(--crimson); }
+.card h2 { font-size: clamp(30px, 4.4vw, 42px); line-height: 1.08; }
+.card .body { font-size: 21px; color: var(--ink); max-width: 30ch; }
+.card .small { font-size: 16px; color: var(--grey); }
+.card .btn { margin-top: 14px; width: 100%; font-size: 22px; padding: 20px 24px; }
+.result.won .label { color: var(--crimson); }
+
+.sheet { text-align: left; justify-items: stretch; gap: 16px; }
+.sheet h2 { font-size: 30px; }
+.rows { display: grid; gap: 12px; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center; }
+.row input {
+  font: inherit; font-size: 18px; padding: 12px 14px;
+  border: 1px solid var(--hair); border-radius: 12px; min-width: 0;
+  -webkit-user-select: text; user-select: text;
+}
+.row input:focus { outline: none; border-color: var(--ink); }
+.stepper { display: flex; align-items: center; border: 1px solid var(--hair); border-radius: 9999px; }
+.stepper button { width: 48px; height: 48px; border: 0; background: none; font-size: 24px; color: var(--ink); cursor: pointer; border-radius: 50%; }
+.stepper output { min-width: 2.2ch; text-align: center; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.note { font-size: 15px; color: var(--grey); }
+.rowlabel { font-size: 18px; padding-left: 2px; }
+#pctOut { min-width: 3.6ch; }
+.stats { font-family: var(--mono); font-size: 13px; letter-spacing: 0.04em; color: var(--grey); font-variant-numeric: tabular-nums; }
+.sheet-actions { display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap; margin-top: 4px; }
+.sheet-actions .btn { width: auto; margin: 0; font-size: 17px; padding: 14px 22px; }
+
+#confetti { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 11; }
+
+@keyframes fade { from { opacity: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(0.92) translateY(10px); } }
+@media (prefers-reduced-motion: reduce) {
+  .scrim, .card { animation: none; }
+}
+</style>
+</head>
+<body>
+<main class="stage">
+  <header class="intro">
+    <p class="label">Valencia Health &amp; Wellness</p>
+    <h1>Spin the wheel</h1>
+    <p class="odds" id="odds">Land on <b>red</b> to win a prize. About 1 in 7 spins wins.</p>
+  </header>
+
+  <div class="wheelbox">
+    <svg class="pointer" id="pointer" viewBox="0 0 48 40" aria-hidden="true">
+      <path d="M2 20 L36 4 A17 17 0 1 1 36 36 Z" fill="#c41230" stroke="#ffffff" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="33" cy="20" r="5" fill="#ffffff"/>
+    </svg>
+    <svg id="wheel" viewBox="-100 -100 200 200" role="img" aria-label="Prize wheel with two red prize slices and six wellness tip slices">
+      <g id="rot"></g>
+    </svg>
+    <button class="hub" id="hub" type="button" aria-label="Spin the wheel">
+      <img src="data:image/webp;base64,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" alt="">
+    </button>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-primary spin" id="spin" type="button">Spin</button>
+    <div class="stock" id="stock" aria-label="Prizes left"></div>
+  </div>
+</main>
+
+<div class="corner">
+  <button class="icon" id="soundBtn" type="button" aria-label="Turn sound off" aria-pressed="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M11 5 6 9H3v6h3l5 4z"/><path id="waves" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/><path id="mute" d="M16 9l6 6M22 9l-6 6" hidden/>
+    </svg>
+  </button>
+  <button class="icon" id="fullBtn" type="button" aria-label="Full screen">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>
+    </svg>
+  </button>
+</div>
+
+<div class="scrim" id="result" hidden>
+  <div class="card result" role="dialog" aria-modal="true" aria-labelledby="rTitle">
+    <div class="badge" id="rBadge"></div>
+    <p class="label" id="rLabel"></p>
+    <h2 id="rTitle"></h2>
+    <p class="body" id="rBody"></p>
+    <p class="small" id="rSmall"></p>
+    <button class="btn btn-primary" id="next" type="button">Next person</button>
+  </div>
+</div>
+
+<div class="scrim" id="sheet" hidden>
+  <div class="card sheet" role="dialog" aria-modal="true" aria-labelledby="sTitle">
+    <p class="label">For Bruce</p>
+    <h2 id="sTitle">Prizes on the wheel</h2>
+    <div class="rows" id="rows"></div>
+    <p class="note">The red slices together cover the chance to win, and wherever the wheel stops decides the spin, so the wheel always shows the real odds. When a prize runs out, its slice turns into a tip and the odds drop with it.</p>
+    <p class="stats" id="stats"></p>
+    <div class="sheet-actions">
+      <button class="btn btn-line" id="resetCounts" type="button">Reset counts</button>
+      <button class="btn btn-primary" id="sheetDone" type="button">Done</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confetti" aria-hidden="true"></canvas>
+
+<script>
+(() => {
+  const C = { ink: "#18181b", white: "#ffffff", grey: "#52525b", hair: "#d4d4d8", whisper: "#f4f4f5", crimson: "#c41230", press: "#a30f28" };
+
+  // Six tips sit on the wheel; the last two stand in when a prize slice runs out.
+  // Ten tips per slice. Each slice works through all ten before it repeats one.
+  const T = (title, body) => ({ title, body });
+  const TIPS = [
+    { key: "Balance", tips: [
+      T("Practice at the counter", "While you brush your teeth, stand with your feet close together. Keep one hand on the counter."),
+      T("Heel to toe", "Along the kitchen counter, take 10 steps with one heel right in front of the other foot's toes. Keep a hand on the counter."),
+      T("One foot at a time", "Hold the back of a sturdy chair and lift one foot for 10 seconds. Switch sides. Hold on the whole time."),
+      T("Shift your weight", "Stand at the counter with your feet hip width apart. Slowly shift your weight side to side 10 times."),
+      T("Turn in small steps", "When you turn around, take small steps in a little circle instead of pivoting on one foot."),
+      T("Look ahead", "When you walk, look a few steps ahead instead of down at your feet. It keeps you upright and steady."),
+      T("Light the way", "Put night lights between the bedroom and the bathroom. Many falls at home happen in the dark."),
+      T("Clear the floor", "Pick up throw rugs and cords from walkways. Tape down any rug you want to keep."),
+      T("Stand up slowly", "After lying down or sitting a long time, sit on the edge for a moment before you stand."),
+      T("Wear the right shoes", "Choose shoes with a closed back and a thin, non-slip sole. Avoid walking in socks or loose slippers.")
+    ] },
+    { key: "Posture", tips: [
+      T("Stack up tall", "Ears over shoulders, shoulders over hips. Check yourself each time you pass a mirror."),
+      T("Chin tucks", "Sitting tall, gently draw your chin straight back. Hold 3 seconds. Repeat 10 times."),
+      T("Squeeze your shoulder blades", "Sit tall and gently squeeze your shoulder blades together. Hold 5 seconds. Repeat 10 times."),
+      T("Raise your screen", "Hold your phone, tablet or book up at eye level so you look straight ahead instead of down."),
+      T("Sit back, feet flat", "Sit all the way back in the chair with both feet flat on the floor."),
+      T("Try the wall check", "Stand with your back to a wall, heels a few inches out. Gently bring your head and shoulders back to touch it."),
+      T("Use a small pillow", "A small pillow behind your lower back helps you sit tall in a soft chair or the car."),
+      T("Carry it close", "Hold bags close to your body and split the load between both hands."),
+      T("Move every half hour", "When you sit for a long time, stand up and move a little every 30 minutes."),
+      T("Roll your shoulders", "Roll your shoulders slowly up, back and down 10 times to ease tension.")
+    ] },
+    { key: "Strength", tips: [
+      T("Stand without your hands", "From a sturdy chair, stand up and sit down 5 times. Use your hands if you need them."),
+      T("Wall push-ups", "Stand an arm's length from a wall with your hands on it at shoulder height. Bend your elbows, then push back. Repeat 10 times."),
+      T("Heel raises", "Hold the counter and rise up onto your toes, then lower slowly. Repeat 10 times."),
+      T("March in your chair", "Sit tall and lift one knee, then the other, like marching. Do 20 steps."),
+      T("Straighten your knee", "Sitting in a chair, straighten one knee and hold 3 seconds, then lower. Repeat 10 times on each leg."),
+      T("Side leg lifts", "Hold the counter and lift one leg out to the side, keeping your body straight. Repeat 10 times on each side."),
+      T("Squeeze for grip", "Squeeze a soft ball or rolled towel for 5 seconds. Repeat 10 times with each hand."),
+      T("Mini squats", "Hold the counter and bend your knees a little, like starting to sit. Then stand tall. Repeat 10 times."),
+      T("Carry light bags", "Carrying light grocery bags builds grip and arm strength. Keep them light and close to your body."),
+      T("A little each day", "Ten minutes of strength work most days does more than one long session a week.")
+    ] },
+    { key: "Walking", tips: [
+      T("Add five minutes", "Add five minutes to one walk a day this week. Small steps add up."),
+      T("Walk after meals", "A short walk after a meal helps your digestion and gets you moving."),
+      T("Bring a buddy", "Walking with a friend makes it easier to keep going, and safer too."),
+      T("Count your steps", "Use your phone or a step counter to see your daily steps, then add a few hundred each week."),
+      T("Swing your arms", "Let your arms swing naturally as you walk. It helps your balance and rhythm."),
+      T("Beat the heat", "On hot days, walk early in the morning or indoors, like laps at the mall."),
+      T("Pick a route with benches", "Choose a path with places to sit so you can rest whenever you need to."),
+      T("Heel, then toe", "Land on your heel and roll through to your toes. Take full steps instead of shuffling."),
+      T("Use your walker or cane", "If you have one, use it every time, even for short trips."),
+      T("Short walks count", "Three 10-minute walks add up to 30 minutes. Breaks are part of it.")
+    ] },
+    { key: "Breathing", tips: [
+      T("Slow your breath", "Breathe in through your nose for 4 counts and out through your mouth for 6. Repeat 5 times."),
+      T("Belly breathing", "Put a hand on your belly. Breathe in so your hand rises, then breathe out slowly. Repeat 5 times."),
+      T("Pursed lips", "Breathe in through your nose, then out slowly through pursed lips, like cooling soup."),
+      T("Breathe before you stand", "Take one slow breath before you stand up. It helps you move calm and steady."),
+      T("Sit tall to breathe", "Sitting tall gives your lungs room. Slumping makes each breath smaller."),
+      T("Breathe out on the effort", "Breathe out during the hard part of a move, like standing up from a chair."),
+      T("Count to calm", "When you feel tense, breathe in for 4, hold for 2, and breathe out for 6."),
+      T("Sigh it out", "Take a deep breath in and let it out with a long sigh. Repeat 3 times."),
+      T("Morning breaths", "Start the day with five slow breaths before you get out of bed."),
+      T("Keep breathing", "Don't hold your breath when you exercise. Steady breathing keeps your blood pressure steady too.")
+    ] },
+    { key: "Stretch", tips: [
+      T("Loosen your neck", "Turn your head slowly side to side, 5 times each way. Stay where it feels comfortable."),
+      T("Calf stretch", "With your hands on a wall, step one foot back and press that heel down. Hold 20 seconds on each side."),
+      T("Back of the thigh", "Sit at the edge of a chair with one leg straight, heel on the floor. Lean forward gently. Hold 20 seconds."),
+      T("Open your chest", "Clasp your hands behind your back and gently lift your chest. Hold 15 seconds."),
+      T("Side reach", "Sitting tall, reach one arm overhead and lean gently to the other side. Hold 10 seconds on each side."),
+      T("Seated turn", "Sitting tall, turn your upper body to one side with a hand on the chair back. Hold 10 seconds on each side."),
+      T("Wrist circles", "Circle your wrists slowly, 10 times each way."),
+      T("Spread your fingers", "Spread your fingers wide for 5 seconds, then make a gentle fist. Repeat 10 times."),
+      T("Stretch when warm", "Stretch after a short walk, when your muscles are warm."),
+      T("Hold, don't bounce", "Hold each stretch steady for 15 to 30 seconds. Bouncing can strain the muscle.")
+    ] },
+    { key: "Hydration", tips: [
+      T("Keep water close", "Keep a glass of water where you sit most, and take a sip each time you stand up."),
+      T("Water with every meal", "Have a glass of water with each meal and with your medicines."),
+      T("Don't wait for thirst", "As we age, thirst shows up later. Sip through the day before you feel thirsty."),
+      T("Check the color", "Pale yellow urine usually means you're drinking enough. Dark yellow means drink more."),
+      T("Eat your water", "Fruit and soup count too, like watermelon, oranges and broth."),
+      T("Add some flavor", "Add a slice of lemon or cucumber, or a few berries, if plain water feels boring."),
+      T("Hot day, more water", "On hot days, drink extra and stay in the shade or the A/C in the middle of the day."),
+      T("A glass when you wake", "Drink a glass of water first thing in the morning."),
+      T("Refill one bottle", "Use the same bottle and refill it a set number of times each day."),
+      T("Ask about your limit", "Some heart and kidney conditions limit fluids. Ask your doctor how much is right for you.")
+    ] },
+    { key: "Ankle", tips: [
+      T("Circle your ankles", "While seated, circle each ankle 10 times each way to get the blood moving."),
+      T("Write the alphabet", "Sitting, lift one foot and trace the letters A to Z with your big toe."),
+      T("Toe taps", "Sitting, tap your toes up and down 20 times with your heels on the floor."),
+      T("Heel and toe rocks", "Sitting, lift your toes, then lift your heels. Rock back and forth 20 times."),
+      T("Towel scrunch", "Sitting barefoot with your feet on a towel, scrunch the towel toward you with your toes."),
+      T("Spread your toes", "Spread your toes apart, hold 5 seconds, then relax. Repeat 10 times."),
+      T("Point and flex", "Sitting, point your toes away, then pull them toward you. Repeat 15 times."),
+      T("Put your feet up", "If your ankles swell, rest with your feet up on a stool for a few minutes."),
+      T("Check your feet", "Look at your feet every day for sores or swelling, especially if you have diabetes."),
+      T("Roll the arch", "Sitting, roll a tennis ball under each foot for a minute.")
+    ] }
+  ];
+  function nextTip(t) {
+    const cat = TIPS[t];
+    if (!state.seen || typeof state.seen !== "object") state.seen = {};
+    let seen = (state.seen[cat.key] || []).filter((i) => i < cat.tips.length);
+    let pool = cat.tips.map((_, i) => i).filter((i) => !seen.includes(i));
+    if (!pool.length) { seen = []; pool = cat.tips.map((_, i) => i); }
+    const i = pool[Math.min(pool.length - 1, Math.floor(rand() * pool.length))];
+    state.seen[cat.key] = seen.concat(i);
+    return cat.tips[i];
+  }
+  // Clockwise: prize, tip, tip, tip, prize, tip, tip, tip. The red slices are sized by the chance to win.
+  const LAYOUT = [{ prize: 0, spare: 6 }, { tip: 0 }, { tip: 1 }, { tip: 2 }, { prize: 1, spare: 7 }, { tip: 3 }, { tip: 4 }, { tip: 5 }];
+  const SHADE = ["prize", "ink", "light", "ink", "prize", "ink", "light", "ink"];
+  const KEY = "vhw-prize-wheel-v1";
+  const fresh = () => ({ prizes: [{ name: "Water bottle", left: 3 }, { name: "Surprise gift", left: 10 }], winPct: 15, seen: {}, spins: 0, wins: 0, sound: true });
+
+  const POINTER = 90;
+  let state = load();
+  let cur = POINTER; // at rest, the water bottle slice sits at the pointer
+  let spinning = false;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const $ = (id) => document.getElementById(id);
+  const rot = $("rot"), pointer = $("pointer"), spinBtn = $("spin"), hub = $("hub");
+
+  function load() {
+    try {
+      const s = JSON.parse(localStorage.getItem(KEY));
+      if (s && Array.isArray(s.prizes) && s.prizes.length === 2) return Object.assign(fresh(), s);
+    } catch (e) {}
+    return fresh();
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+  function rand() {
+    try { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; } catch (e) { return Math.random(); }
+  }
+
+  function slots() {
+    return LAYOUT.map((L, i) => {
+      if (L.prize !== undefined && state.prizes[L.prize].left > 0) {
+        return { kind: "prize", p: L.prize, shade: "prize", lines: splitName(state.prizes[L.prize].name) };
+      }
+      const t = L.prize !== undefined ? L.spare : L.tip;
+      return { kind: "tip", t, shade: SHADE[i] === "prize" ? "light" : SHADE[i], lines: [TIPS[t].key, "tip"] };
+    });
+  }
+
+  // Slice sizes come from the chance to win: the two red slices together cover winPct of the
+  // wheel, and wherever the wheel stops decides the spin, so what people see is the real odds.
+  function geometry() {
+    const pw = (state.winPct / 100) * 180;
+    const tw = (360 - 2 * pw) / 6;
+    const widths = LAYOUT.map((L) => (L.prize !== undefined ? pw : tw));
+    const starts = [];
+    let a = -widths[0] / 2;
+    widths.forEach((w) => { starts.push(a); a += w; });
+    return { widths, starts };
+  }
+  function sliceAt(angle, G) {
+    const a = (((angle - G.starts[0]) % 360) + 360) % 360;
+    let acc = 0;
+    for (let i = 0; i < G.widths.length; i++) { acc += G.widths[i]; if (a < acc) return i; }
+    return G.widths.length - 1;
+  }
+
+  function splitName(name) {
+    const n = (name || "Prize").trim();
+    const words = n.split(/\s+/);
+    if (words.length === 1) return [n];
+    let best = 1, diff = Infinity;
+    for (let i = 1; i < words.length; i++) {
+      const d = Math.abs(words.slice(0, i).join(" ").length - words.slice(i).join(" ").length);
+      if (d < diff) { diff = d; best = i; }
+    }
+    return [words.slice(0, best).join(" "), words.slice(best).join(" ")];
+  }
+
+  // ---------- Wheel ----------
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent) {
+    const n = document.createElementNS(NS, tag);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+  function pt(r, deg) { const a = (deg * Math.PI) / 180; return [r * Math.sin(a), -r * Math.cos(a)]; }
+  const f = (n) => n.toFixed(3);
+
+  function render() {
+    rot.textContent = "";
+    const S = slots();
+    const G = geometry();
+    el("circle", { r: 99, fill: C.ink }, rot);
+    const longest = Math.max(...S.flatMap((s) => s.lines.map((l) => l.length)));
+    const fs = Math.min(10.5, 54 / (0.6 * longest));
+    // Shrink a label only when its slice is too thin for it at the inner end.
+    const fit = (s, w) => {
+      const half = ((w / 2) * Math.PI) / 180;
+      const chars = Math.max(...s.lines.map((l) => l.length));
+      let size = fs;
+      while (size > 6) {
+        const rIn = 84 - chars * 0.6 * size;
+        const need = s.lines.length === 1 ? size : size * 2.15;
+        if (2 * rIn * Math.tan(half) * 0.92 >= need) break;
+        size -= 0.25;
+      }
+      return size;
+    };
+    S.forEach((s, i) => {
+      const w = G.widths[i];
+      const a0 = G.starts[i], a1 = a0 + w;
+      const [x0, y0] = pt(91, a0), [x1, y1] = pt(91, a1);
+      const fill = s.shade === "prize" ? C.crimson : s.shade === "ink" ? C.ink : C.whisper;
+      el("path", { d: `M0 0 L${f(x0)} ${f(y0)} A91 91 0 0 1 ${f(x1)} ${f(y1)} Z`, fill, stroke: C.white, "stroke-width": 0.9, "stroke-linejoin": "round" }, rot);
+      // Every label reads outward from the hub, so whichever slice stops at the
+      // 3 o'clock pointer reads left to right, right side up.
+      const c = a0 + w / 2;
+      const g = el("g", { transform: `rotate(${f(c)}) rotate(-90)` }, rot);
+      const color = s.shade === "light" ? C.ink : C.white;
+      const sz = fit(s, w);
+      s.lines.forEach((t, j) => {
+        const small = s.kind === "tip" && j === 1;
+        const y = s.lines.length === 1 ? sz * 0.36 : j === 0 ? -sz * 0.18 : sz * 0.98;
+        const tx = el("text", {
+          x: 84, y: f(y),
+          "text-anchor": "end",
+          "font-size": f(small ? sz * 0.82 : sz),
+          "font-weight": small ? 400 : 700,
+          "font-family": small ? "Space Mono, ui-monospace, monospace" : "Inter, system-ui, sans-serif",
+          "letter-spacing": small ? "0.6" : "-0.1",
+          fill: color, opacity: small ? 0.8 : 1
+        }, g);
+        tx.textContent = small ? t.toUpperCase() : t;
+      });
+    });
+    G.starts.forEach((a, i) => {
+      const [x, y] = pt(95.2, a);
+      el("circle", { cx: f(x), cy: f(y), r: 1.6, fill: C.white, opacity: 0.9 }, rot);
+      const [cx, cy] = pt(95.2, a + G.widths[i] / 2);
+      el("circle", { cx: f(cx), cy: f(cy), r: 1.1, fill: C.white, opacity: 0.45 }, rot);
+    });
+    setRot(cur);
+    renderStock();
+  }
+  function setRot(d) { rot.setAttribute("transform", `rotate(${f(d)})`); }
+
+  function renderStock() {
+    const box = $("stock");
+    box.textContent = "";
+    state.prizes.forEach((p) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip" + (p.left > 0 ? "" : " out");
+      b.innerHTML = "<i></i>";
+      const s = document.createElement("span");
+      s.textContent = p.left > 0 ? `${p.name}: ` : `${p.name}: all claimed`;
+      b.appendChild(s);
+      if (p.left > 0) { const n = document.createElement("b"); n.textContent = `${p.left} left`; b.appendChild(n); }
+      b.addEventListener("click", openSheet);
+      box.appendChild(b);
+    });
+    const live = state.prizes.filter((p) => p.left > 0).length;
+    const pct = (state.winPct * live) / 2;
+    $("odds").innerHTML = live
+      ? `Land on <b>red</b> to win a prize. About 1 in ${Math.round(100 / pct)} spins wins.`
+      : "Every prize has been claimed. Spin for a wellness tip.";
+  }
+
+  // ---------- Spin ----------
+  function spin() {
+    if (spinning || !$("result").hidden || !$("sheet").hidden) return;
+    spinning = true;
+    audioInit();
+    spinBtn.disabled = true;
+    spinBtn.textContent = "Spinning…";
+    const S = slots();
+    const G = geometry();
+    // Pick the spot on the wheel where it will stop. Each slice's share of the circle is its
+    // chance. Keep the stop a little inside the slice so it never looks like a tie on a line.
+    let a = rand() * 360;
+    const k = sliceAt(a, G);
+    const m = Math.min(2.5, G.widths[k] / 4);
+    const rel = (((a - G.starts[k]) % 360) + 360) % 360;
+    a = G.starts[k] + Math.min(G.widths[k] - m, Math.max(m, rel));
+    const turns = reduce ? 1 : 6 + Math.floor(rand() * 2);
+    const base = cur;
+    // The pointer sits at 3 o'clock (90 degrees clockwise from the top).
+    const targetMod = (((POINTER - a) % 360) + 360) % 360;
+    const curMod = ((cur % 360) + 360) % 360;
+    let delta = targetMod - curMod;
+    if (delta < 0) delta += 360;
+    const end = cur + turns * 360 + delta;
+    const dur = reduce ? 1200 : 5600;
+    whoosh();
+    const t0 = performance.now();
+    const peg = (r) => sliceAt(POINTER - r, G);
+    let lastB = peg(cur);
+    const frame = (now) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 4);
+      cur = base + (end - base) * e;
+      setRot(cur);
+      const b = peg(cur);
+      if (b !== lastB) { lastB = b; tick(Math.pow(1 - p, 3)); }
+      if (p < 1) requestAnimationFrame(frame);
+      else setTimeout(() => land(S[k]), 250);
+    };
+    requestAnimationFrame(frame);
+  }
+
+  function land(s) {
+    state.spins += 1;
+    const card = $("result").querySelector(".card");
+    if (s.kind === "prize") {
+      const prize = state.prizes[s.p];
+      prize.left = Math.max(0, prize.left - 1);
+      state.wins += 1;
+      card.classList.add("won");
+      $("rBadge").className = "badge win";
+      $("rBadge").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>';
+      $("rLabel").textContent = "You won";
+      $("rTitle").textContent = prize.name;
+      $("rBody").textContent = "Congratulations! Pick up your prize from Bruce.";
+      $("rSmall").textContent = "";
+      winSound();
+      confetti();
+    } else {
+      const t = nextTip(s.t);
+      card.classList.remove("won");
+      $("rBadge").className = "badge tip";
+      $("rBadge").innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12h5l2-5 4 10 2.5-7 1.5 2H22"/></svg>';
+      $("rLabel").textContent = `${TIPS[s.t].key} tip`;
+      $("rTitle").textContent = t.title;
+      $("rBody").textContent = t.body;
+      $("rSmall").textContent = "Thanks for coming. Ask Bruce how this fits you.";
+      tipSound();
+    }
+    save();
+    $("result").hidden = false;
+    $("next").focus();
+  }
+
+  function nextPerson() {
+    $("result").hidden = true;
+    spinning = false;
+    spinBtn.disabled = false;
+    spinBtn.textContent = "Spin";
+    render();
+    spinBtn.focus();
+  }
+
+  // ---------- Prize sheet ----------
+  function openSheet() {
+    if (spinning) return;
+    const rows = $("rows");
+    rows.textContent = "";
+    state.prizes.forEach((p, i) => {
+      const row = document.createElement("div");
+      row.className = "row";
+      row.innerHTML =
+        `<label class="sr" for="pname${i}">Prize ${i + 1} name</label>` +
+        `<input id="pname${i}" maxlength="18" autocomplete="off" autocorrect="off" spellcheck="false">` +
+        `<div class="stepper"><button type="button" id="pminus${i}" aria-label="One fewer ${i + 1}">−</button>` +
+        `<output id="pleft${i}" aria-live="polite"></output>` +
+        `<button type="button" id="pplus${i}" aria-label="One more ${i + 1}">+</button></div>`;
+      rows.appendChild(row);
+      const input = row.querySelector("input");
+      input.value = p.name;
+      input.addEventListener("input", () => { p.name = input.value.trim() || `Prize ${i + 1}`; });
+      const out = row.querySelector("output");
+      const show = () => { out.textContent = p.left; };
+      show();
+      row.querySelector(`#pminus${i}`).addEventListener("click", () => { p.left = Math.max(0, p.left - 1); show(); });
+      row.querySelector(`#pplus${i}`).addEventListener("click", () => { p.left = Math.min(99, p.left + 1); show(); });
+    });
+    const crow = document.createElement("div");
+    crow.className = "row";
+    crow.innerHTML =
+      `<span class="rowlabel" id="pctLabel">Chance to win</span>` +
+      `<div class="stepper"><button type="button" id="pctMinus" aria-label="Lower the chance to win">−</button>` +
+      `<output id="pctOut" aria-labelledby="pctLabel" aria-live="polite"></output>` +
+      `<button type="button" id="pctPlus" aria-label="Raise the chance to win">+</button></div>`;
+    rows.appendChild(crow);
+    const po = crow.querySelector("output");
+    const showPct = () => { po.textContent = `${state.winPct}%`; };
+    showPct();
+    crow.querySelector("#pctMinus").addEventListener("click", () => { state.winPct = Math.max(5, state.winPct - 5); showPct(); });
+    crow.querySelector("#pctPlus").addEventListener("click", () => { state.winPct = Math.min(50, state.winPct + 5); showPct(); });
+    showStats();
+    $("sheet").hidden = false;
+  }
+  function showStats() { $("stats").textContent = `${state.spins} spins · ${state.wins} prizes won`; }
+  function closeSheet() { save(); $("sheet").hidden = true; render(); }
+
+  // ---------- Sound ----------
+  // Synthesized like a real wheel: each tick is a plastic flapper striking a peg (a noise
+  // click, a peg tap and a short hollow body), varied a little each time, and it snaps
+  // harder as the wheel slows. Wins ring a struck bell rather than a pure tone.
+  let ctx = null, out = null, noise = null;
+  function audioInit() {
+    if (!state.sound) return;
+    try {
+      if (!ctx) {
+        ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const comp = ctx.createDynamicsCompressor();
+        comp.threshold.value = -14; comp.knee.value = 10; comp.ratio.value = 4;
+        comp.attack.value = 0.002; comp.release.value = 0.12;
+        out = ctx.createGain();
+        out.gain.value = 0.9;
+        out.connect(comp); comp.connect(ctx.destination);
+        const len = Math.floor(ctx.sampleRate * 0.5);
+        noise = ctx.createBuffer(1, len, ctx.sampleRate);
+        const d = noise.getChannelData(0);
+        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (ctx.state === "suspended") ctx.resume();
+    } catch (e) { ctx = null; }
+  }
+  const audible = () => state.sound && ctx && out && noise;
+
+  function burst(t, dur, freq, q, gain, type) {
+    const s = ctx.createBufferSource(); s.buffer = noise;
+    const flt = ctx.createBiquadFilter(); flt.type = type || "bandpass"; flt.frequency.value = freq; flt.Q.value = q;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.0015);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    s.connect(flt); flt.connect(g); g.connect(out);
+    s.start(t, Math.random() * 0.4); s.stop(t + dur + 0.02);
+  }
+  function tone(t, f0, f1, dur, gain, type) {
+    const o = ctx.createOscillator(); o.type = type || "sine";
+    o.frequency.setValueAtTime(f0, t);
+    if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.003);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(out);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+  // speed: 1 at full spin, 0 as it comes to rest.
+  function clack(speed) {
+    if (!audible()) return;
+    try {
+      const t = ctx.currentTime;
+      const v = 0.75 + Math.random() * 0.25;
+      const snap = 1 - 0.45 * speed;
+      burst(t, 0.018 + 0.012 * (1 - speed), 2600 + Math.random() * 900, 2.2, 0.55 * snap * v);
+      burst(t, 0.006, 6500, 1.0, 0.18 * v, "highpass");
+      tone(t, 340 + Math.random() * 40, 190, 0.05 + 0.03 * (1 - speed), 0.22 * snap * v, "triangle");
+    } catch (e) {}
+  }
+  function whoosh() {
+    if (!audible()) return;
+    try {
+      const t = ctx.currentTime;
+      const s = ctx.createBufferSource(); s.buffer = noise; s.loop = true;
+      const flt = ctx.createBiquadFilter(); flt.type = "bandpass"; flt.Q.value = 0.8;
+      flt.frequency.setValueAtTime(300, t);
+      flt.frequency.exponentialRampToValueAtTime(1600, t + 0.25);
+      flt.frequency.exponentialRampToValueAtTime(500, t + 0.7);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.12, t + 0.08);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+      s.connect(flt); flt.connect(g); g.connect(out);
+      s.start(t); s.stop(t + 0.75);
+    } catch (e) {}
+  }
+  // A struck bell: a few inharmonic partials that ring out at different rates.
+  function bell(t, freq, gain) {
+    [[1, 1, 1.6], [2.76, 0.5, 0.9], [5.4, 0.25, 0.5], [8.93, 0.12, 0.3]].forEach(([m, a, d]) => tone(t, freq * m, 0, d, gain * a, "sine"));
+    burst(t, 0.02, 4000, 1.5, gain * 0.5);
+  }
+  function winSound() {
+    if (!audible()) return;
+    try { const t = ctx.currentTime; bell(t, 1046, 0.22); bell(t + 0.16, 1318, 0.2); bell(t + 0.32, 1568, 0.24); } catch (e) {}
+  }
+  function tipSound() {
+    if (!audible()) return;
+    try { bell(ctx.currentTime, 784, 0.12); } catch (e) {}
+  }
+  function tick(speed) {
+    clack(speed);
+    const slow = 1 - speed;
+    try {
+      pointer.animate(
+        [{ transform: `translateY(-50%) rotate(${-(10 + 10 * slow)}deg)` }, { transform: "translateY(-50%) rotate(0deg)" }],
+        { duration: 60 + 120 * slow, easing: "cubic-bezier(0.2, 1.6, 0.4, 1)" }
+      );
+    } catch (e) {}
+  }
+  function paintSound() {
+    $("soundBtn").setAttribute("aria-pressed", String(state.sound));
+    $("soundBtn").setAttribute("aria-label", state.sound ? "Turn sound off" : "Turn sound on");
+    $("waves").toggleAttribute("hidden", !state.sound);
+    $("mute").toggleAttribute("hidden", state.sound);
+  }
+
+  // ---------- Confetti ----------
+  function confetti() {
+    if (reduce) return;
+    const cv = $("confetti");
+    const g = cv.getContext && cv.getContext("2d");
+    if (!g) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const W = (cv.width = innerWidth * dpr), H = (cv.height = innerHeight * dpr);
+    const colors = [C.crimson, C.ink, C.hair, C.press, C.crimson];
+    const parts = Array.from({ length: 160 }, () => ({
+      x: W / 2 + (rand() - 0.5) * W * 0.2, y: H * 0.45,
+      vx: (rand() - 0.5) * 26 * dpr, vy: (-rand() * 22 - 8) * dpr,
+      w: (6 + rand() * 8) * dpr, h: (8 + rand() * 10) * dpr,
+      r: rand() * 6, vr: (rand() - 0.5) * 0.4, c: colors[Math.floor(rand() * colors.length)]
+    }));
+    const t0 = performance.now();
+    const step = (now) => {
+      const age = now - t0;
+      g.clearRect(0, 0, W, H);
+      parts.forEach((p) => {
+        p.vy += 0.6 * dpr; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        g.save(); g.translate(p.x, p.y); g.rotate(p.r);
+        g.globalAlpha = Math.max(0, 1 - age / 2400);
+        g.fillStyle = p.c; g.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.r * 2)));
+        g.restore();
+      });
+      if (age < 2400) requestAnimationFrame(step); else g.clearRect(0, 0, W, H);
+    };
+    requestAnimationFrame(step);
+  }
+
+  // ---------- Wiring ----------
+  spinBtn.addEventListener("click", spin);
+  hub.addEventListener("click", spin);
+  $("next").addEventListener("click", nextPerson);
+  $("sheetDone").addEventListener("click", closeSheet);
+  $("resetCounts").addEventListener("click", () => { state.spins = 0; state.wins = 0; showStats(); save(); });
+  $("soundBtn").addEventListener("click", () => { state.sound = !state.sound; paintSound(); save(); if (state.sound) audioInit(); });
+  $("fullBtn").addEventListener("click", () => {
+    const d = document.documentElement;
+    try {
+      if (document.fullscreenElement || document.webkitFullscreenElement) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else { const r = (d.requestFullscreen || d.webkitRequestFullscreen).call(d); if (r && r.catch) r.catch(() => {}); }
+    } catch (e) {}
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !$("sheet").hidden) closeSheet();
+  });
+
+  paintSound();
+  render();
+})();
+</script>
+</body>
+</html>

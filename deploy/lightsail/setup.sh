@@ -86,6 +86,11 @@ install -d -m 0700 -o www-data -g www-data "$site/private"   # booking form sett
 [[ -d "$site/repo/.git" ]] || sudo -u "$owner" git clone -q https://github.com/JAAH923/vhwpt-site.git "$site/repo"
 install -m 0755 -o "$owner" -g "$owner" "$here/deploy-vhwpt.sh" "$site/deploy.sh"
 
+echo "== play.vhwpt.com"
+site=/srv/sites/play   # published from vhwpt's clone (play/ folder) by deploy.sh
+install -d -m 0755 -o "$owner" -g "$owner" "$site" "$site/releases"
+install -m 0755 -o "$owner" -g "$owner" "$here/deploy-play.sh" "$site/deploy.sh"
+
 echo
 echo "done. Caddy $(caddy version | cut -d' ' -f1), Node $(node -v), PHP $(php -r 'echo PHP_VERSION;')"
 [[ -f /var/run/reboot-required ]] && echo "a reboot is pending (sudo reboot)" || true
