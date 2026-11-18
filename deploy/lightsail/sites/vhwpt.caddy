@@ -46,6 +46,10 @@
 	# /b is a short link to the banner page for Bruce and whoever prints it.
 	@b path /b /b/
 	redir @b /banner/ 302
+	# The table sign's QR (design/table-sign/) opens the sign-up for residents and families. e= tags each
+	# sign-up with the event: change it to the next event's name before the sign goes out again.
+	@qr_signup path /qr/signup /qr/signup/
+	redir @qr_signup /signup/clients/?e=meadows&src=qr-signup 302
 	# More QR codes (the visit log tags each one, so the report counts them separately): add a pair of
 	# lines like these, then print the QR for https://www.vhwpt.com/qr/<name>. Keep the src= tag
 	# unique to that code. See deploy/lightsail/README.md ("Traffic").
