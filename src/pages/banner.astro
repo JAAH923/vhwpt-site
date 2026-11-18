@@ -10,8 +10,9 @@
  * its QR opens the sign-up page through /qr/signup. Link it directly: /banner/#table-sign.
  * After it is the logo-only sign (same script, design/table-sign/logo.html): /banner/#logo-sign,
  * and its fold-in-half tent version (design/table-sign/tent.html): /banner/#logo-tent.
- * Then the table-front banner, three versions for Vistaprint's 2.5' x 6' vinyl banner
- * (design/event-banner/build-table.mjs makes its files from table-banner.html): /banner/#table-banner.
+ * Then the table-front banner, four versions, each for Office Depot's 6' x 2' (same-day) and
+ * Vistaprint's 2.5' x 6', and Bruce's letter-size tabletop sheet (design/event-banner/build-table.mjs
+ * makes all their files from table-banner.html): /banner/#table-banner, /banner/#tabletop-sheet.
  */
 import Site from "../layouts/Site.astro";
 import PageHead from "../components/PageHead.astro";
@@ -32,6 +33,12 @@ const bannerFile = (name: string) => {
 };
 
 const tableBanners = [
+  {
+    file: "strong",
+    title: "Bruce’s design: “Strong Body. Strong Life.”",
+    body: "Bruce’s own layout: the logo centered over his tagline, rebuilt with the full-size logo so it prints sharp.",
+    alt: "The table banner: the logo centered, with “Strong Body. Strong Life.” under it, “Strong Life.” in red.",
+  },
   {
     file: "care",
     title: "Logo and “Care that comes to you.”",
@@ -346,8 +353,8 @@ const audiences = [
         <p class="label">For the front of the table</p>
         <h2 id="table-banner-title">Table banner</h2>
         <p>
-          A wide vinyl banner that hangs across the front of a 6-foot table, 72″&nbsp;×&nbsp;30″ (2½′&nbsp;×&nbsp;6′).
-          Three versions: pick one.
+          A wide vinyl banner that hangs across the front of a 6-foot table. Each version comes in
+          two sizes: 6′&nbsp;×&nbsp;2′ for Office Depot, ready the same day, and 2½′&nbsp;×&nbsp;6′ for Vistaprint.
         </p>
       </div>
       <ul class="wides">
@@ -364,7 +371,7 @@ const audiences = [
                 src={bannerFile(`valencia-table-banner-${v.file}-preview.png`)}
                 alt={v.alt}
                 width="1200"
-                height="500"
+                height="400"
                 loading="lazy"
               />
             </a>
@@ -378,15 +385,21 @@ const audiences = [
               <summary class="btn btn-primary btn-sm">Download</summary>
               <ul class="dlopts">
                 <li>
-                  <a href={bannerFile(`valencia-table-banner-${v.file}-2.5x6ft.pdf`)} download>
-                    <strong>Print PDF</strong>
-                    <span>74″ × 32″: the 72″ × 30″ banner plus the 1″ edge Vistaprint asks for. Use this one.</span>
+                  <a href={bannerFile(`valencia-table-banner-${v.file}-6x2ft.pdf`)} download>
+                    <strong>Office Depot PDF (6′ × 2′)</strong>
+                    <span>72″ × 24″. For Office Depot’s Custom Banners, same-day pickup if ordered by 2 pm.</span>
                   </a>
                 </li>
                 <li>
-                  <a href={bannerFile(`valencia-table-banner-${v.file}-2.5x6ft.png`)} download>
+                  <a href={bannerFile(`valencia-table-banner-${v.file}-2.5x6ft.pdf`)} download>
+                    <strong>Vistaprint PDF (2½′ × 6′)</strong>
+                    <span>74″ × 32″: the 72″ × 30″ banner plus the 1″ edge Vistaprint asks for.</span>
+                  </a>
+                </li>
+                <li>
+                  <a href={bannerFile(`valencia-table-banner-${v.file}-6x2ft.png`)} download>
                     <strong>Image (PNG)</strong>
-                    <span>The 72″ × 30″ banner as a picture, for email or other programs.</span>
+                    <span>The 6′ × 2′ banner as a picture, for email or other programs.</span>
                   </a>
                 </li>
               </ul>
@@ -395,10 +408,53 @@ const audiences = [
         ))}
       </ul>
       <p class="note">
-        To order: on Vistaprint’s Vinyl Banners, choose Horizontal, size 2.5′ × 6′, single-sided,
-        grommets and reinforced edges, then upload the Print PDF. Nothing important sits near the
-        edges, so the grommets miss the words and the logo.
+        Office Depot, ready the same day: open Custom Banners, choose Upload Your Design, pick
+        Landscape and 6′ × 2′, upload the Office Depot PDF, then choose Scrim (vinyl) and grommets.
+        Order by 2 pm for pickup that day. Vistaprint: Vinyl Banners, Horizontal, 2.5′ × 6′,
+        single-sided, grommets and reinforced edges, then upload the Vistaprint PDF. Nothing
+        important sits near the edges, so the grommets miss the words and the logo.
       </p>
+    </div>
+  </section>
+
+  <section class="section sign" id="tabletop-sheet" aria-labelledby="tabletop-sheet-title">
+    <div class="wrap">
+      <div class="signrow">
+        <a
+          class="art signart"
+          href={bannerFile("valencia-tabletop-sheet-letter.pdf")}
+          target="_blank"
+          rel="noopener"
+          aria-label="Open the tabletop sheet as a PDF"
+        >
+          <img
+            src={bannerFile("valencia-tabletop-sheet-letter-preview.png")}
+            alt="The tabletop sheet: the logo, large, with “Strong Body. Strong Life.” under it."
+            width="800"
+            height="1035"
+            loading="lazy"
+          />
+        </a>
+        <div class="signtext">
+          <p class="label">For the table</p>
+          <h2 id="tabletop-sheet-title">Tabletop sheet</h2>
+          <p class="desc">
+            Bruce’s letter-size sheet (8½″ × 11″): the logo over “Strong Body. Strong Life.”, to
+            match the banner. Print at home or any copy shop and stand it in a sign holder.
+          </p>
+          <details class="dlmenu">
+            <summary class="btn btn-primary btn-sm">Download</summary>
+            <ul class="dlopts">
+              <li>
+                <a href={bannerFile("valencia-tabletop-sheet-letter.pdf")} download>
+                  <strong>Print PDF</strong>
+                  <span>8½″ × 11″. Print at 100% (“Actual size”), not “Fit to page”.</span>
+                </a>
+              </li>
+            </ul>
+          </details>
+        </div>
+      </div>
     </div>
   </section>
 
