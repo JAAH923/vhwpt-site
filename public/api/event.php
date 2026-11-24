@@ -254,6 +254,9 @@ if ($class) {
     'release'    => WAIVER,
     'signature'  => $signature,
     'signed_on'  => gmdate('Y-m-d'),
+    'signed_at'  => gmdate('c'),
+    // "submit": they agreed by tapping Sign me up under the terms, with their full name above.
+    'signed_by'  => ($in['signed_by'] ?? '') === 'submit' ? 'submit' : 'typed name',
   ];
 }
 $rows = $class ? [
@@ -266,7 +269,7 @@ $rows = $class ? [
   'Address / Unit'  => $address !== '' ? $address : '(not given)',
   'Event'           => $event !== '' ? $event : '(not tagged)',
   'OK to contact'   => 'Yes, by phone or email',
-  'Release'         => 'Agreed and signed "' . $signature . '" on ' . gmdate('Y-m-d') . ' (UTC)',
+  'Release'         => 'Agreed' . (($in['signed_by'] ?? '') === 'submit' ? ' by submitting the form as "' : ' and signed "') . $signature . '" on ' . gmdate('Y-m-d') . ' (UTC)',
 ] : ($people ? [
   'Name'          => $name,
   'Phone'         => $phone !== '' ? $phone : '(not given)',

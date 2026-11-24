@@ -57,86 +57,55 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     data-failed={`That didn’t go through. Please try once more, or call Bruce at ${practice.phone}.`}
   >
     {back && <a class="cback" href={withBase(back)}>← Event details</a>}
-    <div class="kbrand">
-      <img src={withBase("/assets/brand/valencia-health-wellness-icon.png")} alt="" width="56" height="56" />
-      <span class="label">The Meadows of Crystal Lake · {practice.name}</span>
-    </div>
 
-    <h1>Class and Free Screening Sign-Up</h1>
-
-    <div class="cnext">
-      <p class="label">Next class</p>
-      <p class="cnext-title">{next.title}</p>
-      <p>{next.when}, {next.time}<br />{next.where}</p>
-    </div>
+    <h1>Sign up</h1>
+    <p class="cwhen">{next.title}<br />{next.when}, {next.time}<br />{next.where}</p>
 
     <slot />
 
     <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-    <label class="cbox cbox-big">
-      <input type="checkbox" name="attending" />
-      <span><strong>Count me in</strong> for {next.title} on {next.when} at {next.time}.</span>
-    </label>
-
-    <label class="cbox cbox-big">
-      <input type="checkbox" name="screening" />
-      <span>
-        <strong>Yes, I want the FREE Fall-Risk Screening.</strong>
-        An introductory check of balance, leg strength, and walking speed. No cost, no obligation.
-        Dr. Valencia will call you.
-      </span>
-    </label>
-
-    <fieldset class="kinterest">
-      <legend class="askq">Classes I am interested in</legend>
-      <p class="askhelp">Optional. Pick any.</p>
-      <div class="chips">
-        {
-          classes.map((c) => (
-            <label class="chip">
-              <input type="checkbox" name="classes" value={c.id} />
-              <span>{c.title}</span>
-            </label>
-          ))
-        }
-      </div>
-    </fieldset>
-
-    <h2 class="askq csub">Your details</h2>
+    <h2 class="csub"><span class="cnum">1</span> Your details</h2>
     <div class="fields">
-      <label class="field"><span>Name</span><input name="name" autocomplete="name" autocapitalize="words" maxlength="100" enterkeyhint="next" /></label>
+      <label class="field"><span>Full name (first and last)</span><input name="name" autocomplete="name" autocapitalize="words" maxlength="100" enterkeyhint="next" /></label>
       <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="tel" maxlength="30" enterkeyhint="next" /></label>
-      <label class="field"><span>Address / Unit</span><input name="address" autocomplete="street-address" maxlength="160" enterkeyhint="next" /></label>
       <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="200" enterkeyhint="next" /></label>
+      <p class="cmailhint" id="cmailhint" role="status" hidden></p>
+      <label class="field"><span>Address / Unit</span><input name="address" autocomplete="street-address" maxlength="160" enterkeyhint="next" /></label>
     </div>
-    <p class="cmailhint" id="cmailhint" role="status" hidden></p>
-    <p class="askhelp">A phone number or an email, whichever you prefer.</p>
+    <p class="chelp">A phone number or an email is enough.</p>
 
-    <h2 class="askq csub">Contact permission, participation acknowledgment, and release</h2>
+    <h2 class="csub"><span class="cnum">2</span> What would you like?</h2>
     <label class="cbox">
-      <input type="checkbox" name="consent" />
-      <span><strong>Contact.</strong> I agree that Valencia Health &amp; Wellness, LLC may contact me by phone or email about these classes, my screening, and general health questions.</span>
+      <input type="checkbox" name="attending" />
+      <span><strong>Count me in</strong> for the class on {next.when}.</span>
     </label>
+    <label class="cbox">
+      <input type="checkbox" name="screening" />
+      <span><strong>FREE Fall-Risk Screening.</strong> A quick check of balance, leg strength, and walking speed. No cost, no obligation. Dr. Valencia will call you.</span>
+    </label>
+    <p class="chelp">Classes I’m interested in (optional):</p>
+    {
+      classes.map((c) => (
+        <label class="cbox csmall">
+          <input type="checkbox" name="classes" value={c.id} />
+          <span>{c.title}</span>
+        </label>
+      ))
+    }
 
-    <div class="cwaiver">
+    <h2 class="csub"><span class="cnum">3</span> Terms</h2>
+    <p class="chelp cterms-lead">By tapping Sign me up, you agree to the contact permission, participation acknowledgment, and release. This counts as your signature, dated today (<span id="cdate"></span>).</p>
+    <details class="cterms">
+      <summary>Read the terms</summary>
+      <p><strong>Contact.</strong> I agree that Valencia Health &amp; Wellness, LLC may contact me by phone or email about these classes, my screening, and general health questions.</p>
       <p><strong>Participation.</strong> I understand that these classes and the screening are wellness and exercise services, not physical therapy treatment, and that taking part does not create a patient relationship. Exercise carries a risk of injury, including falls, muscle strain, and, rarely, a serious medical event. I am taking part voluntarily. I will talk with my doctor about any health concern before I exercise, and I will stop and tell the instructor if I feel pain, dizziness, or unwell.</p>
       <p><strong>Release.</strong> I release Valencia Health &amp; Wellness, LLC and Dr. Bruce Valencia from claims for injury or loss arising from my participation, including claims based on negligence, to the fullest extent Florida law allows.</p>
-    </div>
-    <label class="cbox">
-      <input type="checkbox" name="waiver" />
-      <span>I have read and agree to the participation acknowledgment and release above.</span>
-    </label>
+    </details>
 
-    <div class="fields">
-      <label class="field"><span>Signature: type your full name</span><input name="signature" autocomplete="off" autocapitalize="words" maxlength="100" enterkeyhint="done" /></label>
-    </div>
-    <p class="askhelp">Typing your name here counts as your signature. Today’s date is added for you: <span id="cdate"></span>.</p>
-
-    <p class="askprivacy">Your details go only to Bruce and are not shared.</p>
     <p class="askerr" id="cerr" role="alert" hidden></p>
-    <button type="submit" class="btn btn-primary" id="csubmit" disabled>Sign me up</button>
-    <p class="askhelp cneed" id="cneed">To sign up, fill in your name, a phone or email, tick both boxes, and type your name as your signature.</p>
+    <button type="submit" class="btn btn-primary" id="csubmit">Sign me up</button>
+    <p class="chelp ccenter">Your details go only to Bruce and are not shared.</p>
 
     <p class="cfoot">Questions? <a href={practice.phoneHref}>{practice.phone}</a> · Strong Body. Strong Life.</p>
   </form>
@@ -145,33 +114,35 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
 <Thanks site={!back} />
 
 <style>
-  .cwrap { display: grid; justify-items: center; gap: 16px; padding: 32px 20px calc(48px + env(safe-area-inset-bottom)); }
+  .cwrap { display: grid; justify-items: center; gap: 16px; padding: 28px 20px calc(48px + env(safe-area-inset-bottom)); }
   .cwrap [hidden] { display: none !important; }
-  .cwrap .kpreview { width: min(680px, 100%); margin-top: 0; }
-  .cform { width: min(680px, 100%); }
-  .cform h1 { font-size: clamp(32px, 5vw, 44px); line-height: 1.08; letter-spacing: -0.02em; }
-  .cform .askhelp, .cform .field span { font-size: 18px; }
-  .cform .field input { font-size: 22px; padding-top: 6px; }
-  .cform .field { padding: 14px 18px; }
-  .cnext { margin-top: 24px; padding: 20px 22px; border-radius: 16px; background: var(--whisper); font-size: 20px; line-height: 1.4; }
-  .cnext-title { font-size: 26px; font-weight: 700; margin: 4px 0 6px; line-height: 1.2; }
-  .csub { margin-top: 40px; font-size: clamp(22px, 3vw, 26px); }
-  .cbox { display: flex; align-items: flex-start; gap: 14px; margin-top: 20px; cursor: pointer; }
-  .cbox input { flex: none; width: 28px; height: 28px; margin: 2px 0 0; accent-color: var(--ink); }
-  .cbox span { font-size: 19px; line-height: 1.45; }
-  .cbox-big { padding: 18px 20px; border: 1px solid var(--hair); border-radius: 16px; }
-  .cbox-big:has(input:checked) { border-color: var(--ink); }
-  .cform .kinterest { margin-top: 36px; }
-  .cform .chip span { padding: 14px 20px; font-size: 18px; }
-  .cwaiver { margin-top: 20px; padding: 18px 20px; border-radius: 16px; border: 1px solid var(--hair); font-size: 17px; line-height: 1.5; }
-  .cwaiver p + p { margin-top: 12px; }
-  .cform .btn { width: 100%; margin-top: 24px; padding: 20px 24px; font-size: 22px; }
+  .cwrap .kpreview { width: min(600px, 100%); margin-top: 0; }
+  .cform { width: min(600px, 100%); font-size: 20px; line-height: 1.45; }
+  .cback { display: inline-block; margin-bottom: 16px; font-size: 19px; color: var(--ink); }
+  .cform h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; }
+  .cwhen { margin-top: 10px; font-size: 20px; color: var(--grey); }
+  .csub { display: flex; align-items: center; gap: 12px; margin-top: 44px; font-size: 26px; line-height: 1.2; }
+  .cnum { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--white); font-size: 19px; }
+  .cform .fields { margin-top: 18px; gap: 14px; }
+  .cform .field { padding: 12px 18px; }
+  .cform .field span { font-size: 18px; color: var(--grey); }
+  .cform .field input { font-size: 24px; padding-top: 4px; }
+  .chelp { margin-top: 12px; font-size: 18px; color: var(--grey); }
+  .ccenter { text-align: center; }
+  .cbox { display: flex; align-items: flex-start; gap: 16px; margin-top: 16px; padding: 16px 18px; border: 2px solid var(--hair); border-radius: 14px; cursor: pointer; }
+  .cbox:has(input:checked) { border-color: var(--ink); }
+  .cbox input { flex: none; width: 30px; height: 30px; margin: 0; accent-color: var(--ink); }
+  .cbox span { font-size: 20px; line-height: 1.4; }
+  .csmall { margin-top: 10px; padding: 12px 18px; }
+  .cterms { margin-top: 12px; font-size: 18px; }
+  .cterms summary { cursor: pointer; text-decoration: underline; padding: 6px 0; }
+  .cterms p { margin-top: 12px; line-height: 1.5; }
+  .cform .btn { width: 100%; margin-top: 28px; padding: 22px 24px; font-size: 24px; }
   .cform .btn:disabled { background: var(--whisper); color: var(--grey); cursor: default; }
-  .cneed { font-size: 16px !important; text-align: center; margin-left: auto; margin-right: auto; }
-  .cmailhint { margin-top: 10px; font-size: 17px; font-weight: 700; }
+  .cform .askerr { font-size: 19px; color: var(--crimson); }
+  .cmailhint { font-size: 18px; font-weight: 700; }
   .cmailhint button { font: inherit; color: var(--crimson); text-decoration: underline; background: none; border: 0; padding: 0; cursor: pointer; }
-  .cback { display: inline-block; margin-bottom: 20px; font-size: 18px; color: var(--ink); }
-  .cfoot { margin-top: 40px; color: var(--grey); text-align: center; }
+  .cfoot { margin-top: 40px; color: var(--grey); text-align: center; font-size: 18px; }
 </style>
 
 <script>
@@ -185,7 +156,6 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     formatPhoneFields(form);
     const submit = document.getElementById("csubmit") as HTMLButtonElement;
     const err = document.getElementById("cerr")!;
-    const need = document.getElementById("cneed")!;
     let sending = false;
 
     document.getElementById("cdate")!.textContent = new Date().toLocaleDateString("en-US", {
@@ -253,13 +223,19 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
 
     const phoneOk = () => val("phone").replace(/\D/g, "").length >= 10;
     const valid = () =>
-      val("name").length > 0 && (emailOk() || phoneOk()) && !emailBad() && checked("consent") && checked("waiver") && val("signature").length > 1;
+      fullName() && (emailOk() || phoneOk()) && !emailBad();
+    // The button stays on. A tap with something missing says what, in plain words.
+    const fullName = () => val("name").split(/\s+/).filter((w) => w.length > 0).length >= 2;
+    const missing = () => {
+      const m: string[] = [];
+      if (!fullName()) m.push("your full name (first and last)");
+      if (emailBad()) m.push("a complete email (or clear it and give a phone number)");
+      else if (!emailOk() && !phoneOk()) m.push("a phone number or email");
+      return m;
+    };
     const refresh = () => {
-      submit.disabled = !valid() || sending;
-      need.hidden = valid();
-      need.textContent = emailBad()
-        ? "Please fix the email address, or clear it and use a phone number."
-        : "To sign up, fill in your name, a phone or email, tick both boxes, and type your name as your signature.";
+      submit.disabled = sending;
+      if (!err.hidden && valid()) err.hidden = true;
     };
 
     function finished(preview = false) {
@@ -286,7 +262,14 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     }
 
     function send() {
-      if (sending || !valid()) return;
+      if (sending) return;
+      if (!valid()) {
+        const m = missing();
+        err.textContent = "Almost there. Please add " + (m.length > 1 ? m.slice(0, -1).join(", ") + " and " + m[m.length - 1] : m[0]) + ".";
+        err.hidden = false;
+        err.scrollIntoView({ block: "center", behavior: "smooth" });
+        return;
+      }
       if (!live) return finished(true);
       sending = true;
       submit.disabled = true;
@@ -308,9 +291,12 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
           attending: checked("attending"),
           class_date: form.dataset.class || "",
           classes: [...form.querySelectorAll<HTMLInputElement>("input[name=classes]:checked")].map((c) => c.value),
-          consent: checked("consent"),
-          waiver: checked("waiver"),
-          signature: val("signature"),
+          // Tapping "Sign me up" is the agreement and the signature (Justin, 2026-11-24): the
+          // terms sit right above the button, and the server records the name and date.
+          consent: true,
+          waiver: true,
+          signature: val("name"),
+          signed_by: "submit",
           event,
           website: val("website"),
         }),
