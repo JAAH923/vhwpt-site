@@ -1,40 +1,19 @@
 ---
 /**
- * Registration for Bruce's class and free fall-risk screening at The Meadows of Crystal Lake.
- * Bruce emails https://www.vhwpt.com/meadows to past class participants. Unlisted and out of
- * search, like the other sign-up pages. The form is components/EventSignupClass.astro.
- *
- * For the next class: change `next` and `event` below. The flyer's copy for the class goes in the
- * "About this class" block (leave it empty and it is not shown).
+ * Short link to the latest Meadows class page. Change `to` when the next class page is made.
+ * Keeps ?e= and other query strings.
  */
-import Kiosk from "../layouts/Kiosk.astro";
-import EventSignupClass from "../components/EventSignupClass.astro";
-
-const next = {
-  title: "Holiday-Proof Habits",
-  when: "Thursday, December 17",
-  time: "11:00 AM",
-  where: "Community Center, The Meadows of Crystal Lake",
-};
-const event = "meadows-2026-12-17";
-
-// The flyer's copy for this class: one string per paragraph. Empty means the block is hidden.
-const about: string[] = [];
+const to = `${import.meta.env.BASE_URL.replace(/\/$/, "")}/events/meadows-dec-17/`;
 ---
 
-<Kiosk title="Class and Free Screening Sign-Up | Valencia Health & Wellness">
-  <EventSignupClass next={next} event={event}>
-    {
-      about.length > 0 && (
-        <section class="cabout" aria-label="About this class">
-          {about.map((p) => <p>{p}</p>)}
-        </section>
-      )
-    }
-  </EventSignupClass>
-</Kiosk>
-
-<style>
-  .cabout { margin-top: 20px; font-size: 19px; line-height: 1.5; }
-  .cabout p + p { margin-top: 12px; }
-</style>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta http-equiv="refresh" content={`0; url=${to}`} />
+    <title>Class Sign-Up | Valencia Health &amp; Wellness</title>
+    <script is:inline define:vars={{ to }}>location.replace(to + location.search + location.hash);</script>
+  </head>
+  <body><a href={to}>Continue to the class sign-up</a></body>
+</html>

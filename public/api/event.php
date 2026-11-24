@@ -23,6 +23,12 @@
 // sign-ups go to their own), and the contact id or the error lands in the resend_* columns. The
 // first tick box only covers Bruce contacting them, so it never adds anyone to a list.
 //
+// Class sign-ups (/events/*, form "class") are the exception: their contact OK covers email "about
+// these classes", so everyone who gives an email is added to "Class sign-ups · All" (invites to
+// future classes), and those who ticked "Count me in" also to a segment for that one event,
+// "Class · <event> · Coming" (e.g. "Class · meadows-2026-12-17 · Coming"). Bruce sends reminders
+// to that segment as a Resend broadcast.
+//
 // Two forms post here. /signup/partners (src/components/EventSignup.astro) is for facility owners and other
 // therapists: it sends a role and topics. /signup/clients (src/components/EventSignupPeople.astro) is for
 // regular people: it sends "form": "people" and the services they are curious about. The ids and
@@ -348,7 +354,17 @@ if ($dbId === null && !$filed && !$sent) {
           . ' file=' . (error_get_last()['message'] ?? 'no error recorded'));
   finish(false, 'That didn’t go through. Please ask Bruce to take your details, or ' . CONTACT . '.', 502);
 }
-if (!$news || !is_array($cfg) || empty($cfg['resend_key'])) finish(true, '', 200);
+// Which Resend segments this sign-up joins (by key in SEGMENTS, or by full name).
+$segments = [];
+if ($email !== '') {
+  if ($class) {
+    $segments[] = $test ? 'test' : 'Class sign-ups · All';
+    if ($attending && !$test) $segments[] = 'Class · ' . ($event !== '' ? $event : 'untagged') . ' · Coming';
+  } elseif ($news) {
+    $segments[] = $test ? 'test' : ($kind === 'pros' ? 'pros' : 'people');
+  }
+}
+if (!$segments || !is_array($cfg) || empty($cfg['resend_key'])) finish(true, '', 200);
 
 // The visitor gets their answer now; the contact is added after, so a slow Resend never holds up
 // the next person at the booth.
@@ -356,7 +372,14 @@ http_response_code(200);
 echo json_encode(['ok' => true, 'error' => '']);
 if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
 
-[$contactId, $pushErr] = resend_add_contact($cfg['resend_key'], $private, $test ? 'test' : ($kind === 'pros' ? 'pros' : 'people'), $email, $name);
+$contactId = null;
+$errs = [];
+foreach ($segments as $which) {
+  [$cid, $err] = resend_add_contact($cfg['resend_key'], $private, $which, $email, $name);
+  if ($cid !== null) $contactId = $cid;
+  if ($err !== null) $errs[] = $err;
+}
+$pushErr = $errs ? implode('; ', $errs) : null;
 if ($pushErr !== null) error_log('vhwpt event signups resend: ' . $pushErr);
 if ($db && $dbId !== null) {
   try {
@@ -385,7 +408,7 @@ function resend_segment(string $key, string $private, string $which): ?string {
   $cache = $private . '/resend-segments.json';
   $ids = is_file($cache) ? (array) json_decode((string) file_get_contents($cache), true) : [];
   if (!empty($ids[$which])) return (string) $ids[$which];
-  $name = SEGMENTS[$which];
+  $name = SEGMENTS[$which] ?? $which;
   [$c, $j] = resend($key, 'GET', '/segments');
   $id = null;
   if (ok($c)) foreach ((array) ($j['data'] ?? []) as $sg) if (($sg['name'] ?? '') === $name) { $id = (string) $sg['id']; break; }
@@ -404,7 +427,7 @@ function resend_segment(string $key, string $private, string $which): ?string {
 // unsubscribe choice is left alone.
 function resend_add_contact(string $key, string $private, string $which, string $email, string $name): array {
   $seg = resend_segment($key, $private, $which);
-  if ($seg === null) return [null, 'could not find or create the segment "' . SEGMENTS[$which] . '"'];
+  if ($seg === null) return [null, 'could not find or create the segment "' . (SEGMENTS[$which] ?? $which) . '"'];
   $parts = preg_split('/\s+/u', $name, 2) ?: [$name];
   [$c, $j] = resend($key, 'POST', '/contacts', [
     'email' => $email, 'first_name' => $parts[0], 'last_name' => $parts[1] ?? '',
