@@ -1,6 +1,6 @@
 ---
 /**
- * The class and free screening sign-up (/meadows): the digital copy of Bruce's paper sheet for his
+ * The class and free screening sign-up (/events/meadows-<date>/): the digital copy of Bruce's paper sheet for his
  * classes at The Meadows of Crystal Lake. Bruce emails the link to past class participants, so it
  * is built for someone on their own phone or computer at home, not for an iPad handed around.
  *
@@ -9,7 +9,7 @@
  * participation acknowledgment and release, signed by typing their name. No free-text box, so no
  * health details (T-883).
  *
- * For the next class, change the `next` prop in src/pages/meadows.astro. The class ids and the
+ * For the next class, copy the newest src/pages/events/meadows-<date>.astro (see its header). The class ids and the
  * contact and release wording are mirrored in public/api/event.php (CLASSES, CONSENT['class'],
  * WAIVER); change them together. Sign-ups go to /api/event.php with form "class": saved in the
  * sign-ups database on Bruce's server, with a backup file, and emailed to Bruce.

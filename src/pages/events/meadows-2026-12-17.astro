@@ -1,0 +1,42 @@
+---
+/**
+ * Registration for Bruce's Dec 17, 2026 class and free fall-risk screening at The Meadows of
+ * Crystal Lake: https://www.vhwpt.com/events/meadows-2026-12-17/. Each class gets its own page
+ * here, named meadows-<yyyy-mm-dd> to match its `event` tag. Unlisted and out of search, like the
+ * other sign-up pages. The form is components/EventSignupClass.astro.
+ *
+ * For the next class: copy this file to events/meadows-<new date>.astro, change `next` and
+ * `event`, then point src/pages/meadows.astro at the new page. The flyer's copy for the class goes
+ * in the "About this class" block (leave it empty and it is not shown).
+ */
+import Kiosk from "../../layouts/Kiosk.astro";
+import EventSignupClass from "../../components/EventSignupClass.astro";
+
+const next = {
+  title: "Holiday-Proof Habits",
+  when: "Thursday, December 17",
+  time: "11:00 AM",
+  where: "Community Center, The Meadows of Crystal Lake",
+};
+const event = "meadows-2026-12-17";
+
+// The flyer's copy for this class: one string per paragraph. Empty means the block is hidden.
+const about: string[] = [];
+---
+
+<Kiosk title="Class and Free Screening Sign-Up | Valencia Health & Wellness">
+  <EventSignupClass next={next} event={event}>
+    {
+      about.length > 0 && (
+        <section class="cabout" aria-label="About this class">
+          {about.map((p) => <p>{p}</p>)}
+        </section>
+      )
+    }
+  </EventSignupClass>
+</Kiosk>
+
+<style>
+  .cabout { margin-top: 20px; font-size: 19px; line-height: 1.5; }
+  .cabout p + p { margin-top: 12px; }
+</style>
