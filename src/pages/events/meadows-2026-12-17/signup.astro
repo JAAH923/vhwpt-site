@@ -1,0 +1,10 @@
+---
+/** The Dec 17, 2026 class at The Meadows: sign-up form. When it goes through, people go back to the info page. */
+import Kiosk from "../../../layouts/Kiosk.astro";
+import EventSignupClass from "../../../components/EventSignupClass.astro";
+import { meadows20261217 as ev } from "../../../data/events";
+---
+
+<Kiosk title={`Sign Up: ${ev.title}, ${ev.when} | Valencia Health & Wellness`}>
+  <EventSignupClass next={ev} event={ev.slug} back={`/events/${ev.slug}/`} />
+</Kiosk>
