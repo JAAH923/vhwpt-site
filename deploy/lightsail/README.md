@@ -85,6 +85,28 @@ to settle first. People who left only a phone number can't be added. And the tic
 covers Bruce contacting them (about their sign-up, on `/event2`), so a mailing list needs new
 wording; `consent_text` keeps what each person actually ticked.
 
+## Admin area
+
+**https://www.vhwpt.com/admin** is Bruce's private area, behind one password (Caddy `basic_auth`,
+user `bruce`). Today it links to **/admin/signups**, every event and class sign-up from the database
+above, filterable by event, with a CSV download for Excel (`public/api/admin-signups.php`, read
+only). It only works over HTTPS on www.vhwpt.com; the test address answers 404.
+
+The password hash is kept out of the repo, in `/etc/caddy/private/vhwpt-admin-auth.caddy`
+(root, 600). To set or change the password:
+
+```sh
+ssh bruce-lightsail 'sudo install -d -m 700 /etc/caddy/private && h=$(caddy hash-password --plaintext "NEW PASSWORD") \
+  && printf "basic_auth {\n\tbruce %s\n}\n" "$h" | sudo tee /etc/caddy/private/vhwpt-admin-auth.caddy >/dev/null \
+  && sudo chmod 600 /etc/caddy/private/vhwpt-admin-auth.caddy \
+  && sudo install -m 644 /srv/sites/vhwpt/repo/deploy/lightsail/sites/vhwpt.caddy /etc/caddy/sites/ \
+  && sudo caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile && sudo systemctl reload caddy'
+```
+
+To move it to **admin.vhwpt.com** later: add the DNS record (Brendan, Cloudflare, proxied), then
+add a site block for `admin.vhwpt.com` with the same certificate that imports the snippet and
+redirects `/` to `/admin/`, and add the host to `@admin`.
+
 ## Traffic: how people arrive
 
 Caddy keeps a **visit log** for vhwpt.com, and [`traffic-report.py`](traffic-report.py) turns it into

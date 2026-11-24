@@ -1,0 +1,42 @@
+---
+/**
+ * Bruce's admin area: vhwpt.com/admin, behind one password (Caddy basic auth, set on the server;
+ * see deploy/lightsail/README.md, "Admin area"). Everything private for Bruce lives under /admin/,
+ * so it can move to admin.vhwpt.com later with a Caddy change only.
+ * Sign-ups are a PHP page (public/api/admin-signups.php), served at /admin/signups.
+ */
+import Kiosk from "../../layouts/Kiosk.astro";
+
+const sections = [
+  { href: "/admin/signups", title: "Sign-ups", text: "Everyone who signed up for a class or event. Filter by event, see who wants a free screening, download for Excel." },
+  { href: "/admin/signups?form=class", title: "Class sign-ups", text: "Only the class registrations (The Meadows)." },
+  { href: "/events/meadows-2026-12-17/", title: "Dec 17 class page", text: "The registration page to send people. Short link: vhwpt.com/meadows" },
+  { href: "/banner/", title: "Banners and print files", text: "Table banner PDFs and pictures for Office Depot and Vistaprint." },
+];
+---
+
+<Kiosk title="Admin | Valencia Health & Wellness">
+  <div class="awrap">
+    <div class="kbrand">
+      <img src="/assets/brand/valencia-health-wellness-icon.png" alt="" width="56" height="56" />
+      <span class="label">Valencia Health &amp; Wellness · Admin</span>
+    </div>
+    <h1>Admin</h1>
+    <p class="askhelp">Private pages for Bruce. Don’t share this address or the password.</p>
+    <ul class="acards">
+      {sections.map((s) => (
+        <li><a href={s.href}><strong>{s.title}</strong><span>{s.text}</span></a></li>
+      ))}
+    </ul>
+  </div>
+</Kiosk>
+
+<style>
+  .awrap { width: min(760px, 100%); margin: 0 auto; padding: 32px 16px 64px; }
+  .awrap h1 { font-size: clamp(32px, 5vw, 44px); line-height: 1.1; }
+  .acards { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 12px; }
+  .acards a { display: block; padding: 18px 20px; border: 1px solid var(--hair); border-radius: 16px; text-decoration: none; color: var(--ink); }
+  .acards a:hover { border-color: var(--ink); }
+  .acards strong { display: block; font-size: 20px; }
+  .acards span { display: block; margin-top: 4px; color: var(--grey); }
+</style>
