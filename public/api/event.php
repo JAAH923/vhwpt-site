@@ -27,7 +27,7 @@
 // these classes", so everyone who gives an email is added to "Class sign-ups · All" (invites to
 // future classes), and those who ticked "Count me in" also to a segment for that one event,
 // "Class · <event> · Coming" (e.g. "Class · meadows-2026-12-17 · Coming"). Bruce sends reminders
-// to that segment as a Resend broadcast.
+// to that segment as a Resend broadcast. TURNED OFF for now (CLASS_TO_RESEND): the database is the list.
 //
 // Two forms post here. /signup/partners (src/components/EventSignup.astro) is for facility owners and other
 // therapists: it sends a role and topics. /signup/clients (src/components/EventSignupPeople.astro) is for
@@ -50,7 +50,8 @@ header('X-Content-Type-Options: nosniff');
 header('Content-Type: application/json; charset=utf-8');
 
 const CONTACT = 'call 1-954-299-6536 or email info@vhwpt.com';
-const PER_HOUR = 90;   // sign-ups per address per hour; a whole booth shares one address
+const PER_HOUR = 90;
+const CLASS_TO_RESEND = false;   // class sign-ups to Resend segments; see the $segments block below   // sign-ups per address per hour; a whole booth shares one address
 
 const ROLES = [
   'facility'  => 'Owns or runs a facility',
@@ -164,6 +165,14 @@ function db_open(string $dir): ?PDO {
     // and before /meadows, its two.
     if (!in_array('address', $cols, true))    $db->exec('ALTER TABLE signups ADD COLUMN address TEXT');
     if (!in_array('details', $cols, true))    $db->exec('ALTER TABLE signups ADD COLUMN details TEXT');
+    // One easy-to-read list of real class participants, per event, for reminders.
+    $db->exec("CREATE VIEW IF NOT EXISTS class_participants AS
+      SELECT id, event, created_at, name, phone, email, address,
+             CASE WHEN json_extract(details, '$.attending') THEN 'yes' ELSE 'no' END AS coming,
+             CASE WHEN json_extract(details, '$.screening') THEN 'yes' ELSE 'no' END AS screening,
+             topics AS interested_in,
+             json_extract(details, '$.signed_at') AS signed_at
+      FROM signups WHERE form = 'class' AND test = 0");
     if ($new) @chmod($file, 0600);
     return $db;
   } catch (Throwable $e) {
@@ -361,8 +370,13 @@ if ($dbId === null && !$filed && !$sent) {
 $segments = [];
 if ($email !== '') {
   if ($class) {
-    $segments[] = $test ? 'test' : 'Class sign-ups · All';
-    if ($attending && !$test) $segments[] = 'Class · ' . ($event !== '' ? $event : 'untagged') . ' · Coming';
+    // Off for now (Justin, 2026-11-24): Bruce's Resend free plan allows 3 segments and they are
+    // taken, so class sign-ups live only in the database (view class_participants). To turn the
+    // lists back on, set CLASS_TO_RESEND to true once the segments can be created.
+    if (CLASS_TO_RESEND) {
+      $segments[] = $test ? 'test' : 'Class sign-ups · All';
+      if ($attending && !$test) $segments[] = 'Class · ' . ($event !== '' ? $event : 'untagged') . ' · Coming';
+    }
   } elseif ($news) {
     $segments[] = $test ? 'test' : ($kind === 'pros' ? 'pros' : 'people');
   }

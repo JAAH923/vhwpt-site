@@ -67,6 +67,17 @@ ssh bruce-lightsail "sudo -u www-data sqlite3 -header -csv /srv/sites/vhwpt/priv
   'select * from signups where test = 0'" > signups.csv
 ```
 
+Class registrations (/events/<slug>/signup) are `form = 'class'`. The view `class_participants`
+lists the real ones per event (name, phone, email, address, coming, screening, interests, signed_at):
+
+```sh
+ssh bruce-lightsail "sudo -u www-data sqlite3 -header -csv /srv/sites/vhwpt/private/vhwpt-signups.sqlite \
+  \"select * from class_participants where event = 'meadows-2026-12-17'\"" > meadows-2026-12-17.csv
+```
+
+Class sign-ups are not sent to Resend for now (`CLASS_TO_RESEND` in event.php): Bruce's free Resend
+plan allows 3 segments and all 3 are used. The database is the participant list.
+
 The columns `resend_contact_id`, `resend_pushed_at` and `resend_error` are for a later step:
 pushing sign-ups to Resend as contacts. That step would take rows with `test = 0`, an email and
 `resend_pushed_at is null`, add each to a Resend audience, and fill those columns in. Two things
