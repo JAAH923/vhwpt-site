@@ -407,6 +407,7 @@ function resend(string $key, string $method, string $path, ?array $body = null):
 function ok(int $code): bool { return $code >= 200 && $code < 300; }
 
 // The segment's id, found by name or created, and remembered in private/resend-segments.json.
+$GLOBALS['resend_segment_error'] = '';
 function resend_segment(string $key, string $private, string $which): ?string {
   $cache = $private . '/resend-segments.json';
   $ids = is_file($cache) ? (array) json_decode((string) file_get_contents($cache), true) : [];
@@ -417,7 +418,11 @@ function resend_segment(string $key, string $private, string $which): ?string {
   if (ok($c)) foreach ((array) ($j['data'] ?? []) as $sg) if (($sg['name'] ?? '') === $name) { $id = (string) $sg['id']; break; }
   if ($id === null) {
     [$c, $j] = resend($key, 'POST', '/segments', ['name' => $name]);
-    if (!ok($c) || empty($j['id'])) return null;
+    if (!ok($c) || empty($j['id'])) {
+      // Keep Resend's own words (a plan limit, a key without contact access) for resend_error.
+      $GLOBALS['resend_segment_error'] = 'create ' . $c . ': ' . (string) ($j['message'] ?? $j['name'] ?? 'no message');
+      return null;
+    }
     $id = (string) $j['id'];
   }
   $ids[$which] = $id;
@@ -430,7 +435,7 @@ function resend_segment(string $key, string $private, string $which): ?string {
 // unsubscribe choice is left alone.
 function resend_add_contact(string $key, string $private, string $which, string $email, string $name): array {
   $seg = resend_segment($key, $private, $which);
-  if ($seg === null) return [null, 'could not find or create the segment "' . (SEGMENTS[$which] ?? $which) . '"'];
+  if ($seg === null) return [null, 'could not find or create the segment "' . (SEGMENTS[$which] ?? $which) . '"' . ($GLOBALS['resend_segment_error'] !== '' ? ' (' . $GLOBALS['resend_segment_error'] . ')' : '')];
   $parts = preg_split('/\s+/u', $name, 2) ?: [$name];
   [$c, $j] = resend($key, 'POST', '/contacts', [
     'email' => $email, 'first_name' => $parts[0], 'last_name' => $parts[1] ?? '',
