@@ -37,6 +37,9 @@
 // address or unit, email, the contact OK, and the participation acknowledgment and release, signed
 // by typing their name. The wording they agreed to, the typed signature and the date are kept in
 // the details column, so each row stands in for a signed paper sheet.
+// It also has one optional free-text box, a testimonial about a past class, with its own tick box
+// to share it (first name and last initial). The page asks for no medical details; Justin or Bruce
+// reads each one before it is used anywhere. Both go in the details column, with the share wording.
 declare(strict_types=1);
 
 header('Cache-Control: no-store');
@@ -83,6 +86,7 @@ const CONSENT = [
 ];
 // The /meadows participation acknowledgment and release, word for word from the paper sheet.
 // Mirrored in src/components/EventSignupClass.astro; change them together.
+const SHARE = 'Yes, Valencia Health & Wellness may share my words on its website, flyers and social media, with my first name and last initial.';
 const WAIVER = 'Participation. I understand that these classes and the screening are wellness and exercise services, not physical therapy treatment, and that taking part does not create a patient relationship. Exercise carries a risk of injury, including falls, muscle strain, and, rarely, a serious medical event. I am taking part voluntarily. I will talk with my doctor about any health concern before I exercise, and I will stop and tell the instructor if I feel pain, dizziness, or unwell. '
              . 'Release. I release Valencia Health & Wellness, LLC and Dr. Bruce Valencia from claims for injury or loss arising from my participation, including claims based on negligence, to the fullest extent Florida law allows.';
 const NEWS = 'Also email me news and event invites from Valencia Health & Wellness. Optional; unsubscribe anytime.';
@@ -205,6 +209,8 @@ $attending = $class && ($in['attending'] ?? false) === true;
 $waiver    = $class && ($in['waiver'] ?? false) === true;
 $signature = $class ? oneLine(clean($in['signature'] ?? '', 100)) : '';
 $classDate = $class ? oneLine(clean($in['class_date'] ?? '', 60)) : '';
+$quote     = $class ? clean($in['testimonial'] ?? '', 1000) : '';
+$shareOk   = $quote !== '' && ($in['share_ok'] ?? false) === true;
 $chosen = [];
 foreach ((array) ($in[$class ? 'classes' : ($people ? 'interests' : 'topics')] ?? []) as $t) {
   $map = $class ? CLASSES : ($people ? SERVICES : TOPICS);
@@ -249,6 +255,11 @@ if ($class) {
     'signature'  => $signature,
     'signed_on'  => gmdate('Y-m-d'),
   ];
+  if ($quote !== '') {
+    $details['testimonial'] = $quote;
+    $details['share_ok']    = $shareOk;
+    $details['share_text']  = $shareOk ? SHARE : null;
+  }
 }
 $rows = $class ? [
   'Name'            => $name,
@@ -261,7 +272,10 @@ $rows = $class ? [
   'Event'           => $event !== '' ? $event : '(not tagged)',
   'OK to contact'   => 'Yes, by phone or email',
   'Release'         => 'Agreed and signed "' . $signature . '" on ' . gmdate('Y-m-d') . ' (UTC)',
-] : ($people ? [
+] + ($quote !== '' ? [
+  'Testimonial'     => $quote,
+  'OK to share it'  => $shareOk ? 'Yes, with first name and last initial' : 'No, keep it private',
+] : []) : ($people ? [
   'Name'          => $name,
   'Phone'         => $phone !== '' ? $phone : '(not given)',
   'Email'         => $email !== '' ? $email : '(not given)',

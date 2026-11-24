@@ -18,12 +18,16 @@ const next = {
 };
 const event = "meadows-2026-12-17";
 
+// Bruce's Google review link, from his Google Business Profile ("Ask for reviews" / "Share review
+// form"), like https://g.page/r/XXXX/review. Empty hides the "post it on Google" step.
+const googleReview = "";
+
 // The flyer's copy for this class: one string per paragraph. Empty means the block is hidden.
 const about: string[] = [];
 ---
 
 <Kiosk title="Class and Free Screening Sign-Up | Valencia Health & Wellness">
-  <EventSignupClass next={next} event={event}>
+  <EventSignupClass next={next} event={event} googleReview={googleReview}>
     {
       about.length > 0 && (
         <section class="cabout" aria-label="About this class">
