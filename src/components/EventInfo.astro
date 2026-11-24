@@ -1,7 +1,7 @@
 ---
 /**
  * An event's info page (/events/<slug>/): what, when, where, the flyer's copy, the free screening
- * and the classes, and a big Sign up button to /events/<slug>/signup/. The sign-up form sends
+ * and the classes, and one Sign up button (under the date and place) to /events/<slug>/signup/. The sign-up form sends
  * people back here when they are done. Data: src/data/events.ts.
  */
 import { practice } from "../data/site";
@@ -57,8 +57,6 @@ const signup = withBase(`/events/${ev.slug}/signup/`);
       </ul>
       <p>Tell us which ones interest you when you sign up.</p>
     </section>
-
-    <a class="btn btn-primary ebig" href={signup}>Sign up</a>
 
     <p class="efoot">Questions? <a href={practice.phoneHref}>{practice.phone}</a><br />Strong Body. Strong Life.</p>
   </div>
