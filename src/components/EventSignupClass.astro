@@ -82,7 +82,7 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     </label>
     <label class="cbox">
       <input type="checkbox" name="screening" />
-      <span><strong>FREE Fall-Risk Screening.</strong> A quick check of balance, leg strength, and walking speed. No cost, no obligation. Dr. Valencia will call you.</span>
+      <span><strong>FREE Fall-Risk Screening.</strong> A quick check of balance, leg strength, and walking speed. No cost, no obligation. Dr. Valencia will contact you.</span>
     </label>
     <p class="chelp">Classes I’m interested in (optional):</p>
     {
@@ -248,7 +248,7 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
       window.scrollTo(0, 0);
       const parts = [];
       if (attending) parts.push("See you at the class.");
-      if (screening) parts.push("Dr. Valencia will call you about your free screening.");
+      if (screening) parts.push("Dr. Valencia will contact you about your free screening.");
       if (!parts.length) parts.push("Bruce will be in touch.");
       const backTo = form.dataset.back || "";
       if (backTo) parts.push("Taking you back to the event page.");
