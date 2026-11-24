@@ -1,0 +1,79 @@
+---
+/**
+ * An event's info page (/events/<slug>/): what, when, where, the flyer's copy, the free screening
+ * and the classes, and a big Sign up button to /events/<slug>/signup/. The sign-up form sends
+ * people back here when they are done. Data: src/data/events.ts.
+ */
+import { practice } from "../data/site";
+import type { ClassEvent } from "../data/events";
+
+export interface Props {
+  ev: ClassEvent;
+}
+const { ev } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+const signup = withBase(`/events/${ev.slug}/signup/`);
+---
+
+<div class="ewrap">
+  <div class="ecol">
+    <div class="kbrand">
+      <img src={withBase("/assets/brand/valencia-health-wellness-icon.png")} alt="" width="56" height="56" />
+      <span class="label">{ev.place} · {practice.name}</span>
+    </div>
+
+    <p class="label">Class and free screening</p>
+    <h1>{ev.title}</h1>
+
+    <div class="ewhen">
+      <p><strong>{ev.when}</strong></p>
+      <p>{ev.time}</p>
+      <p>{ev.where}</p>
+    </div>
+
+    <a class="btn btn-primary ebig" href={signup}>Sign up</a>
+
+    {ev.about.length > 0 && (
+      <section class="eabout" aria-label="About this class">
+        {ev.about.map((p) => <p>{p}</p>)}
+      </section>
+    )}
+
+    <section class="ebox" aria-labelledby="e-screen">
+      <h2 id="e-screen">FREE Fall-Risk Screening</h2>
+      <p>An introductory check of balance, leg strength, and walking speed. No cost, no obligation. Tick the box when you sign up and Dr. Valencia will call you.</p>
+    </section>
+
+    <section class="ebox" aria-labelledby="e-classes">
+      <h2 id="e-classes">Classes</h2>
+      <ul>
+        <li>Balance &amp; Fall Prevention</li>
+        <li>Chair Exercise</li>
+        <li>Bone Health &amp; Strength</li>
+      </ul>
+      <p>Tell us which ones interest you when you sign up.</p>
+    </section>
+
+    <a class="btn btn-primary ebig" href={signup}>Sign up</a>
+
+    <p class="efoot">Questions? <a href={practice.phoneHref}>{practice.phone}</a><br />Strong Body. Strong Life.</p>
+  </div>
+</div>
+
+<style>
+  .ewrap { padding: 32px 20px calc(48px + env(safe-area-inset-bottom)); }
+  .ecol { width: min(680px, 100%); margin: 0 auto; }
+  .ecol h1 { margin-top: 6px; font-size: clamp(36px, 6vw, 52px); line-height: 1.05; letter-spacing: -0.02em; }
+  .ewhen { margin-top: 20px; padding: 20px 22px; border-radius: 16px; background: var(--whisper); font-size: 21px; line-height: 1.45; }
+  .ebig { display: flex; width: 100%; margin-top: 24px; padding: 20px 24px; font-size: 22px; text-decoration: none; }
+  .eabout { margin-top: 28px; font-size: 19px; line-height: 1.55; }
+  .eabout p + p { margin-top: 12px; }
+  .ebox { margin-top: 24px; padding: 20px 22px; border: 1px solid var(--hair); border-radius: 16px; font-size: 19px; line-height: 1.5; }
+  .ebox h2 { font-size: 24px; line-height: 1.2; margin-bottom: 8px; }
+  .ebox ul { margin: 0 0 8px; padding-left: 22px; }
+  .efoot { margin-top: 40px; text-align: center; color: var(--grey); font-size: 18px; }
+</style>

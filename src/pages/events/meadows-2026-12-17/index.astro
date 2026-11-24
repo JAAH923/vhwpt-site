@@ -1,0 +1,10 @@
+---
+/** The Dec 17, 2026 class at The Meadows: info page. Sign-up is ./signup. Data: src/data/events.ts. */
+import Kiosk from "../../../layouts/Kiosk.astro";
+import EventInfo from "../../../components/EventInfo.astro";
+import { meadows20261217 as ev } from "../../../data/events";
+---
+
+<Kiosk title={`${ev.title}, ${ev.when} | Valencia Health & Wellness`}>
+  <EventInfo ev={ev} />
+</Kiosk>
