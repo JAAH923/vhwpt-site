@@ -22,10 +22,8 @@ export interface Props {
   next: { title: string; when: string; time: string; where: string };
   /** Tags each sign-up with the class it came from, e.g. "meadows-2026-12-17". */
   event: string;
-  /** Bruce's Google review link (Google Business Profile > Ask for reviews). Empty hides the Google button. */
-  googleReview?: string;
 }
-const { next, event, googleReview = "" } = Astro.props;
+const { next, event } = Astro.props;
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -45,14 +43,6 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     Preview only: sign-ups on this copy of the site are not sent anywhere.
   </p>
 
-  <section class="cgoogle" id="cgoogle" hidden aria-labelledby="cgoogle-title">
-    <h2 class="askq" id="cgoogle-title">Thank you for your kind words</h2>
-    <p class="askhelp">Would you post them on Google too? It helps neighbors find Dr. Valencia. Tap the button: your words are copied, and Google opens so you can paste them and pick your stars.</p>
-    <blockquote class="cquote" id="cgoogle-quote"></blockquote>
-    <a class="btn btn-primary" id="cgoogle-go" href={googleReview} target="_blank" rel="noopener">Copy my words and open Google</a>
-    <button type="button" class="btn btn-line" id="cgoogle-no">No thanks</button>
-  </section>
-
   <form
     class="cform"
     id="cform"
@@ -60,7 +50,6 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     action={withBase("/api/event.php")}
     novalidate
     data-event={event}
-    data-google={googleReview}
     data-class={classLabel}
     data-failed={`That didn’t go through. Please try once more, or call Bruce at ${practice.phone}.`}
   >
@@ -120,14 +109,6 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     <p class="cmailhint" id="cmailhint" role="status" hidden></p>
     <p class="askhelp">A phone number or an email, whichever you prefer.</p>
 
-    <h2 class="askq csub">Been to a class? Tell us how it went</h2>
-    <p class="askhelp">Optional. A sentence or two about the class is plenty. Please leave out any medical details.</p>
-    <textarea class="ctext" name="testimonial" maxlength="1000" rows="4" aria-label="How the class went"></textarea>
-    <label class="cbox">
-      <input type="checkbox" name="share_ok" />
-      <span>Yes, Valencia Health &amp; Wellness may share my words on its website, flyers and social media, with my first name and last initial.</span>
-    </label>
-
     <h2 class="askq csub">Contact permission, participation acknowledgment, and release</h2>
     <label class="cbox">
       <input type="checkbox" name="consent" />
@@ -185,12 +166,6 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
   .cneed { font-size: 16px !important; text-align: center; margin-left: auto; margin-right: auto; }
   .cmailhint { margin-top: 10px; font-size: 17px; font-weight: 700; }
   .cmailhint button { font: inherit; color: var(--crimson); text-decoration: underline; background: none; border: 0; padding: 0; cursor: pointer; }
-  .ctext { display: block; width: 100%; margin-top: 16px; min-height: 120px; padding: 14px 16px; border: 0; border-radius: 12px; background: var(--whisper); font: inherit; font-size: 19px; color: var(--ink); resize: vertical; }
-  .ctext:focus { outline: 2px solid var(--ink); outline-offset: 0; }
-  .cgoogle { width: min(680px, 100%); padding: 24px; border: 1px solid var(--ink); border-radius: 16px; }
-  .cgoogle .askhelp { font-size: 18px; }
-  .cquote { margin: 16px 0 0; padding: 14px 16px; background: var(--whisper); border-radius: 12px; font-size: 18px; white-space: pre-wrap; }
-  .cgoogle .btn { width: 100%; margin-top: 16px; padding: 18px 22px; font-size: 20px; }
   .cfoot { margin-top: 40px; color: var(--grey); text-align: center; }
 </style>
 
@@ -282,24 +257,8 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
         : "To sign up, fill in your name, a phone or email, tick both boxes, and type your name as your signature.";
     };
 
-    // After a shared testimonial: offer to post it on Google. Google only takes reviews the person
-    // posts themselves, so we copy their words and open Bruce's review page for them.
-    const gBox = document.getElementById("cgoogle")!;
-    const gGo = document.getElementById("cgoogle-go") as HTMLAnchorElement;
-    gGo.addEventListener("click", () => {
-      navigator.clipboard?.writeText(document.getElementById("cgoogle-quote")!.textContent || "").catch(() => {});
-      window.setTimeout(() => { gBox.hidden = true; }, 500);
-    });
-    document.getElementById("cgoogle-no")!.addEventListener("click", () => { gBox.hidden = true; });
-
     function finished(preview = false) {
       const name = val("name");
-      const quote = ((form.elements.namedItem("testimonial") as HTMLTextAreaElement | null)?.value || "").trim();
-      const google = !!form.dataset.google && !!quote && checked("share_ok");
-      if (google) {
-        document.getElementById("cgoogle-quote")!.textContent = quote;
-        gBox.hidden = false;
-      }
       const screening = checked("screening");
       const attending = checked("attending");
       form.reset();
@@ -310,7 +269,6 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
       if (attending) parts.push("See you at the class.");
       if (screening) parts.push("Dr. Valencia will call you about your free screening.");
       if (!parts.length) parts.push("Bruce will be in touch.");
-      if (google) parts.push("One more thing: would you share your words on Google? Close this to see how.");
       showThanks({
         name,
         message: parts.join(" "),
@@ -344,8 +302,6 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
           consent: checked("consent"),
           waiver: checked("waiver"),
           signature: val("signature"),
-          testimonial: ((form.elements.namedItem("testimonial") as HTMLTextAreaElement | null)?.value || "").trim(),
-          share_ok: checked("share_ok"),
           event,
           website: val("website"),
         }),
