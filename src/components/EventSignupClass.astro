@@ -1,0 +1,335 @@
+---
+/**
+ * The class and free screening sign-up (/meadows): the digital copy of Bruce's paper sheet for his
+ * classes at The Meadows of Crystal Lake. Bruce emails the link to past class participants, so it
+ * is built for someone on their own phone or computer at home, not for an iPad handed around.
+ *
+ * It asks what the paper asks and nothing more: the free fall-risk screening, the next class,
+ * the classes they are interested in, name, phone, address or unit, email, the contact OK, and the
+ * participation acknowledgment and release, signed by typing their name. No free-text box, so no
+ * health details (T-883).
+ *
+ * For the next class, change the `next` prop in src/pages/meadows.astro. The class ids and the
+ * contact and release wording are mirrored in public/api/event.php (CLASSES, CONSENT['class'],
+ * WAIVER); change them together. Sign-ups go to /api/event.php with form "class": saved in the
+ * sign-ups database on Bruce's server, with a backup file, and emailed to Bruce.
+ */
+import { practice } from "../data/site";
+import Thanks from "./Thanks.astro";
+
+export interface Props {
+  /** The next class, as printed on the sheet. */
+  next: { title: string; when: string; time: string; where: string };
+  /** Tags each sign-up with the class it came from, e.g. "meadows-2026-12-17". */
+  event: string;
+}
+const { next, event } = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const withBase = (path = "") => `${basePath}${path.replace(/^\//, "")}`;
+
+const classes = [
+  { id: "balance", title: "Balance & Fall Prevention" },
+  { id: "chair", title: "Chair Exercise" },
+  { id: "bone", title: "Bone Health & Strength" },
+];
+const classLabel = `${next.title}, ${next.when}, ${next.time}`;
+---
+
+<div class="cwrap">
+  <p class="kpreview" id="cpreview" role="status" hidden>
+    Preview only: sign-ups on this copy of the site are not sent anywhere.
+  </p>
+
+  <form
+    class="cform"
+    id="cform"
+    method="post"
+    action={withBase("/api/event.php")}
+    novalidate
+    data-event={event}
+    data-class={classLabel}
+    data-failed={`That didn’t go through. Please try once more, or call Bruce at ${practice.phone}.`}
+  >
+    <div class="kbrand">
+      <img src={withBase("/assets/brand/valencia-health-wellness-icon.png")} alt="" width="56" height="56" />
+      <span class="label">The Meadows of Crystal Lake · {practice.name}</span>
+    </div>
+
+    <h1>Class and Free Screening Sign-Up</h1>
+
+    <div class="cnext">
+      <p class="label">Next class</p>
+      <p class="cnext-title">{next.title}</p>
+      <p>{next.when}, {next.time}<br />{next.where}</p>
+    </div>
+
+    <slot />
+
+    <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+    <label class="cbox cbox-big">
+      <input type="checkbox" name="attending" />
+      <span><strong>Count me in</strong> for {next.title} on {next.when} at {next.time}.</span>
+    </label>
+
+    <label class="cbox cbox-big">
+      <input type="checkbox" name="screening" />
+      <span>
+        <strong>Yes, I want the FREE Fall-Risk Screening.</strong>
+        An introductory check of balance, leg strength, and walking speed. No cost, no obligation.
+        Dr. Valencia will call you.
+      </span>
+    </label>
+
+    <fieldset class="kinterest">
+      <legend class="askq">Classes I am interested in</legend>
+      <p class="askhelp">Optional. Pick any.</p>
+      <div class="chips">
+        {
+          classes.map((c) => (
+            <label class="chip">
+              <input type="checkbox" name="classes" value={c.id} />
+              <span>{c.title}</span>
+            </label>
+          ))
+        }
+      </div>
+    </fieldset>
+
+    <h2 class="askq csub">Your details</h2>
+    <div class="fields">
+      <label class="field"><span>Name</span><input name="name" autocomplete="name" autocapitalize="words" maxlength="100" enterkeyhint="next" /></label>
+      <label class="field"><span>Phone</span><input name="phone" type="tel" autocomplete="tel" maxlength="30" enterkeyhint="next" /></label>
+      <label class="field"><span>Address / Unit</span><input name="address" autocomplete="street-address" maxlength="160" enterkeyhint="next" /></label>
+      <label class="field"><span>Email</span><input name="email" type="email" autocomplete="email" autocapitalize="none" autocorrect="off" spellcheck="false" maxlength="200" enterkeyhint="next" /></label>
+    </div>
+    <p class="cmailhint" id="cmailhint" role="status" hidden></p>
+    <p class="askhelp">A phone number or an email, whichever you prefer.</p>
+
+    <h2 class="askq csub">Contact permission, participation acknowledgment, and release</h2>
+    <label class="cbox">
+      <input type="checkbox" name="consent" />
+      <span><strong>Contact.</strong> I agree that Valencia Health &amp; Wellness, LLC may contact me by phone or email about these classes, my screening, and general health questions.</span>
+    </label>
+
+    <div class="cwaiver">
+      <p><strong>Participation.</strong> I understand that these classes and the screening are wellness and exercise services, not physical therapy treatment, and that taking part does not create a patient relationship. Exercise carries a risk of injury, including falls, muscle strain, and, rarely, a serious medical event. I am taking part voluntarily. I will talk with my doctor about any health concern before I exercise, and I will stop and tell the instructor if I feel pain, dizziness, or unwell.</p>
+      <p><strong>Release.</strong> I release Valencia Health &amp; Wellness, LLC and Dr. Bruce Valencia from claims for injury or loss arising from my participation, including claims based on negligence, to the fullest extent Florida law allows.</p>
+    </div>
+    <label class="cbox">
+      <input type="checkbox" name="waiver" />
+      <span>I have read and agree to the participation acknowledgment and release above.</span>
+    </label>
+
+    <div class="fields">
+      <label class="field"><span>Signature: type your full name</span><input name="signature" autocomplete="off" autocapitalize="words" maxlength="100" enterkeyhint="done" /></label>
+    </div>
+    <p class="askhelp">Typing your name here counts as your signature. Today’s date is added for you: <span id="cdate"></span>.</p>
+
+    <p class="askprivacy">Your details go only to Bruce and are not shared.</p>
+    <p class="askerr" id="cerr" role="alert" hidden></p>
+    <button type="submit" class="btn btn-primary" id="csubmit" disabled>Sign me up</button>
+    <p class="askhelp cneed" id="cneed">To sign up, fill in your name, a phone or email, tick both boxes, and type your name as your signature.</p>
+
+    <p class="cfoot">Questions? <a href={practice.phoneHref}>{practice.phone}</a> · Strong Body. Strong Life.</p>
+  </form>
+</div>
+
+<Thanks site />
+
+<style>
+  .cwrap { display: grid; justify-items: center; gap: 16px; padding: 32px 20px calc(48px + env(safe-area-inset-bottom)); }
+  .cwrap [hidden] { display: none !important; }
+  .cwrap .kpreview { width: min(680px, 100%); margin-top: 0; }
+  .cform { width: min(680px, 100%); }
+  .cform h1 { font-size: clamp(32px, 5vw, 44px); line-height: 1.08; letter-spacing: -0.02em; }
+  .cform .askhelp, .cform .field span { font-size: 18px; }
+  .cform .field input { font-size: 22px; padding-top: 6px; }
+  .cform .field { padding: 14px 18px; }
+  .cnext { margin-top: 24px; padding: 20px 22px; border-radius: 16px; background: var(--whisper); font-size: 20px; line-height: 1.4; }
+  .cnext-title { font-size: 26px; font-weight: 700; margin: 4px 0 6px; line-height: 1.2; }
+  .csub { margin-top: 40px; font-size: clamp(22px, 3vw, 26px); }
+  .cbox { display: flex; align-items: flex-start; gap: 14px; margin-top: 20px; cursor: pointer; }
+  .cbox input { flex: none; width: 28px; height: 28px; margin: 2px 0 0; accent-color: var(--ink); }
+  .cbox span { font-size: 19px; line-height: 1.45; }
+  .cbox-big { padding: 18px 20px; border: 1px solid var(--hair); border-radius: 16px; }
+  .cbox-big:has(input:checked) { border-color: var(--ink); }
+  .cform .kinterest { margin-top: 36px; }
+  .cform .chip span { padding: 14px 20px; font-size: 18px; }
+  .cwaiver { margin-top: 20px; padding: 18px 20px; border-radius: 16px; border: 1px solid var(--hair); font-size: 17px; line-height: 1.5; }
+  .cwaiver p + p { margin-top: 12px; }
+  .cform .btn { width: 100%; margin-top: 24px; padding: 20px 24px; font-size: 22px; }
+  .cform .btn:disabled { background: var(--whisper); color: var(--grey); cursor: default; }
+  .cneed { font-size: 16px !important; text-align: center; margin-left: auto; margin-right: auto; }
+  .cmailhint { margin-top: 10px; font-size: 17px; font-weight: 700; }
+  .cmailhint button { font: inherit; color: var(--crimson); text-decoration: underline; background: none; border: 0; padding: 0; cursor: pointer; }
+  .cfoot { margin-top: 40px; color: var(--grey); text-align: center; }
+</style>
+
+<script>
+  import { showThanks } from "../scripts/thanks";
+  import { formatPhoneFields } from "../scripts/phone";
+
+  const form = document.getElementById("cform") as HTMLFormElement | null;
+  if (form) setup(form);
+
+  function setup(form: HTMLFormElement) {
+    formatPhoneFields(form);
+    const submit = document.getElementById("csubmit") as HTMLButtonElement;
+    const err = document.getElementById("cerr")!;
+    const need = document.getElementById("cneed")!;
+    let sending = false;
+
+    document.getElementById("cdate")!.textContent = new Date().toLocaleDateString("en-US", {
+      month: "long", day: "numeric", year: "numeric",
+    });
+
+    // Only vhwpt.com sends; the test address on Bruce's server sends test rows. Anywhere else is a preview.
+    const home = /(^|\.)vhwpt\.com$/.test(location.hostname);
+    const test = location.hostname === "3.226.58.165";
+    const live = home || test;
+    const note = document.getElementById("cpreview")!;
+    note.hidden = home;
+    if (test) note.textContent = "Test copy: sign-ups here are saved on the server and marked as tests.";
+
+    // The page tags its sign-ups with the class; ?e= on the address can override it.
+    const event = (new URLSearchParams(location.search).get("e") || form.dataset.event || "")
+      .toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 40);
+
+    const val = (n: string) => ((form.elements.namedItem(n) as HTMLInputElement | null)?.value || "").trim();
+    const checked = (n: string) => !!(form.elements.namedItem(n) as HTMLInputElement | null)?.checked;
+    // Email: a format check, and a "did you mean" for the usual typos (gmail.con, yaho.com).
+    // The server checks the format again and that the domain can receive mail.
+    const emailOk = () => /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i.test(val("email"));
+    const emailBad = () => val("email") !== "" && !emailOk();
+    const DOMAINS = ["gmail.com", "yahoo.com", "aol.com", "hotmail.com", "outlook.com", "icloud.com", "comcast.net", "bellsouth.net", "att.net", "msn.com", "live.com", "me.com"];
+    const dist = (a: string, b: string) => {
+      const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+      for (let j = 1; j <= b.length; j++) d[0][j] = j;
+      for (let i = 1; i <= a.length; i++)
+        for (let j = 1; j <= b.length; j++)
+          d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      return d[a.length][b.length];
+    };
+    const suggestion = () => {
+      const m = val("email").toLowerCase().match(/^([^\s@]+)@([^\s@]+)$/);
+      if (!m || DOMAINS.includes(m[2])) return "";
+      let best = "", bestD = 3;
+      for (const dom of DOMAINS) {
+        const dd = dist(m[2], dom);
+        if (dd < bestD) { best = dom; bestD = dd; }
+      }
+      return best ? `${m[1]}@${best}` : "";
+    };
+    const hint = document.getElementById("cmailhint")!;
+    const emailInput = form.elements.namedItem("email") as HTMLInputElement;
+    function showHint(final: boolean) {
+      const s = suggestion();
+      if (s) {
+        hint.textContent = "Did you mean ";
+        const b = document.createElement("button");
+        b.type = "button";
+        b.textContent = s;
+        b.addEventListener("click", () => { emailInput.value = s; showHint(true); refresh(); });
+        hint.append(b, "?");
+        hint.hidden = false;
+      } else if (final && emailBad()) {
+        hint.textContent = "That email doesn’t look complete. Please check it, for example name@gmail.com.";
+        hint.hidden = false;
+      } else {
+        hint.hidden = true;
+      }
+    }
+    emailInput.addEventListener("blur", () => showHint(true));
+    emailInput.addEventListener("input", () => { if (!hint.hidden) showHint(false); });
+
+    const phoneOk = () => val("phone").replace(/\D/g, "").length >= 10;
+    const valid = () =>
+      val("name").length > 0 && (emailOk() || phoneOk()) && !emailBad() && checked("consent") && checked("waiver") && val("signature").length > 1;
+    const refresh = () => {
+      submit.disabled = !valid() || sending;
+      need.hidden = valid();
+      need.textContent = emailBad()
+        ? "Please fix the email address, or clear it and use a phone number."
+        : "To sign up, fill in your name, a phone or email, tick both boxes, and type your name as your signature.";
+    };
+
+    function finished(preview = false) {
+      const name = val("name");
+      const screening = checked("screening");
+      const attending = checked("attending");
+      form.reset();
+      hint.hidden = true;
+      refresh();
+      window.scrollTo(0, 0);
+      const parts = [];
+      if (attending) parts.push("See you at the class.");
+      if (screening) parts.push("Dr. Valencia will call you about your free screening.");
+      if (!parts.length) parts.push("Bruce will be in touch.");
+      showThanks({
+        name,
+        message: parts.join(" "),
+        note: preview ? "Preview only: nothing was sent from this copy of the site." : "",
+      });
+    }
+
+    function send() {
+      if (sending || !valid()) return;
+      if (!live) return finished(true);
+      sending = true;
+      submit.disabled = true;
+      submit.textContent = "Sending";
+      err.hidden = true;
+      const ctl = new AbortController();
+      const giveUp = window.setTimeout(() => ctl.abort(), 20000);
+      fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: ctl.signal,
+        body: JSON.stringify({
+          form: "class",
+          name: val("name"),
+          phone: val("phone"),
+          email: val("email"),
+          address: val("address"),
+          screening: checked("screening"),
+          attending: checked("attending"),
+          class_date: form.dataset.class || "",
+          classes: [...form.querySelectorAll<HTMLInputElement>("input[name=classes]:checked")].map((c) => c.value),
+          consent: checked("consent"),
+          waiver: checked("waiver"),
+          signature: val("signature"),
+          event,
+          website: val("website"),
+        }),
+      })
+        .then((r) => r.json().catch(() => ({ ok: false })))
+        .then((j: { ok?: boolean; error?: string }) => {
+          if (j && j.ok) return finished();
+          err.textContent = (j && j.error) || form.dataset.failed || "";
+          err.hidden = false;
+        })
+        .catch(() => {
+          err.textContent = form.dataset.failed || "";
+          err.hidden = false;
+        })
+        .then(() => {
+          clearTimeout(giveUp);
+          sending = false;
+          submit.textContent = "Sign me up";
+          refresh();
+        });
+    }
+
+    form.addEventListener("input", refresh);
+    form.addEventListener("change", refresh);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      send();
+    });
+    refresh();
+  }
+</script>

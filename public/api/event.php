@@ -29,6 +29,14 @@
 // the consent wording below mirror those components, and the ids mirror the service ids in
 // src/data/site.ts and inquiry.php; change them together. Neither form has a free-text box, so a
 // sign-up carries no patient or resident details (T-883).
+//
+// A third form, /meadows (src/components/EventSignupClass.astro), is the digital copy of Bruce's paper
+// sign-up for his class and free fall-risk screening at The Meadows of Crystal Lake. It sends
+// "form": "class" and asks what the paper asks and nothing more: the free screening (yes or no),
+// whether they are coming to the next class, the classes they are interested in, name, phone,
+// address or unit, email, the contact OK, and the participation acknowledgment and release, signed
+// by typing their name. The wording they agreed to, the typed signature and the date are kept in
+// the details column, so each row stands in for a signed paper sheet.
 declare(strict_types=1);
 
 header('Cache-Control: no-store');
@@ -61,11 +69,22 @@ const SERVICES = [
   'virtual'  => 'Virtual Training',
   'holistic' => 'Holistic & Corporate Wellness',
 ];
+// The classes on the /meadows paper sheet. Mirrored in src/components/EventSignupClass.astro.
+const CLASSES = [
+  'balance' => 'Balance & Fall Prevention',
+  'chair'   => 'Chair Exercise',
+  'bone'    => 'Bone Health & Strength',
+];
 // The wording of the tick box, kept with each row so we know what each person agreed to.
 const CONSENT = [
   'pros'   => 'It’s OK for Bruce to contact me by phone, text or email.',
   'people' => 'It’s OK for Bruce to contact me by phone, text or email about my sign-up.',
+  'class'  => 'I agree that Valencia Health & Wellness, LLC may contact me by phone or email about these classes, my screening, and general health questions.',
 ];
+// The /meadows participation acknowledgment and release, word for word from the paper sheet.
+// Mirrored in src/components/EventSignupClass.astro; change them together.
+const WAIVER = 'Participation. I understand that these classes and the screening are wellness and exercise services, not physical therapy treatment, and that taking part does not create a patient relationship. Exercise carries a risk of injury, including falls, muscle strain, and, rarely, a serious medical event. I am taking part voluntarily. I will talk with my doctor about any health concern before I exercise, and I will stop and tell the instructor if I feel pain, dizziness, or unwell. '
+             . 'Release. I release Valencia Health & Wellness, LLC and Dr. Bruce Valencia from claims for injury or loss arising from my participation, including claims based on negligence, to the fullest extent Florida law allows.';
 const NEWS = 'Also email me news and event invites from Valencia Health & Wellness. Optional; unsubscribe anytime.';
 // Resend segments for those who ticked NEWS, by name. Each is created the first time it is needed,
 // and its id is kept in private/resend-segments.json.
@@ -79,16 +98,18 @@ const SEGMENTS = [
 const DB_SCHEMA = 'CREATE TABLE IF NOT EXISTS signups (
   id                INTEGER PRIMARY KEY AUTOINCREMENT,
   created_at        TEXT    NOT NULL,
-  form              TEXT    NOT NULL,            -- "pros" (/signup/partners) or "people" (/signup/clients)
+  form              TEXT    NOT NULL,            -- "pros" (/signup/partners), "people" (/signup/clients) or "class" (/meadows)
   event             TEXT,                        -- the ?e= tag on the page address
   host              TEXT,                        -- the address it was filled in on
   test              INTEGER NOT NULL DEFAULT 0,  -- 1 when it was not filled in on vhwpt.com
   name              TEXT    NOT NULL,
   organization      TEXT,                        -- facility or practice (/signup/partners only)
   role              TEXT,                        -- who they are (/signup/partners only)
-  topics            TEXT,                        -- JSON list: topics (/signup/partners) or services (/signup/clients)
+  topics            TEXT,                        -- JSON list: topics (/signup/partners), services (/signup/clients) or classes (/meadows)
   phone             TEXT,
   email             TEXT,
+  address           TEXT,                        -- address or unit (/meadows only)
+  details           TEXT,                        -- JSON (/meadows only): screening, attending, the release they signed, typed signature, date
   consent_text      TEXT    NOT NULL,            -- the wording they ticked
   emailed           INTEGER NOT NULL DEFAULT 0,  -- 1 when the email to Bruce went out
   news_optin        INTEGER NOT NULL DEFAULT 0,  -- 1 when they ticked NEWS and gave an email
@@ -134,6 +155,9 @@ function db_open(string $dir): ?PDO {
     $cols = array_column($db->query('PRAGMA table_info(signups)')->fetchAll(PDO::FETCH_ASSOC), 'name');
     if (!in_array('news_optin', $cols, true)) $db->exec('ALTER TABLE signups ADD COLUMN news_optin INTEGER NOT NULL DEFAULT 0');
     if (!in_array('news_text', $cols, true))  $db->exec('ALTER TABLE signups ADD COLUMN news_text TEXT');
+    // and before /meadows, its two.
+    if (!in_array('address', $cols, true))    $db->exec('ALTER TABLE signups ADD COLUMN address TEXT');
+    if (!in_array('details', $cols, true))    $db->exec('ALTER TABLE signups ADD COLUMN details TEXT');
     if ($new) @chmod($file, 0600);
     return $db;
   } catch (Throwable $e) {
@@ -163,7 +187,9 @@ if (count($hits) >= PER_HOUR) finish(false, 'Too many sign-ups from here in the 
 $hits[] = $now;
 @file_put_contents($rlf, json_encode(array_values($hits)), LOCK_EX);
 
-$people = ($in['form'] ?? '') === 'people';   // /signup/clients; otherwise the facility-owner and therapist form
+$kind   = in_array($in['form'] ?? '', ['people', 'class'], true) ? $in['form'] : 'pros';
+$people = $kind !== 'pros';   // /signup/clients or /meadows; otherwise the facility-owner and therapist form
+$class  = $kind === 'class';  // /meadows: the class and free screening sheet
 $role   = (is_string($in['role'] ?? null) && isset(ROLES[$in['role']])) ? ROLES[$in['role']] : '';
 $org    = oneLine(clean($in['org'] ?? '', 120));
 $name   = oneLine(clean($in['name'] ?? '', 100));
@@ -173,13 +199,36 @@ $phoneOk = strlen(preg_replace('/\D/', '', $phone) ?? '') >= 10;
 $consent = ($in['consent'] ?? false) === true;
 $news   = ($in['news'] ?? false) === true && $email !== '';   // a list needs an email
 $event  = substr(preg_replace('/[^a-z0-9-]/', '', strtolower(is_string($in['event'] ?? null) ? $in['event'] : '')) ?? '', 0, 40);
+$address   = $class ? oneLine(clean($in['address'] ?? '', 160)) : '';
+$screening = $class && ($in['screening'] ?? false) === true;
+$attending = $class && ($in['attending'] ?? false) === true;
+$waiver    = $class && ($in['waiver'] ?? false) === true;
+$signature = $class ? oneLine(clean($in['signature'] ?? '', 100)) : '';
+$classDate = $class ? oneLine(clean($in['class_date'] ?? '', 60)) : '';
 $chosen = [];
-foreach ((array) ($in[$people ? 'interests' : 'topics'] ?? []) as $t) {
-  $map = $people ? SERVICES : TOPICS;
+foreach ((array) ($in[$class ? 'classes' : ($people ? 'interests' : 'topics')] ?? []) as $t) {
+  $map = $class ? CLASSES : ($people ? SERVICES : TOPICS);
   $l = (is_string($t) && isset($map[$t])) ? $map[$t] : '';
   if ($l !== '' && !in_array($l, $chosen, true)) $chosen[] = $l;
 }
 
+// /meadows: an email that was typed but is not a real address is turned back, not quietly dropped,
+// and so is one whose domain cannot receive mail (gmail.con). The DNS check only runs when the
+// server can look anything up, so a DNS outage never blocks a sign-up.
+if ($class) {
+  $typed = trim((string) ($in['email'] ?? ''));
+  $domain = strtolower((string) substr(strrchr($typed, '@') ?: '', 1));
+  if ($typed !== '' && ($email === '' || ($domain !== '' && !mail_domain_ok($domain)))) {
+    finish(false, 'That email address doesn’t look right. Please check it, or leave it empty and give a phone number.', 400);
+  }
+}
+function mail_domain_ok(string $domain): bool {
+  if (checkdnsrr($domain, 'MX') || checkdnsrr($domain, 'A')) return true;
+  return !(checkdnsrr('gmail.com', 'MX'));   // no DNS on the server at all: let it through
+}
+if ($class && ($name === '' || ($email === '' && !$phoneOk) || !$consent || !$waiver || $signature === '')) {
+  finish(false, 'A few answers are missing. Please check your name, a phone number or email, both tick boxes, and your name as your signature.', 400);
+}
 if ((!$people && $role === '') || $name === '' || ($email === '' && !$phoneOk) || !$consent) {
   finish(false, $people
     ? 'A few answers are missing. Please check your name, a phone number or email, and the OK to be contacted.'
@@ -190,7 +239,29 @@ if ((!$people && $role === '') || $name === '' || ($email === '' && !$phoneOk) |
 $host = strtolower(preg_replace('/:\d+$/', '', (string) ($_SERVER['HTTP_HOST'] ?? '')) ?? '');
 $test = !preg_match('/(^|\.)vhwpt\.com$/', $host);
 
-$rows = $people ? [
+$details = null;
+if ($class) {
+  $details = [
+    'screening'  => $screening,
+    'attending'  => $attending,
+    'class'      => $classDate,
+    'release'    => WAIVER,
+    'signature'  => $signature,
+    'signed_on'  => gmdate('Y-m-d'),
+  ];
+}
+$rows = $class ? [
+  'Name'            => $name,
+  'Free screening'  => $screening ? 'YES, wants the free fall-risk screening. Please call.' : 'No',
+  'Next class'      => $attending ? 'Coming' . ($classDate !== '' ? ': ' . $classDate : '') : 'Not this time',
+  'Interested in'   => $chosen ? implode(', ', $chosen) : '(not answered)',
+  'Phone'           => $phone !== '' ? $phone : '(not given)',
+  'Email'           => $email !== '' ? $email : '(not given)',
+  'Address / Unit'  => $address !== '' ? $address : '(not given)',
+  'Event'           => $event !== '' ? $event : '(not tagged)',
+  'OK to contact'   => 'Yes, by phone or email',
+  'Release'         => 'Agreed and signed "' . $signature . '" on ' . gmdate('Y-m-d') . ' (UTC)',
+] : ($people ? [
   'Name'          => $name,
   'Phone'         => $phone !== '' ? $phone : '(not given)',
   'Email'         => $email !== '' ? $email : '(not given)',
@@ -208,7 +279,7 @@ $rows = $people ? [
   'Event'         => $event !== '' ? $event : '(not tagged)',
   'OK to contact' => 'Yes, by phone, text or email',
   'Email list'    => $news ? 'Yes, news and event invites' : 'No',
-];
+]);
 if ($test) $rows['Test'] = 'Filled in on ' . ($host !== '' ? $host : 'an unknown address') . ', not vhwpt.com';
 
 // Save first, so the sign-up survives even if the email does not go out.
@@ -217,12 +288,13 @@ $db = db_open($private);
 $dbId = null;
 if ($db) {
   try {
-    $st = $db->prepare('INSERT INTO signups (created_at, form, event, host, test, name, organization, role, topics, phone, email, consent_text, news_optin, news_text)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
+    $st = $db->prepare('INSERT INTO signups (created_at, form, event, host, test, name, organization, role, topics, phone, email, address, details, consent_text, news_optin, news_text)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     $st->execute([
-      gmdate('c'), $people ? 'people' : 'pros', orNull($event), orNull($host), $test ? 1 : 0, $name,
+      gmdate('c'), $kind, orNull($event), orNull($host), $test ? 1 : 0, $name,
       $people ? null : orNull($org), $people ? null : $role,
-      json_encode($chosen, JSON_UNESCAPED_UNICODE), orNull($phone), orNull($email), CONSENT[$people ? 'people' : 'pros'],
+      json_encode($chosen, JSON_UNESCAPED_UNICODE), orNull($phone), orNull($email),
+      orNull($address), $details !== null ? json_encode($details, JSON_UNESCAPED_UNICODE) : null, CONSENT[$kind],
       $news ? 1 : 0, $news ? NEWS : null,
     ]);
     $dbId = (int) $db->lastInsertId();
@@ -231,7 +303,7 @@ if ($db) {
   }
 }
 
-$subject = ($test ? '[TEST] ' : '') . 'Event sign-up: ' . $name . ($people ? '' : ($org !== '' ? ', ' . $org : '') . ' (' . $role . ')') . ($event !== '' ? ' [' . $event . ']' : '');
+$subject = ($test ? '[TEST] ' : '') . ($class ? 'Class sign-up' . ($screening ? ' + FREE SCREENING' : '') . ': ' . $name . ($event !== '' ? ' [' . $event . ']' : '') : 'Event sign-up: ' . $name . ($people ? '' : ($org !== '' ? ', ' . $org : '') . ' (' . $role . ')') . ($event !== '' ? ' [' . $event . ']' : ''));
 $replyHint = $email !== '' ? 'Reply to this email to answer ' . $name . ' directly.' : $name . ' left no email; call them back.';
 $text = "A new sign-up from the event page on vhwpt.com. $replyHint\n\n";
 $html = '<div style="font-family:-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif;color:#18181b;line-height:1.5;font-size:15px">'
@@ -266,7 +338,7 @@ if ($sent && $db && $dbId !== null) {
 
 // The backup file: one line per sign-up, always written, in case the database is unavailable.
 $log = $private . '/vhwpt-event-signups.jsonl';
-$entry = ['at' => gmdate('c'), 'form' => $people ? 'people' : 'pros', 'host' => $host, 'test' => $test, 'answers' => $rows, 'emailed' => $sent, 'db_id' => $dbId];
+$entry = ['at' => gmdate('c'), 'form' => $kind, 'host' => $host, 'test' => $test, 'answers' => $rows, 'details' => $details, 'emailed' => $sent, 'db_id' => $dbId];
 $new = !is_file($log);
 $filed = @file_put_contents($log, json_encode($entry, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n", FILE_APPEND | LOCK_EX) !== false;
 if ($new && $filed) @chmod($log, 0600);
@@ -284,7 +356,7 @@ http_response_code(200);
 echo json_encode(['ok' => true, 'error' => '']);
 if (function_exists('fastcgi_finish_request')) fastcgi_finish_request();
 
-[$contactId, $pushErr] = resend_add_contact($cfg['resend_key'], $private, $test ? 'test' : ($people ? 'people' : 'pros'), $email, $name);
+[$contactId, $pushErr] = resend_add_contact($cfg['resend_key'], $private, $test ? 'test' : ($kind === 'pros' ? 'pros' : 'people'), $email, $name);
 if ($pushErr !== null) error_log('vhwpt event signups resend: ' . $pushErr);
 if ($db && $dbId !== null) {
   try {
