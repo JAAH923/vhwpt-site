@@ -67,12 +67,45 @@ ssh bruce-lightsail "sudo -u www-data sqlite3 -header -csv /srv/sites/vhwpt/priv
   'select * from signups where test = 0'" > signups.csv
 ```
 
+Class registrations (/events/<slug>/signup) are `form = 'class'`. The view `class_participants`
+lists the real ones per event (name, phone, email, address, coming, screening, interests, signed_at):
+
+```sh
+ssh bruce-lightsail "sudo -u www-data sqlite3 -header -csv /srv/sites/vhwpt/private/vhwpt-signups.sqlite \
+  \"select * from class_participants where event = 'meadows-2026-12-17'\"" > meadows-2026-12-17.csv
+```
+
+Class sign-ups are not sent to Resend for now (`CLASS_TO_RESEND` in event.php): Bruce's free Resend
+plan allows 3 segments and all 3 are used. The database is the participant list.
+
 The columns `resend_contact_id`, `resend_pushed_at` and `resend_error` are for a later step:
 pushing sign-ups to Resend as contacts. That step would take rows with `test = 0`, an email and
 `resend_pushed_at is null`, add each to a Resend audience, and fill those columns in. Two things
 to settle first. People who left only a phone number can't be added. And the tick box today only
 covers Bruce contacting them (about their sign-up, on `/event2`), so a mailing list needs new
 wording; `consent_text` keeps what each person actually ticked.
+
+## Admin area
+
+**https://www.vhwpt.com/admin** is Bruce's private area, behind one password (Caddy `basic_auth`,
+user `bruce`). Today it links to **/admin/signups**, every event and class sign-up from the database
+above, filterable by event, with a CSV download for Excel (`public/api/admin-signups.php`, read
+only). It only works over HTTPS on www.vhwpt.com; the test address answers 404.
+
+The password hash is kept out of the repo, in `/etc/caddy/private/vhwpt-admin-auth.caddy`
+(root, 600). To set or change the password:
+
+```sh
+ssh bruce-lightsail 'sudo install -d -m 700 /etc/caddy/private && h=$(caddy hash-password --plaintext "NEW PASSWORD") \
+  && printf "basic_auth {\n\tbruce %s\n}\n" "$h" | sudo tee /etc/caddy/private/vhwpt-admin-auth.caddy >/dev/null \
+  && sudo chmod 600 /etc/caddy/private/vhwpt-admin-auth.caddy \
+  && sudo install -m 644 /srv/sites/vhwpt/repo/deploy/lightsail/sites/vhwpt.caddy /etc/caddy/sites/ \
+  && sudo caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile && sudo systemctl reload caddy'
+```
+
+To move it to **admin.vhwpt.com** later: add the DNS record (Brendan, Cloudflare, proxied), then
+add a site block for `admin.vhwpt.com` with the same certificate that imports the snippet and
+redirects `/` to `/admin/`, and add the host to `@admin`.
 
 ## Traffic: how people arrive
 

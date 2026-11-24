@@ -10,7 +10,7 @@
 	# nothing that identifies a person: no cookies, no scripts, no IP addresses, and only the host of
 	# the referring site. Files, the API and the banner page are left out. 90 days are kept, then the
 	# oldest are deleted. deploy/lightsail/traffic-report.py reads it.
-	@untracked path /_astro/* /assets/* /banner/* /api/* /favicon.ico /apple-touch-icon.png /robots.txt /sitemap.xml /.well-known/*
+	@untracked path /_astro/* /assets/* /banner/* /api/* /admin /admin/* /favicon.ico /apple-touch-icon.png /robots.txt /sitemap.xml /.well-known/*
 	log_skip @untracked
 	log {
 		output file /var/log/caddy/vhwpt-visits.log {
@@ -69,6 +69,40 @@
 	redir @old / 301
 	@shop path /shop /shop/* /cart /cart/* /checkout /checkout/* /my-account /my-account/*
 	respond @shop 410
+
+	# Bruce's admin area (vhwpt.com/admin): his sign-ups list and other private pages, behind one
+	# password. The password's hash is NOT in this repo: it lives on the server in
+	# /etc/caddy/private/vhwpt-admin-auth.caddy, one block like
+	#     basic_auth {
+	#         bruce <hash from `caddy hash-password`>
+	#     }
+	# If that file is missing, Caddy refuses the whole config, so the area can't be served open.
+	# Only over HTTPS on vhwpt.com; the plain-http test address answers 404. Everything private sits
+	# under /admin/, so moving it to admin.vhwpt.com later is a change to this file only.
+	@admin {
+		path /admin /admin/*
+		host www.vhwpt.com
+	}
+	handle @admin {
+		import /etc/caddy/private/vhwpt-admin-auth.caddy
+		header Cache-Control "no-store"
+		header X-Robots-Tag "noindex, nofollow"
+		@adminSignups path /admin/signups /admin/signups/ /admin/signups.csv
+		handle @adminSignups {
+			rewrite * /api/admin-signups.php
+			php_fastcgi unix//run/php/php8.3-fpm.sock {
+				env ADMIN_USER {http.auth.user.id}
+			}
+		}
+		handle {
+			file_server
+		}
+	}
+	@adminElsewhere {
+		path /admin /admin/*
+		not host www.vhwpt.com
+	}
+	respond @adminElsewhere 404
 
 	# Only the booking form and the event sign-up run PHP. Any other .php path, and files that are not for the
 	# public, answer 404 rather than being sent as text.
