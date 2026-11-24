@@ -22,8 +22,10 @@ export interface Props {
   next: { title: string; when: string; time: string; where: string };
   /** Tags each sign-up with the class it came from, e.g. "meadows-2026-12-17". */
   event: string;
+  /** The event's info page. After a sign-up goes through, the thank-you closes and people land there. */
+  back?: string;
 }
-const { next, event } = Astro.props;
+const { next, event, back = "" } = Astro.props;
 
 const basePath = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -50,9 +52,11 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
     action={withBase("/api/event.php")}
     novalidate
     data-event={event}
+    data-back={back ? withBase(back) : ""}
     data-class={classLabel}
     data-failed={`That didn’t go through. Please try once more, or call Bruce at ${practice.phone}.`}
   >
+    {back && <a class="cback" href={withBase(back)}>← Event details</a>}
     <div class="kbrand">
       <img src={withBase("/assets/brand/valencia-health-wellness-icon.png")} alt="" width="56" height="56" />
       <span class="label">The Meadows of Crystal Lake · {practice.name}</span>
@@ -138,7 +142,7 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
   </form>
 </div>
 
-<Thanks site />
+<Thanks site={!back} />
 
 <style>
   .cwrap { display: grid; justify-items: center; gap: 16px; padding: 32px 20px calc(48px + env(safe-area-inset-bottom)); }
@@ -166,6 +170,7 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
   .cneed { font-size: 16px !important; text-align: center; margin-left: auto; margin-right: auto; }
   .cmailhint { margin-top: 10px; font-size: 17px; font-weight: 700; }
   .cmailhint button { font: inherit; color: var(--crimson); text-decoration: underline; background: none; border: 0; padding: 0; cursor: pointer; }
+  .cback { display: inline-block; margin-bottom: 20px; font-size: 18px; color: var(--ink); }
   .cfoot { margin-top: 40px; color: var(--grey); text-align: center; }
 </style>
 
@@ -269,10 +274,14 @@ const classLabel = `${next.title}, ${next.when}, ${next.time}`;
       if (attending) parts.push("See you at the class.");
       if (screening) parts.push("Dr. Valencia will call you about your free screening.");
       if (!parts.length) parts.push("Bruce will be in touch.");
+      const backTo = form.dataset.back || "";
+      if (backTo) parts.push("Taking you back to the event page.");
       showThanks({
         name,
-        message: parts.join(" "),
+        message: "You’re signed up. " + parts.join(" "),
         note: preview ? "Preview only: nothing was sent from this copy of the site." : "",
+        closeAfter: backTo ? 8000 : undefined,
+        onClose: backTo ? () => { location.href = backTo; } : undefined,
       });
     }
 
