@@ -22,6 +22,14 @@ jobs:
     name: build
     runs-on: ubuntu-latest
     steps:
+      # main takes only develop, so everything going live was approved on its way to staging
+      # (the main ruleset doesn't ask for code owner approval again).
+      - name: Only develop goes into main
+        if: github.base_ref == 'main' && github.head_ref != 'develop'
+        run: |
+          echo "::error::Only develop can be merged into main. Open this pull request into develop instead."
+          exit 1
+
       - name: Check out the pull request
         uses: actions/checkout@v4
 
