@@ -109,6 +109,12 @@ cmd_install() {
     cp -p "/etc/caddy/vhwpt.caddy.bak.$stamp" "$CADDY_SITE"
     die "Caddy rejected the new site file; the old one is back and nothing was reloaded"
   fi
+  # The admin log has to exist and be writable by Caddy before reload. If it is missing, or owned
+  # by root from an earlier validate, reload fails with permission denied and the old config stays loaded.
+  touch /var/log/caddy/vhwpt-admin.log
+  chown caddy:caddy /var/log/caddy/vhwpt-admin.log
+  chmod 640 /var/log/caddy/vhwpt-admin.log
+
   systemctl reload caddy
   say "Caddy reloaded with the admin.vhwpt.com block (backup: /etc/caddy/vhwpt.caddy.bak.$stamp)."
   say "www.vhwpt.com/admin is unchanged and does not redirect."
@@ -117,7 +123,6 @@ cmd_install() {
   install -m 644 "$HERE/fail2ban/filter.d/vhwpt-admin.conf" /etc/fail2ban/filter.d/vhwpt-admin.conf
   install -m 644 "$HERE/fail2ban/action.d/vhwpt-admin-caddy.conf" /etc/fail2ban/action.d/vhwpt-admin-caddy.conf
   install -m 644 "$HERE/fail2ban/jail.d/vhwpt-admin.conf" /etc/fail2ban/jail.d/vhwpt-admin.conf
-  [[ -f /var/log/caddy/vhwpt-admin.log ]] || { touch /var/log/caddy/vhwpt-admin.log; chown caddy:caddy /var/log/caddy/vhwpt-admin.log; chmod 640 /var/log/caddy/vhwpt-admin.log; }
   fail2ban-client -t >/dev/null || die "fail2ban rejects its configuration; the three vhwpt-admin files are installed, check them"
   systemctl reload fail2ban || systemctl restart fail2ban
   sleep 2
