@@ -103,9 +103,48 @@ ssh bruce-lightsail 'sudo install -d -m 700 /etc/caddy/private && h=$(caddy hash
   && sudo caddy validate --adapter caddyfile --config /etc/caddy/Caddyfile && sudo systemctl reload caddy'
 ```
 
-To move it to **admin.vhwpt.com** later: add the DNS record (Brendan, Cloudflare, proxied), then
-add a site block for `admin.vhwpt.com` with the same certificate that imports the snippet and
-redirects `/` to `/admin/`, and add the host to `@admin`.
+### admin.vhwpt.com
+
+The same admin area, on its own address. Nothing about the pages changes: the sign-ups list, the CSV
+and the menu keep their `/admin/...` addresses, so `https://admin.vhwpt.com/` goes to `/admin/` and
+`https://admin.vhwpt.com/admin/signups` is the list. The code is the same code, served by a second
+Caddy site block (`sites/vhwpt.caddy`, the `vhwpt_admin_area` snippet shared by both addresses).
+
+| Piece | How |
+|---|---|
+| Address | `admin.vhwpt.com`, an A record to `3.226.58.165`, **proxied (orange cloud)**. Brendan Meehan owns the Cloudflare zone, so he adds it. |
+| Certificate | The Origin Certificate already in `/etc/caddy/certs` covers `*.vhwpt.com`. Caddy does no ACME and nothing waits on DNS to get a certificate. It must be **proxied**: with a grey cloud, browsers would see the Origin Certificate, which only Cloudflare trusts. |
+| Password | The same one gate as `/admin` today: `basic_auth` from `/etc/caddy/private/vhwpt-admin-auth.caddy`. No new secret. It uses no cookies; the browser remembers the password per address, so Bruce signs in once on the new address. |
+| Lockout | fail2ban jail `vhwpt-admin`: 6 wrong passwords in 10 minutes bans that address for an hour (doubling for repeat offenders, up to a week). Because the site is behind Cloudflare, the ban goes into Caddy (`bin/vhwpt-admin-ban` writes `/etc/caddy/private/vhwpt-admin-banned.caddy`, banned addresses get 429), not the firewall. Only requests that carried a password and still got 401 count, never the browser's first prompt. Own log: `/var/log/caddy/vhwpt-admin.log`, kept a week, holds addresses (the visit log still holds none). |
+| Everything else on the subdomain | Fonts, styles and the logo are served (public files). The menu's links to the banner and event pages, and any other address, redirect to the same path on `www.vhwpt.com`. The PHP files are never served. |
+| Old address | `www.vhwpt.com/admin` keeps working until the switch below, then redirects to the subdomain (same path and query). |
+
+Not used, and why: **Turnstile** needs a login page and a session cookie, and Caddy's password prompt
+has neither, so it would mean building a login system for one person. **Tailscale or an address
+allowlist** would lock Bruce out from his phone and from changing addresses. **Cloudflare Access**
+(free) would be a good second gate but needs Brendan to set it up and gives Bruce a second login;
+ask only if the password plus lockout is judged not enough.
+
+#### Order of work
+
+1. **Anytime, before DNS** (nothing public changes; the new block has no traffic until the record exists):
+   `ssh bruce-lightsail 'cd /srv/sites/vhwpt/repo && git fetch -q origin && git checkout -q --detach origin/main && sudo bash deploy/lightsail/admin-subdomain.sh install'`
+   (after this branch is merged to `main`; to try it earlier use the branch name instead of `main`).
+   It backs up the old site file, validates before reloading, installs the lockout, and tests the
+   block locally with `--resolve`. `sudo bash admin-subdomain.sh status` shows where things stand.
+2. **Brendan adds the A record** `admin` → `3.226.58.165`, proxied. (Needs Justin's go-ahead before anything is sent to Brendan.)
+3. **Check from outside**, as Bruce's browser would: `curl -I https://admin.vhwpt.com/admin/` answers `401` with `www-authenticate: Basic`. Open it, sign in, open the sign-ups list and download the CSV.
+4. **Switch the old address**: `sudo bash admin-subdomain.sh redirect on`. It refuses unless step 3 passes. It redirects with a temporary 302 first. Undo at any time with `redirect off`. After a quiet week, change `302` to `308` in the script and run `redirect on` again.
+5. Tell Bruce the new address once; his old bookmark keeps working through the redirect.
+
+Why redirect rather than keep both: two addresses means two places a password can be typed and two
+sets of saved logins, and the old `/admin` on the public site is the one search engines and scanners
+look for. One address is easier to protect, log and lock down. The redirect keeps old bookmarks and
+any link already sent to Bruce working, and `redirect off` is instant if anything is wrong.
+
+Rolling back everything: `redirect off`, then put the saved `/etc/caddy/vhwpt.caddy.bak.<time>` back as
+`/etc/caddy/sites/vhwpt.caddy`, validate and reload Caddy, and delete
+`/etc/fail2ban/jail.d/vhwpt-admin.conf` and reload fail2ban.
 
 ## Traffic: how people arrive
 

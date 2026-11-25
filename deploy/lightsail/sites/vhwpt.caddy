@@ -1,6 +1,32 @@
 # vhwpt.com on Bruce's Lightsail server: the Astro build in /srv/sites/vhwpt/current plus the
 # booking form's PHP endpoint. Source: deploy/lightsail/sites/vhwpt.caddy in the vhwpt-site repo.
 
+# The admin area itself, shared by www.vhwpt.com/admin (today) and admin.vhwpt.com (after the
+# cut-over, see "Admin area" in README.md). One password for both: the hash is NOT in this repo, it
+# lives on the server in /etc/caddy/private/vhwpt-admin-auth.caddy, one block like
+#     basic_auth {
+#         bruce <hash from `caddy hash-password`>
+#     }
+# If that file is missing, Caddy refuses the whole config, so the area can't be served open.
+# The pages use root-relative addresses (/admin/signups, /assets/...), so they work unchanged
+# whether the host is www.vhwpt.com or admin.vhwpt.com. No cookies or sessions are involved: the
+# browser keeps the password per host.
+(vhwpt_admin_area) {
+	import /etc/caddy/private/vhwpt-admin-auth.caddy
+	header Cache-Control "no-store"
+	header X-Robots-Tag "noindex, nofollow"
+	@adminSignups path /admin/signups /admin/signups/ /admin/signups.csv
+	handle @adminSignups {
+		rewrite * /api/admin-signups.php
+		php_fastcgi unix//run/php/php8.3-fpm.sock {
+			env ADMIN_USER {http.auth.user.id}
+		}
+	}
+	handle {
+		file_server
+	}
+}
+
 (vhwpt_site) {
 	root * /srv/sites/vhwpt/current
 	encode zstd gzip
@@ -71,32 +97,19 @@
 	respond @shop 410
 
 	# Bruce's admin area (vhwpt.com/admin): his sign-ups list and other private pages, behind one
-	# password. The password's hash is NOT in this repo: it lives on the server in
-	# /etc/caddy/private/vhwpt-admin-auth.caddy, one block like
-	#     basic_auth {
-	#         bruce <hash from `caddy hash-password`>
-	#     }
-	# If that file is missing, Caddy refuses the whole config, so the area can't be served open.
-	# Only over HTTPS on vhwpt.com; the plain-http test address answers 404. Everything private sits
-	# under /admin/, so moving it to admin.vhwpt.com later is a change to this file only.
+	# password (see the vhwpt_admin_area snippet above). Only over HTTPS on www.vhwpt.com; the plain-http
+	# test address answers 404.
+	#
+	# After the move to admin.vhwpt.com, /etc/caddy/flags/vhwpt-admin-redirect.caddy sends the old address
+	# there. That file only exists once `admin-subdomain.sh redirect on` has run (it checks first that
+	# admin.vhwpt.com really answers). With no such file the glob below matches nothing and does nothing.
 	@admin {
 		path /admin /admin/*
 		host www.vhwpt.com
 	}
 	handle @admin {
-		import /etc/caddy/private/vhwpt-admin-auth.caddy
-		header Cache-Control "no-store"
-		header X-Robots-Tag "noindex, nofollow"
-		@adminSignups path /admin/signups /admin/signups/ /admin/signups.csv
-		handle @adminSignups {
-			rewrite * /api/admin-signups.php
-			php_fastcgi unix//run/php/php8.3-fpm.sock {
-				env ADMIN_USER {http.auth.user.id}
-			}
-		}
-		handle {
-			file_server
-		}
+		import /etc/caddy/flags/vhwpt-admin-redirect*
+		import vhwpt_admin_area
 	}
 	@adminElsewhere {
 		path /admin /admin/*
@@ -146,4 +159,64 @@ www.vhwpt.com {
 vhwpt.com {
 	tls /etc/caddy/certs/vhwpt.crt /etc/caddy/certs/vhwpt.key
 	redir https://www.vhwpt.com{uri} 308
+}
+
+# admin.vhwpt.com: the same admin area on its own address. Needs an A record for admin in Cloudflare
+# (proxied, orange cloud) pointing at 3.226.58.165. The certificate is the same Origin Certificate as
+# above (it covers *.vhwpt.com), so Caddy does no ACME and nothing here depends on DNS being live; the
+# block just receives no traffic until the record exists. Cloudflare's own certificate faces visitors.
+# Same URL space as www/admin on purpose (/admin/, /admin/signups, /admin/signups.csv).
+admin.vhwpt.com {
+	tls /etc/caddy/certs/vhwpt.crt /etc/caddy/certs/vhwpt.key
+	root * /srv/sites/vhwpt/current
+	encode zstd gzip
+
+	# Separate from the visit log (which keeps no IP addresses): fail2ban reads this one to find
+	# repeated wrong passwords. It keeps the visitor's IP, the page and the result. The password
+	# itself is never written (Caddy replaces the Authorization header with REDACTED). One week kept.
+	log {
+		output file /var/log/caddy/vhwpt-admin.log {
+			mode 640
+			roll_size 5MiB
+			roll_keep 4
+			roll_keep_for 168h
+		}
+	}
+
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+		X-Frame-Options DENY
+		-Server
+	}
+
+	# Addresses fail2ban has banned after repeated wrong passwords. Defines @banned. The file is written
+	# by /usr/local/sbin/vhwpt-admin-ban; with nobody banned it holds one harmless documentation address.
+	import /etc/caddy/private/vhwpt-admin-banned.caddy
+	handle @banned {
+		header Retry-After 3600
+		respond "Too many wrong passwords from this address. Try again in an hour." 429
+	}
+
+	@adminPaths path /admin /admin/*
+	handle @adminPaths {
+		import vhwpt_admin_area
+	}
+
+	# What the admin pages load (fonts, styles, the logo): public files, the same ones www serves.
+	@shared path /_astro/* /assets/* /favicon.ico /apple-touch-icon.png
+	handle @shared {
+		file_server
+	}
+
+	@home path /
+	handle @home {
+		redir * /admin/ 302
+	}
+
+	# Everything else (the banner and event pages the admin menu links to, and any stray address)
+	# lives on www: send it there. Never the PHP files or the private folder.
+	handle {
+		redir * https://www.vhwpt.com{uri} 302
+	}
 }

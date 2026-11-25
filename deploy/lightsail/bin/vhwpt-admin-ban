@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# Keeps the list of addresses banned from admin.vhwpt.com (fail2ban's action calls this). Installed as
+# /usr/local/sbin/vhwpt-admin-ban by admin-subdomain.sh. Run as root.
+#
+#   vhwpt-admin-ban ban <ip-or-cidr>     add, rewrite the Caddy snippet, reload Caddy
+#   vhwpt-admin-ban unban <ip-or-cidr>   remove
+#   vhwpt-admin-ban clear                empty the list
+#   vhwpt-admin-ban list
+#
+# The list is /var/lib/vhwpt-admin/banned.txt. Caddy reads /etc/caddy/private/vhwpt-admin-banned.caddy,
+# one line: `@banned client_ip <addresses>`. With nobody banned it holds 192.0.2.1, an address reserved
+# for documentation, because a matcher cannot be empty. If the new config does not validate, the old
+# snippet is put back and nothing reloads.
+set -euo pipefail
+
+# The defaults are the real paths; the variables exist so the script can be tried out in a scratch folder.
+STATE=${VHWPT_ADMIN_STATE:-/var/lib/vhwpt-admin/banned.txt}
+SNIPPET=${VHWPT_ADMIN_SNIPPET:-/etc/caddy/private/vhwpt-admin-banned.caddy}
+CADDYFILE=${VHWPT_ADMIN_CADDYFILE:-/etc/caddy/Caddyfile}
+RELOAD=${VHWPT_ADMIN_RELOAD:-systemctl reload caddy}
+LOCK=$STATE.lock
+
+[[ $# -ge 1 ]] || { echo "usage: $0 ban|unban <ip> | clear | list" >&2; exit 2; }
+cmd=$1; ip=${2:-}
+
+valid_ip() {
+  python3 - "$1" <<'PY'
+import ipaddress, sys
+try:
+    ipaddress.ip_network(sys.argv[1], strict=False)
+except ValueError:
+    sys.exit(1)
+PY
+}
+
+install -d -m 750 "$(dirname "$STATE")"
+touch "$STATE"
+exec 9>"$LOCK"
+flock 9
+
+case "$cmd" in
+  list) cat "$STATE"; exit 0 ;;
+  ban|unban) valid_ip "$ip" || { echo "not an address: $ip" >&2; exit 2; } ;;
+  clear) ;;
+  *) echo "unknown command: $cmd" >&2; exit 2 ;;
+esac
+
+tmp=$(mktemp)
+case "$cmd" in
+  ban)   { cat "$STATE"; echo "$ip"; } | sort -u > "$tmp" ;;
+  unban) grep -vxF -- "$ip" "$STATE" > "$tmp" || true ;;
+  clear) : > "$tmp" ;;
+esac
+
+ips=$(paste -sd' ' "$tmp")
+line="@banned client_ip ${ips:-192.0.2.1}"
+
+old=$(mktemp)
+cp -p "$SNIPPET" "$old" 2>/dev/null || : > "$old"
+if [[ "$(cat "$SNIPPET" 2>/dev/null || true)" == "$line" ]]; then
+  cp "$tmp" "$STATE"; rm -f "$tmp" "$old"; exit 0      # nothing changed, no reload
+fi
+
+printf '%s\n' "$line" > "$SNIPPET"
+chmod 640 "$SNIPPET"; chown root:caddy "$SNIPPET" 2>/dev/null || true
+if caddy validate --adapter caddyfile --config "$CADDYFILE" >/dev/null 2>&1; then
+  cp "$tmp" "$STATE"
+  $RELOAD
+else
+  cp "$old" "$SNIPPET"
+  rm -f "$tmp" "$old"
+  echo "Caddy rejected the new ban list; left the old one in place" >&2
+  exit 1
+fi
+rm -f "$tmp" "$old"
