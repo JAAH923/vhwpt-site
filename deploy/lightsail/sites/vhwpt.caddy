@@ -1,9 +1,9 @@
 # vhwpt.com on Bruce's Lightsail server: the Astro build in /srv/sites/vhwpt/current plus the
 # booking form's PHP endpoint. Source: deploy/lightsail/sites/vhwpt.caddy in the vhwpt-site repo.
 
-# The admin area itself, shared by www.vhwpt.com/admin (today) and admin.vhwpt.com (after the
-# cut-over, see "Admin area" in README.md). One password for both: the hash is NOT in this repo, it
-# lives on the server in /etc/caddy/private/vhwpt-admin-auth.caddy, one block like
+# The admin area itself, shared by www.vhwpt.com/admin and admin.vhwpt.com (both stay in service;
+# see "Admin area" in README.md). One password for both: the hash is NOT in this repo, it lives on
+# the server in /etc/caddy/private/vhwpt-admin-auth.caddy, one block like
 #     basic_auth {
 #         bruce <hash from `caddy hash-password`>
 #     }
@@ -98,17 +98,12 @@
 
 	# Bruce's admin area (vhwpt.com/admin): his sign-ups list and other private pages, behind one
 	# password (see the vhwpt_admin_area snippet above). Only over HTTPS on www.vhwpt.com; the plain-http
-	# test address answers 404.
-	#
-	# After the move to admin.vhwpt.com, /etc/caddy/flags/vhwpt-admin-redirect.caddy sends the old address
-	# there. That file only exists once `admin-subdomain.sh redirect on` has run (it checks first that
-	# admin.vhwpt.com really answers). With no such file the glob below matches nothing and does nothing.
+	# test address answers 404. This path stays in service alongside admin.vhwpt.com; it does not redirect.
 	@admin {
 		path /admin /admin/*
 		host www.vhwpt.com
 	}
 	handle @admin {
-		import /etc/caddy/flags/vhwpt-admin-redirect*
 		import vhwpt_admin_area
 	}
 	@adminElsewhere {

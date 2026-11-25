@@ -2,20 +2,20 @@
 # Puts Bruce's admin area on admin.vhwpt.com, in steps that can each be checked and undone.
 # Run on the server, from this folder in the repo checkout (after deploy.sh has put the branch there):
 #
-#   sudo bash admin-subdomain.sh status           what is installed, what DNS says. Changes nothing.
-#   sudo bash admin-subdomain.sh install          Caddy site block + login-failure lockout. Safe BEFORE DNS.
-#   sudo bash admin-subdomain.sh redirect on      send www.vhwpt.com/admin to admin.vhwpt.com. Refuses until
-#                                                 admin.vhwpt.com answers over the public internet.
-#   sudo bash admin-subdomain.sh redirect off     back to serving /admin on www (instant undo)
+#   sudo bash admin-subdomain.sh status    what is installed, what DNS says. Changes nothing.
+#   sudo bash admin-subdomain.sh install   Caddy site block + login-failure lockout. Safe BEFORE DNS.
+#   sudo bash admin-subdomain.sh check     the same local self-test install runs, plus a public check
+#                                          once DNS exists. Never redirects www.vhwpt.com/admin.
 #
+# www.vhwpt.com/admin and admin.vhwpt.com both stay in service. There is no redirect command.
 # Nothing here touches DNS or Cloudflare, and no password or key is read or printed.
 # See "Admin area" in README.md for the whole plan.
 set -euo pipefail
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 CADDY_SITE=/etc/caddy/sites/vhwpt.caddy
-FLAG_DIR=/etc/caddy/flags
-FLAG=$FLAG_DIR/vhwpt-admin-redirect.caddy
+# An earlier draft wrote a redirect flag here. Install removes it if present so /admin cannot redirect.
+LEGACY_FLAG=/etc/caddy/flags/vhwpt-admin-redirect.caddy
 BANNED=/etc/caddy/private/vhwpt-admin-banned.caddy
 AUTH=/etc/caddy/private/vhwpt-admin-auth.caddy
 HOST=admin.vhwpt.com
@@ -37,17 +37,28 @@ dns_state() {
   echo "answers ($ips)"
 }
 
-# The real test: ask for the page the way Bruce's browser will, without --resolve and without -k.
-# 401 with a Basic challenge means DNS, Cloudflare, TLS, Caddy and the password gate are all in place.
-live_check() {
+# Public check, the way a browser would, without --resolve and without -k.
+# Before Cloudflare Access: 401 with a Basic challenge.
+# After Access: a redirect or 403 to Cloudflare's login, not the password prompt, until signed in.
+public_check() {
   local head; head=$(curl -sS -m 15 -I "https://$HOST/admin/" 2>&1 || true)
-  grep -q '^HTTP/[0-9.]* 401' <<<"$head" && grep -qi '^www-authenticate: *basic' <<<"$head"
+  if grep -q '^HTTP/[0-9.]* 401' <<<"$head" && grep -qi '^www-authenticate: *basic' <<<"$head"; then
+    say "https://$HOST/admin/ answers 401 with a password prompt (Access is not in front yet)."
+    return 0
+  fi
+  if grep -qiE 'cloudflareaccess\.com|cf-access|location:.*access' <<<"$head"; then
+    say "https://$HOST/admin/ is reaching Cloudflare Access (expected once Access is on)."
+    return 0
+  fi
+  say "https://$HOST/admin/ did not look like a password prompt or an Access login:"
+  say "$head"
+  return 1
 }
 
 # The same page straight at Caddy on this server, before DNS exists. -k because the Origin Certificate is
 # only trusted by Cloudflare. Expect: 401 for /admin/, 302 for /, 302 to www for anything else.
 local_check() {
-  local ok=0 code loc
+  local ok=0 code
   code=$(curl -sk -m 10 -o /dev/null -w '%{http_code}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/admin/") || true
   say "  GET /admin/ with no password: $code (want 401)"; [[ $code == 401 ]] || ok=1
   code=$(curl -sk -m 10 -o /dev/null -w '%{http_code} %{redirect_url}' --resolve "$HOST:443:127.0.0.1" "https://$HOST/") || true
@@ -59,12 +70,23 @@ local_check() {
   return $ok
 }
 
+remove_legacy_flag() {
+  if [[ -e $LEGACY_FLAG || -e /etc/caddy/flags/vhwpt-admin-redirect.caddy.bak ]]; then
+    rm -f "$LEGACY_FLAG" /etc/caddy/flags/vhwpt-admin-redirect.caddy.bak
+    say "Removed a leftover redirect flag so www.vhwpt.com/admin cannot redirect."
+  fi
+}
+
 cmd_status() {
   say "Caddy site file: $(grep -q "^$HOST {" "$CADDY_SITE" 2>/dev/null && echo 'has the admin.vhwpt.com block' || echo 'no admin.vhwpt.com block yet')"
   say "Password file:   $([[ -f $AUTH ]] && echo present || echo MISSING)"
   say "Ban list:        $([[ -f $BANNED ]] && sed 's/@banned client_ip //' "$BANNED" | sed 's/192.0.2.1/(nobody)/' || echo 'not installed')"
   say "Lockout jail:    $(fail2ban-client status vhwpt-admin 2>/dev/null | grep -E 'Currently (failed|banned)' | tr -s ' \t' ' ' | paste -sd',' || echo 'not running')"
-  say "Redirect flag:   $([[ -f $FLAG ]] && echo 'ON (www/admin sends to admin.vhwpt.com)' || echo 'off (www/admin served as before)')"
+  if [[ -e $LEGACY_FLAG ]]; then
+    say "Redirect flag:   leftover file present; run install (or rm $LEGACY_FLAG) so /admin cannot redirect"
+  else
+    say "Redirect flag:   none (www.vhwpt.com/admin stays in service)"
+  fi
   say "DNS:             $(dns_state)"
 }
 
@@ -74,7 +96,7 @@ cmd_install() {
   command -v fail2ban-client >/dev/null || die "fail2ban is not installed"
 
   local stamp; stamp=$(date +%Y%m%d-%H%M%S)
-  install -d -m 755 "$FLAG_DIR"
+  remove_legacy_flag
   install -m 755 -o root -g root "$HERE/bin/vhwpt-admin-ban" /usr/local/sbin/vhwpt-admin-ban
   install -d -m 750 /var/lib/vhwpt-admin
   if [[ ! -f $BANNED ]]; then
@@ -89,6 +111,7 @@ cmd_install() {
   fi
   systemctl reload caddy
   say "Caddy reloaded with the admin.vhwpt.com block (backup: /etc/caddy/vhwpt.caddy.bak.$stamp)."
+  say "www.vhwpt.com/admin is unchanged and does not redirect."
 
   # fail2ban last: it needs the log file Caddy has just started writing.
   install -m 644 "$HERE/fail2ban/filter.d/vhwpt-admin.conf" /etc/fail2ban/filter.d/vhwpt-admin.conf
@@ -103,38 +126,27 @@ cmd_install() {
   say "Checking the new block directly on this server (no DNS needed):"
   if local_check; then say "All four checks passed."; else say "A check above did not match. Look before going on (journalctl -u caddy)."; fi
   say "DNS today: $(dns_state)"
-  say "Next: once Brendan's admin record is live, run: sudo bash admin-subdomain.sh redirect on"
+  say "Once Brendan's proxied admin record is live, run: sudo bash admin-subdomain.sh check"
 }
 
-cmd_redirect() {
-  case "${1:-}" in
-    on)
-      grep -q "^$HOST {" "$CADDY_SITE" || die "run 'install' first"
-      say "DNS: $(dns_state)"
-      if ! live_check; then
-        die "https://$HOST/admin/ does not answer 401 from the public internet yet (DNS not live, grey cloud, or Cloudflare not serving it). Redirect NOT turned on; /admin on www is unchanged."
-      fi
-      say "https://$HOST/admin/ answers 401 with a password prompt: the new address works."
-      # 302, not 301/308: browsers keep a permanent redirect for good. After a week of it working, change
-      # the 302 below to 308 in this script, and rerun 'redirect on'.
-      printf 'redir * https://%s{uri} 302\n' "$HOST" > "$FLAG"
-      if ! validate; then rm -f "$FLAG"; die "Caddy rejected the redirect; removed it"; fi
-      systemctl reload caddy
-      local loc; loc=$(curl -sS -m 15 -o /dev/null -w '%{http_code} %{redirect_url}' "https://www.vhwpt.com/admin/signups?form=class" || true)
-      say "https://www.vhwpt.com/admin/signups?form=class now gives: $loc"
-      ;;
-    off)
-      rm -f "$FLAG"; validate || die "Caddy rejects its config after removing the flag; check /etc/caddy"
-      systemctl reload caddy
-      say "Redirect off: www.vhwpt.com/admin is served as before."
-      ;;
-    *) die "usage: redirect on|off" ;;
-  esac
+cmd_check() {
+  grep -q "^$HOST {" "$CADDY_SITE" || die "run 'install' first"
+  say "Local checks (no DNS needed):"
+  if local_check; then say "All four local checks passed."; else die "a local check did not match (journalctl -u caddy)"; fi
+  say "DNS: $(dns_state)"
+  if [[ $(dns_state) == none ]]; then
+    say "No public check yet: admin.vhwpt.com has no DNS record."
+    return 0
+  fi
+  public_check || die "public check failed"
 }
 
 case "${1:-}" in
-  status)   cmd_status ;;
-  install)  cmd_install ;;
-  redirect) shift; cmd_redirect "$@" ;;
+  status)  cmd_status ;;
+  install) cmd_install ;;
+  check)   cmd_check ;;
+  redirect)
+    die "redirect was removed: www.vhwpt.com/admin and admin.vhwpt.com both stay in service. There is no on/off switch."
+    ;;
   *) sed -n '2,13p' "${BASH_SOURCE[0]}"; exit 2 ;;
 esac

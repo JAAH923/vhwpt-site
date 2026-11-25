@@ -109,42 +109,70 @@ The same admin area, on its own address. Nothing about the pages changes: the si
 and the menu keep their `/admin/...` addresses, so `https://admin.vhwpt.com/` goes to `/admin/` and
 `https://admin.vhwpt.com/admin/signups` is the list. The code is the same code, served by a second
 Caddy site block (`sites/vhwpt.caddy`, the `vhwpt_admin_area` snippet shared by both addresses).
+**www.vhwpt.com/admin stays in service.** It does not redirect to the subdomain.
 
 | Piece | How |
 |---|---|
 | Address | `admin.vhwpt.com`, an A record to `3.226.58.165`, **proxied (orange cloud)**. Brendan Meehan owns the Cloudflare zone, so he adds it. |
 | Certificate | The Origin Certificate already in `/etc/caddy/certs` covers `*.vhwpt.com`. Caddy does no ACME and nothing waits on DNS to get a certificate. It must be **proxied**: with a grey cloud, browsers would see the Origin Certificate, which only Cloudflare trusts. |
-| Password | The same one gate as `/admin` today: `basic_auth` from `/etc/caddy/private/vhwpt-admin-auth.caddy`. No new secret. It uses no cookies; the browser remembers the password per address, so Bruce signs in once on the new address. |
-| Lockout | fail2ban jail `vhwpt-admin`: 6 wrong passwords in 10 minutes bans that address for an hour (doubling for repeat offenders, up to a week). Because the site is behind Cloudflare, the ban goes into Caddy (`bin/vhwpt-admin-ban` writes `/etc/caddy/private/vhwpt-admin-banned.caddy`, banned addresses get 429), not the firewall. Only requests that carried a password and still got 401 count, never the browser's first prompt. Own log: `/var/log/caddy/vhwpt-admin.log`, kept a week, holds addresses (the visit log still holds none). |
+| Cloudflare Access | A second login in front of the password, set up by Brendan in Zero Trust (steps below). Bruce signs in with a one-time PIN to `brucevalencia@vhwpt.com`, then the existing password. |
+| Password | The same one gate as `/admin` today: `basic_auth` from `/etc/caddy/private/vhwpt-admin-auth.caddy`. No new secret. It uses no cookies; the browser remembers the password per address, so Bruce signs in once on each address. |
+| Lockout | fail2ban jail `vhwpt-admin`: 6 wrong passwords in 10 minutes bans that address for an hour (doubling for repeat offenders, up to a week). Because the site is behind Cloudflare, the ban goes into Caddy (`bin/vhwpt-admin-ban` writes `/etc/caddy/private/vhwpt-admin-banned.caddy`, banned addresses get 429), not the firewall. Only requests that carried a password and still got 401 count, never the browser's first prompt. Own log: `/var/log/caddy/vhwpt-admin.log`, kept a week, holds addresses (the visit log still holds none). The jail watches `admin.vhwpt.com` only. |
 | Everything else on the subdomain | Fonts, styles and the logo are served (public files). The menu's links to the banner and event pages, and any other address, redirect to the same path on `www.vhwpt.com`. The PHP files are never served. |
-| Old address | `www.vhwpt.com/admin` keeps working until the switch below, then redirects to the subdomain (same path and query). |
+| Old address | `www.vhwpt.com/admin` stays as it is, behind the same password. A path-based Access app should cover `/admin*` there too (see below), so both doors have the same second gate. |
 
 Not used, and why: **Turnstile** needs a login page and a session cookie, and Caddy's password prompt
 has neither, so it would mean building a login system for one person. **Tailscale or an address
-allowlist** would lock Bruce out from his phone and from changing addresses. **Cloudflare Access**
-(free) would be a good second gate but needs Brendan to set it up and gives Bruce a second login;
-ask only if the password plus lockout is judged not enough.
+allowlist** would lock Bruce out from his phone and from changing addresses.
+
+**Later hardening (not in this change):** Caddy does not check Cloudflare Access's
+`Cf-Access-Jwt-Assertion` header. Access already stops unsigned visitors at the proxy, and the
+password still protects a direct hit on the origin. Checking the JWT at Caddy would need a custom
+Caddy build (a plugin). Leave stock Caddy as it is unless that extra check is wanted later.
+
+#### Cloudflare Access (Brendan, in the vhwpt.com Cloudflare account)
+
+Free Zero Trust Access is enough. Nothing on the Lightsail server has to change for this, and no
+new secret goes in git. Do this after the proxied `admin` A record exists.
+
+1. Open **Zero Trust** (dash.cloudflare.com > the account that holds vhwpt.com > Zero Trust).
+2. **Access > Applications > Add an application > Self-hosted.**
+3. Application name: `vhwpt admin`.
+4. Application domain: `admin.vhwpt.com`, leave the path empty (the whole hostname). Session
+   duration: **24 hours** (long enough for a work session, short enough that a shared browser is
+   not signed in for days).
+5. Add a second public hostname on the same application, or a second self-hosted application:
+   domain `www.vhwpt.com`, path `/admin*`. That covers the existing `/admin` path and leaves the
+   rest of the public site alone. (Apex `vhwpt.com/admin` already redirects to www, so it does
+   not need its own rule.)
+6. Policy: **Allow**. Include **Emails**:
+   - `brucevalencia@vhwpt.com` (Bruce)
+   - optionally `justin@donovanhunter.com` (Justin; confirm with him before adding)
+7. Identity: **One-time PIN** (email). No Google or other login is required.
+8. Save. Visit `https://admin.vhwpt.com/` and `https://www.vhwpt.com/admin/`: Cloudflare asks for
+   the email and PIN first, then Caddy asks for the existing password. Anyone else is stopped at
+   Access.
+
+If Access is added before the A record, the application simply has no traffic yet.
 
 #### Order of work
 
 1. **Anytime, before DNS** (nothing public changes; the new block has no traffic until the record exists):
    `ssh bruce-lightsail 'cd /srv/sites/vhwpt/repo && git fetch -q origin && git checkout -q --detach origin/main && sudo bash deploy/lightsail/admin-subdomain.sh install'`
    (after this branch is merged to `main`; to try it earlier use the branch name instead of `main`).
-   It backs up the old site file, validates before reloading, installs the lockout, and tests the
-   block locally with `--resolve`. `sudo bash admin-subdomain.sh status` shows where things stand.
-2. **Brendan adds the A record** `admin` → `3.226.58.165`, proxied. (Needs Justin's go-ahead before anything is sent to Brendan.)
-3. **Check from outside**, as Bruce's browser would: `curl -I https://admin.vhwpt.com/admin/` answers `401` with `www-authenticate: Basic`. Open it, sign in, open the sign-ups list and download the CSV.
-4. **Switch the old address**: `sudo bash admin-subdomain.sh redirect on`. It refuses unless step 3 passes. It redirects with a temporary 302 first. Undo at any time with `redirect off`. After a quiet week, change `302` to `308` in the script and run `redirect on` again.
-5. Tell Bruce the new address once; his old bookmark keeps working through the redirect.
+   It backs up the old site file, validates before reloading, installs the lockout, removes any
+   leftover redirect flag, and tests the block locally with `--resolve`.
+   `sudo bash admin-subdomain.sh status` and `… check` show where things stand.
+2. **Brendan adds the A record** `admin` → `3.226.58.165`, proxied, and sets up Access as above.
+   (Needs Justin's go-ahead before anything is sent to Brendan.) `mail.vhwpt.com` stays DNS-only.
+3. **Check from outside**: `sudo bash admin-subdomain.sh check`, then open both addresses, pass
+   Access, sign in with the password, open the sign-ups list and download the CSV.
+4. Tell Bruce both addresses work. His existing `/admin` bookmark stays valid.
 
-Why redirect rather than keep both: two addresses means two places a password can be typed and two
-sets of saved logins, and the old `/admin` on the public site is the one search engines and scanners
-look for. One address is easier to protect, log and lock down. The redirect keeps old bookmarks and
-any link already sent to Bruce working, and `redirect off` is instant if anything is wrong.
-
-Rolling back everything: `redirect off`, then put the saved `/etc/caddy/vhwpt.caddy.bak.<time>` back as
+Rolling back: put the saved `/etc/caddy/vhwpt.caddy.bak.<time>` back as
 `/etc/caddy/sites/vhwpt.caddy`, validate and reload Caddy, and delete
-`/etc/fail2ban/jail.d/vhwpt-admin.conf` and reload fail2ban.
+`/etc/fail2ban/jail.d/vhwpt-admin.conf` and reload fail2ban. Access is turned off in the
+Cloudflare Zero Trust dashboard if it was already on.
 
 ## Traffic: how people arrive
 
